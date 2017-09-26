@@ -1,0 +1,3 @@
+<apex:page standardController="CameleonCPQ__Quote__c" extensions="SmartPriceOfferView" action="{!nullValue(redir.url, urlFor($Action.CameleonCPQ__Quote__c.View, CameleonCPQ__Quote__c.id, null, true))}">>
+
+</apex:page>

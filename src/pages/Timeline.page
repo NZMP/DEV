@@ -1,0 +1,391 @@
+<apex:page standardStylesheets="false" showHeader="false" sidebar="false">
+
+        <link href="/dCSS/Theme2/default/common.css" type="text/css" media="handheld,print,projection,screen,tty,tv" rel="stylesheet"/>
+    
+    <apex:includeScript value="{!URLFOR($Resource.Timeline, 'timeline_2.3.0/timeline_ajax/simile-ajax-api.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.Timeline, 'timeline_2.3.0/timeline_js/timeline-api.js?bundle=true')}"/>
+    <script src="/soap/ajax/29.0/connection.js" type="text/javascript"></script>
+    <apex:stylesheet value="{!URLFOR($Resource.Timeline, 'timeline_2.3.0/timeline_js/timeline_custom.css')}" />
+ 
+    <script>
+        //Disable Simile history functionality because it creates an invalid 
+        //url error within an iframe when the Clickjack protection critical 
+        //update is active.
+        SimileAjax.History.enabled = false;
+
+        sforce.connection.sessionId = '{!$Api.Session_ID}';
+        var tl;var eventSource;
+        var recordId = "{!$Request.recordId}";
+        var userId = "{!$User.id}";
+        var hideOpportunities = {!CONTAINS($Label.TIMELINE_PROFILES_WITHOUT_ACCESS_TO_OPPORTUNITY, $Profile.Name)};
+        //var hideCases = {!CONTAINS($Label.TIMELINE_PROFILES_WITHOUT_ACCESS_TO_CASE, $Profile.Name)};
+        var hideKeyInitiatives = {!CONTAINS($Label.TIMELINE_PROFILES_WITHOUT_ACCESS_TO_KEY_INITIATIVE, $Profile.Name)};
+        var hideTasks = {!$Label.TIMELINE_HIDE_TASKS};
+        var baseURL = window.location.protocol + '//' + window.location.hostname;
+        var isOpportunity = new Boolean("{!$Request.recordType}" == "Opportunity"); 
+        var isContact = new Boolean("{!$Request.recordType}" == "Contact");
+        var isAccount = new Boolean("{!$Request.recordType}" == "Account"); 
+        var isCase = new Boolean( "{!$Request.recordType}" == "Case");
+        var isStrategicInitiative = new Boolean( "{!$Request.recordType}" == "Key_Initiative__c");
+        // see what tab we are called from
+        function validId(id) { return (recordId!= null && recordId != "" && recordId === id); }
+        
+        var hasActivities = new Boolean( isOpportunity == true || isCase == true || isAccount == true || isStrategicInitiative == true );
+        
+        
+        var WhatId = (isOpportunity || isCase || isAccount || isStrategicInitiative) ? recordId:null;
+        function onLoad() {
+            eventSource = new Timeline.DefaultEventSource();
+            var theme = Timeline.ClassicTheme.create();
+            theme.event.track.height = 1.5;
+            theme.event.track.gap = 0.1;
+            
+            var bandInfos = [
+                    Timeline.createBandInfo({
+                        eventSource: eventSource,   date: Date(),
+                        width: "80%",               intervalUnit: Timeline.DateTime.MONTH,
+                        intervalPixels: 100,        theme:theme,
+                        layout:'original'           
+                    }),
+                    Timeline.createBandInfo({
+                        overview:       true,
+                        showEventText: true,
+                        trackHeight: 0.5,           trackGap: 0.2,
+                        eventSource: eventSource,   date: Date(),
+                        width: "20%",               intervalUnit: Timeline.DateTime.YEAR,
+                        intervalPixels: 200
+                    })
+            ];
+            bandInfos[1].syncWith = 0;
+            bandInfos[1].highlight = true;
+            
+            tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
+            if(validId(recordId)){
+                if ( hasActivities == true && WhatId != null) {
+                    //get all tasks related to this object ( must have a WhatId)
+                    if ( !hideTasks ) {
+                        sforce.connection.query(
+                            "Select Id,Subject,Status,ActivityDate,Description,CreatedDate,Owner.FirstName,Owner.LastName, Who.FirstName, Who.LastName from Task where WhatId='"+ WhatId +"'", 
+                            layoutTasks);
+                        }
+                    // events
+                    sforce.connection.query(
+                        "Select Id, Subject, Location, ActivityDateTime,ActivityDate, IsAllDayEvent,startdatetime,enddatetime, DurationInMinutes, Description, Owner.FirstName,Owner.LastName, Who.FirstName, Who.LastName from Event where WhatId='"+ WhatId + "' order by ActivityDate",
+                        layoutEvents);
+                }
+                // opportunity stage history if we are on an opp
+                if (isOpportunity && validId( recordId ) && !hideOpportunities) {
+                    sforce.connection.query("Select CreatedById, CreatedDate, StageName, Amount, CloseDate from OpportunityHistory where OpportunityId ='"+recordId+"'",
+                        layoutOppHistory);  
+                }
+                // more can be added, these will find activities on the contact record  
+                // simular code can be added for Lead
+                if (isContact && validId(recordId) && !hideTasks) { 
+                    // tasks
+                    if ( !hideTasks ) {
+                        sforce.connection.query(
+                            "Select Id,Subject,Status,ActivityDate,Description,CreatedDate, Owner.FirstName,Owner.LastName, What.Name from Task where WhoId='"+recordId+"'", 
+                            layoutTasksWhat);
+                    }
+                    // events
+                    sforce.connection.query(
+                        "Select Id, Subject, Location, ActivityDateTime,ActivityDate, IsAllDayEvent,StartDateTime,EndDateTime, DurationInMinutes, Description, Owner.FirstName,Owner.LastName, What.Name from Event where WhoId='"+recordId+"' order by ActivityDate",
+                        layoutEventsWhat);
+                              
+                }
+                if (isAccount&& validId(recordId) ) { // we are on an account page, so show opportunities
+                    if (!hideOpportunities) {
+                        sforce.connection.query(
+                        "Select Id, Name, StageName, Amount, CloseDate, IsWon, IsClosed , NextStep from Opportunity where AccountId = '"+recordId+"'", 
+                        layoutOpps);    
+                    }
+                    // more can be added here
+                        // key initiatives with status
+                        if (!hideKeyInitiatives) {
+                                sforce.connection.query(
+                                "Select Id, CreatedDate, Status__c, Name, Target_Date__c, Strategy_Detail__c from Key_Initiative__c where Account__c ='"+recordId+"' and (Target_Date__c != null)",
+                            layoutKeyInits);
+                        }
+                    // add activities on an account ( AccountId is set)
+                    if ( !hideTasks ) {
+                        sforce.connection.query(
+                            "Select Id,Subject,Status,ActivityDate,Description,CreatedDate, Owner.FirstName,Owner.LastName, Who.FirstName, Who.LastName, What.Name from Task where AccountId ='"+recordId+"'", 
+                            layoutTasks);
+                    }
+                    // events
+                    sforce.connection.query(
+                        "Select Id, Subject, Location, ActivityDateTime,ActivityDate, IsAllDayEvent,startdatetime,enddatetime, DurationInMinutes, Description, Owner.FirstName,Owner.LastName, Who.FirstName, Who.LastName , What.Name from Event where WhatId='"+recordId+"' order by ActivityDate",
+                        layoutEvents);
+                }
+                
+             /*   // for a case
+                if (isCase && validId(recordId) && !hideCases) { // we are on a case page, this gets interesting...
+                    
+                    // query the case history and display that
+                    sforce.connection.query( "Select Id, CreatedDate,ClosedDate,CaseNumber,Subject,Reason,LastModifiedDate From Case"+
+                    " where Id = '"+recordId+"'", 
+                    layoutCasesAsDuration);  
+                    
+                    // query the case history and display that
+                    sforce.connection.query( "Select c.OldValue, c.NewValue, c.IsDeleted, c.Id, c.Field, c.CreatedDate, c.CreatedBy.FirstName, c.CreatedBy.LastName, c.CreatedById, c.CaseId From CaseHistory c"+
+                    " where c.CaseId = '"+recordId+"' order by CreatedDate ", 
+                    layoutCaseHist );   
+                    
+                    // case comments 
+                    sforce.connection.query( "Select c.ParentId, c.LastModifiedDate, c.LastModifiedById, c.IsPublished, c.IsDeleted, c.Id, c.CreatedDate, c.CreatedBy.FirstName, c.CreatedBy.LastName, c.CreatedById, c.CommentBody From CaseComment c " + 
+                     " where ParentId = '"+recordId+"' order by CreatedDate ", 
+                     layoutCaseComment  );
+                    
+                } // end case */
+
+            //end if for if recordId exist
+            }else{
+                if ( !hideTasks ) {
+                    sforce.connection.query(
+                            "Select Id,Subject,Status,ActivityDate,Description,CreatedDate,Owner.FirstName,Owner.LastName, Who.FirstName, Who.LastName from Task where ownerid='"+ userId +"'", 
+                            layoutTasks);
+                }
+                sforce.connection.query(
+                        "Select Id, Subject, Location, ActivityDateTime,ActivityDate, IsAllDayEvent,startdatetime,enddatetime, DurationInMinutes, Description, Owner.FirstName,Owner.LastName, Who.FirstName, Who.LastName from Event where ownerid='"+ userId + "' order by ActivityDate",
+                        layoutEvents);
+                sforce.connection.query(
+                        "Select Id, Name, StageName, Amount, CloseDate, IsWon, IsClosed , NextStep from Opportunity where ownerid= '"+userId+"'", 
+                        layoutOpps);
+                /* sforce.connection.query(
+                        "Select Id, CreatedDate,ClosedDate,CaseNumber,Subject,Reason,LastModifiedDate from Case where ownerid= '"+userId+"'", 
+                        layoutCases); */
+            }
+            
+        }
+        
+        
+       
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        /* 
+        * layout callbacks, gets a list of query results, formats a timeline entry and bubble contents
+        * when constructing data.events array of objects to add via loadJSON, the following are available
+        * 
+        *  { start: 
+            end: 
+            title:
+            link:   'parent:link...'
+            latestStart: null,
+            earliestEnd: null,
+            isDuration: false,
+            description: 
+            image: img,
+            icon: img,
+            color: "#999",
+            textColor: null,
+            onclick: "javascript:..."
+            }
+        Note, for IE and IE7 the last data element must not have a comma following it
+        */
+      /*  function layoutCaseHist(qr) { 
+        var formatDesc = function (rec) { 
+            if (rec.Field == 'created' ) { 
+                return 'the case was created <br>by '+rec.CreatedBy.FirstName + ' '+ rec.CreatedBy.LastName + ' on ' ;
+            } else { 
+                return 'the field '+rec.Field+  
+                    '<br>was changed to ' + (rec.NewValue?rec.NewValue:'') + 
+                    '<br>by '+rec.CreatedBy.FirstName + ' '+ rec.CreatedBy.LastName + ' on '
+            }
+        };  
+        loadJSON ( map ( qr.getArray('records'), function(rec,idx,ary) { 
+            return  {
+                start: rec.getDateTime('CreatedDate'),
+                title: '.'+rec.Field + ' ' + (rec.NewValue?rec.NewValue:''),
+                description: formatDesc(rec),
+                image: "/img/icon/cases16.gif",
+                icon: "/img/icon/cases16.gif",
+                color: "#333" }
+        } ) ); 
+        }
+        
+        function layoutCaseComment (qr ) { 
+        loadJSON ( map ( qr.getArray('records'), function(rec,idx,ary) { 
+            return  {
+                start: rec.getDateTime('CreatedDate'),
+                title: '.'+'Comment by ' + rec.CreatedBy.FirstName + ' ' + rec.CreatedBy.LastName,
+                description: (rec.IsPublished?'Public ':'Private ') + '<br>'+ rec.CommentBody.substr(0,64),
+                image:"/img/icon/documents16.gif",
+                icon: "/img/icon/documents16.gif",
+                color: "#333" }
+        } ) );      
+        } */
+        
+        
+        
+        
+        //  layout helper routines for various objects
+        function layoutOpps(qr) { 
+        loadJSON ( map ( qr.getArray('records'), function(rec,idx,ary) { 
+            return  {
+                start: rec.getDate('CloseDate'),
+                title: '.'+rec.Name + ', ' + rec.StageName + ', ' + rec.Amount,
+                link: 'parent:/' + rec.Id,  
+                description: rec.Name + ' currently at stage '+rec.StageName+ ', '+
+                    (rec.NextStep?rec.NextStep:'')+' and is expected to close on ',
+                image: "/img/icon/opportunities16.gif",
+                icon: "/img/icon/opportunities16.gif",
+                color: "#333" };        
+        } ) );
+        }
+        
+        function layoutOppHistory(qr) { 
+        loadJSON ( map ( qr.getArray('records'), function(rec,idx,ary) { 
+            return {
+                start: rec.getDateTime('CreatedDate'),
+                title: '.'+rec.StageName + ', ' + rec.Amount,
+                description: '' , 
+                image: "/img/icon/opportunities16.gif",
+                icon: "/img/icon/opportunities16.gif",
+                color: "#333" };
+        } ) );  
+        }
+      /*  function layoutCasesAsDuration(qr) { 
+        loadJSON ( map ( qr.getArray('records'), function(rec,idx,ary) {
+            var duration = true;
+            var endDt = rec.getDateTime('ClosedDate'); 
+            if (!endDt) {endDt = new Date();duration = false}
+            return {
+                durationEvent: duration,
+                start: rec.getDateTime('CreatedDate'),
+                end: endDt,
+                color: "#65CA4D",
+                link: 'parent:/' + rec.Id,
+                title: '.'+rec.CaseNumber,
+                description: rec.Subject , 
+                image: "/img/icon/cases16.gif",
+                icon: "/img/icon/cases16.gif",
+                textColor: "#333" };
+        } ) );  
+        }
+        function layoutCases(qr) { 
+        loadJSON ( map ( qr.getArray('records'), function(rec,idx,ary) { 
+            return {
+                duration: false,
+                start: rec.getDateTime('CreatedDate'),
+                //latestStart:rec.getDateTime('LastModifiedDate'),
+                //end: rec.getDateTime('ClosedDate'),
+                link: 'parent:/' + rec.Id,
+                title: '.'+rec.CaseNumber,
+                description: rec.Subject , 
+                image: "/img/icon/cases16.gif",
+                icon: "/img/icon/cases16.gif",
+                textColor: "#333" };
+        } ) );  
+        } */
+
+        function layoutKeyInits(qr) { 
+        loadJSON ( map ( qr.getArray('records'), function(rec,idx,ary) {
+            return  {
+                start: rec.getDate('Target_Date__c'),
+                title: '.'+rec.Name + ', ' + rec.Status__c,
+                link: 'parent:/' + rec.Id,  
+                description: rec.Strategy_Detail__c,
+                image: "/img/icon/custom51_100/redcross16.png",
+                icon: "/img/icon/custom51_100/redcross16.png",
+                color: "#333" };
+        } ) );
+        }
+
+        function layoutTasks(qr) { layoutActivity(qr, "/img/icon/tasks16.png","false"); }
+        function layoutEvents(qr) {layoutActivity(qr, "/img/icon/calendar16.png","true"); }
+        function layoutTasksWhat(qr) { layoutActivityWhat(qr, "/img/icon/tasks16.png"); }
+        function layoutEventsWhat(qr) { layoutActivityWhat(qr, "/img/icon/calendar16.png"); }
+        
+        // activities may have duplicates on an account for example, keep a list to avoid 
+        var seen = [];
+        // this callback loads tasks into the timeline
+        function layoutActivityWhat(qr,img) {
+        loadJSON ( map ( qr.getArray('records'), function(rec,idx,ary) { 
+            if ( seen[rec.Id] ) { return null; } else { seen[rec.Id] = rec.Id;}
+            var stdate = rec.getDate('ActivityDate');
+            if (!stdate) { stdate = rec.getDateTime('CreatedDate'); }
+            return {
+                start: stdate,
+                title: '.'+rec.Subject + (rec.What && rec.What.Name ? ', '+rec.What.Name : ''),
+                link: '/' + rec.Id, 
+                description: 'Description: ' + (rec.Description ? rec.Description:'') + 
+                     (rec.Who && rec.Who.FirstName && rec.Who.LastName ?
+                        '<br>Contact: ' + rec.Who.FirstName + ' '+rec.Who.LastName : '') +
+                        "<br>Assigned to: " + rec.Owner.FirstName + " " + rec.Owner.LastName,
+                image: img,
+                icon: img,
+                color: "#333" }
+        } ) );
+        }
+        
+        // this callback loads tasks into the timeline
+        function layoutActivity(qr,img) {
+        loadJSON ( map ( qr.getArray('records'), function(rec,idx,ary) { 
+            if ( seen[rec.Id] ) { return null; } else { seen[rec.Id] = rec.Id;}
+            var stdate;
+            //if(duration=="true")stdate = rec.getDateTime('StartDateTime');
+            
+            if (!stdate) { stdate = rec.getDate('ActivityDate'); }
+            if (!stdate) { stdate = rec.getDateTime('CreatedDate'); }
+            var endDate = rec.getDateTime('EndDateTime');
+            return {
+                start: stdate,
+                title: '.'+rec.Subject + (rec.Who && rec.Who.FirstName && rec.Who.LastName ?
+                                    ', '+rec.Who.FirstName + ' '+rec.Who.LastName : ''),
+                link: 'parent:/' + rec.Id, 
+                description: 'Description: ' + (rec.Description ? rec.Description:'') + 
+                     (rec.Who && rec.Who.FirstName && rec.Who.LastName ?
+                        '<br>Contact: ' + rec.Who.FirstName + ' '+rec.Who.LastName : '') +
+                        "<br>Assigned to: " + rec.Owner.FirstName + " " + rec.Owner.LastName,
+                image: img,
+                icon: img,
+                color: "#333" };
+        } ) );
+        }
+        
+        // some helper functions
+        // take an array of events, load them into a data object and pass to loadJSON 
+        function loadJSON (events) { 
+        if (!events || events.length <1) return; 
+        var data = {}; 
+        data.events = events; 
+        eventSource.loadJSON(data,baseURL); // eventSource is part of the Timeline API
+        }
+        // call a function on each member of the array, return an array 
+        // of the results of the callbacks
+        function map(anArray /* Array */, callback /* Function */){
+        var outArr = [];
+        for(var i=0,l=anArray.length; i<l; i++){ 
+            var topush = callback(anArray[i], i, anArray);
+            if (topush != null) {
+                outArr.push( topush );
+            }
+        }
+        return outArr;
+        }
+        
+        
+        var resizeTimerID = null;
+        function onResize() {
+         if (resizeTimerID == null) {
+             resizeTimerID = window.setTimeout(function() {
+                 resizeTimerID = null;
+                 tl.layout();
+             }, 500);
+         }
+        }
+    </script>
+    <body onload="onLoad();" onresize="onResize();">
+        <div id="my-timeline" style="height: 300px; border: 1px solid #aaa"></div>
+        <noscript>
+            This page uses Javascript to show you a Timeline. Please enable Javascript in your browser to see the full page. Thank you.
+        </noscript> 
+    </body>
+</apex:page>

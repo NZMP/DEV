@@ -1,0 +1,5 @@
+<apex:page standardController="Account">
+    <apex:outputPanel layout="block" id="detail">
+        <apex:iframe src="/apex/Timeline?recordType=Account&recordId={!id}" scrolling="false" height="315px" width="100%" />
+    </apex:outputPanel>    
+</apex:page>

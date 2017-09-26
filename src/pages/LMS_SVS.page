@@ -1,0 +1,35 @@
+<apex:page >
+    <apex:stylesheet value="{!$Resource.LearningStyle}"/>
+    <apex:form >       
+        <apex:outputLink value="{! $Page.LMS_CTM}">back</apex:outputLink>  
+        <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel styleClass="Title">Sales Value Stream</apex:outputLabel>   
+                </apex:pageBlockSectionitem> 
+                <apex:pageblockSection columns="3" >
+                    <apex:pageblockSectionItem dataStyle="width:10%">     
+                        <apex:image width="200" height="200" url="{!URLFOR($Resource.LearningImages,'Images/SVS.gif')}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSection columns="1" >           
+                        <apex:outputLabel >Has the ability to explain the key value chain activities and systems required to see a sale through to successful execution. </apex:outputLabel>
+                        <apex:outputLabel >Has the understanding and ability to use technology, systems, reporting, tools and insights to support sound business decisions. </apex:outputLabel>
+                        <apex:outputLabel styleClass="Header" >Examples of competency behaviours</apex:outputLabel>                         
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SVS%20Master%20data%22%5D">•Understand the importance of Master data </apex:outputLink>  
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SVS%20Processes systems%22%5D">•Knowledge of the Fonterra Value stream parts and value stream processes, systems and services </apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SVS%20Supply%20Chain%22%5D">•Provides insight and input into long term Supply Chain solutions for Fonterra and its customers by advocating for the customers needs internally. Co-operates with Supply Chain to ensure customer requirements are clearly understood and met</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SVS%20GDT%22%5D">•Working knowledge and understanding of GDT, ability to inform customers of requirements, processes, potential issues and response to queries</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SVS%20Customer Central%22%5D">•Working knowledge of CRM system (Salesforce) with the ability to use the system to manage, track, report and measure customer information, opportunities and value</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SVS%20Bi-lateral%20agreements%22%5D">•Awareness of current bi-lateral Agreements within your customer portfolio Knowledge of current Bi-lateral Agreements within own customer portfolio</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SVS%20Customer%20contracts%22%5D">•Aware of implications of guidelines governing the various types of customer contracts and agreements (GSA) and (LTSA) and implications of legal principles surrounding contract law</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SVS%20Complaints%20process%22%5D">•Can explain the complaints process</apex:outputLink> 
+                   </apex:pageblockSection> 
+                    <apex:pageblockSection columns="1" >
+                        <apex:outputLabel styleClass="Header" >Competency levels</apex:outputLabel>
+                        <apex:image url="{!URLFOR($Resource.LearningImages,'Images/SVS_CL.gif')}"/>
+                       </apex:pageblockSection>                    
+                </apex:pageblockSection>
+            </apex:pageblockSection>
+       </apex:pageBlock>
+    </apex:form>
+</apex:page>

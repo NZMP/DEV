@@ -1,0 +1,205 @@
+<apex:page showHeader="false" id="loginPage" controller="SiteLoginController" title="{!$Label.site.site_login}">
+
+    <head>
+        <!-- Meta -->
+        <title>NZMP Reseller Programme 2014</title>
+        <meta charset="utf-8" />
+        
+        
+        <meta name="format-detection" content="telephone=no" />  
+
+        <!--[if lt IE 9]>
+        <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->   
+        
+        <link rel="stylesheet" href="{!URLFOR($Resource.ResellerPortalAssets, 'css/jquery.maximage.css')}" media="screen" type="text/css" charset="utf-8"/>
+        <link rel="stylesheet" href="{!URLFOR($Resource.ResellerPortalAssets, 'css/screen.css')}" media="screen" type="text/css" charset="utf-8"/>
+
+        
+        <!-- Global Stylesheets -->
+        <link rel="stylesheet" href="{!URLFOR($Resource.ResellerPortalAssets, 'css/reset.css')}" media="all" type="text/css"/>
+        <link rel="stylesheet" href="{!URLFOR($Resource.ResellerPortalAssets, 'css/fonts.css')}" media="all" type="text/css"/>
+        <link rel="stylesheet" href="{!URLFOR($Resource.ResellerPortalAssets, 'css/style.css')}" media="all" type="text/css"/>
+        
+        <!-- Fallback if browser does not support media queries + javascript (Read: Internet Explorer 7 - 8) -->
+        <link rel="stylesheet" href="{!URLFOR($Resource.ResellerPortalAssets, 'css/10col.css')}" media="all" type="text/css"/>
+    
+        <!-- Media Queries for responsiveness -->
+        <link rel="stylesheet" href="{!URLFOR($Resource.ResellerPortalAssets, 'css/10col.css')}" media="only screen and (min-width: 992px)" type="text/css"/>
+        <link rel="stylesheet" href="{!URLFOR($Resource.ResellerPortalAssets, 'css/8col.css')}" media="only screen and (min-width: 768px) and (max-width: 991px)" type="text/css"/>
+        <link rel="stylesheet" href="{!URLFOR($Resource.ResellerPortalAssets, 'css/3col.css')}" media="only screen and (max-width: 767px)" type="text/css"/>
+        <link rel="stylesheet" href="{!URLFOR($Resource.ResellerPortalAssets, 'css/5col.css')}" media="only screen and (min-width: 480px) and (max-width: 767px)" type="text/css"/>
+
+        <!-- Smartphone stuff -->
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <!-- Add "maximum-scale=1.0, user-scalable=no" to fix the Mobile Safari auto-zoom bug on orientation changes, but keep in mind that it will disable user-zooming completely. Bad for accessibility. -->   
+       
+        <!-- Favicons, 16x16 -->
+        <!-- TO BE ADDED BFORE GO LIVE -->
+        <link rel="shortcut icon" href="{!URLFOR($Resource.ResellerPortalAssets, 'images/favicon.ico')}" type="image/x-icon" />
+        <link rel="icon" href="{!URLFOR($Resource.ResellerPortalAssets, 'images/favicon.ico')}" type="image/x-icon" />
+        
+        <!-- Fancy Apple icons, 144x144 -->
+        <!-- TO BE ADDED BFORE GO LIVE -->
+        <link rel="apple-touch-icon" sizes="114x114" href="{!URLFOR($Resource.ResellerPortalAssets, 'assets/114-icon.png')}"/> 
+        
+        <!-- Fancy Apple 'fake webapp' support -->
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+        <!-- TO BE ADDED BFORE GO LIVE -->
+        <link rel="apple-touch-startup-image" href="{!URLFOR($Resource.ResellerPortalAssets, 'images/splash.png')}"/>
+                    
+        
+        <!-- Fonterra spcific js --> 
+        <!--<script type="text/javascript" src="{!URLFOR($Resource.ResellerPortalAssets, 'js/fonterra.js')}"></script>-->
+        <style>
+            .loginButton {
+                 color: #fff;
+                 width: 25px;
+                 height: 25px;
+                 border: none;
+                 margin: 0 0 0 7px;
+                 padding: 0;
+                 background: transparent url('{!URLFOR($Resource.ResellerPortalAssets, 'images/submit.png')}') 0 0 no-repeat; 
+                 text-indent:-1999px;
+                 cursor: pointer;
+            }
+        </style>
+    </head>
+<body>
+
+<!--  Start main container -->
+<div id="main-container">
+    
+    <!--  Start Header -->
+    <div id="header">
+        <!--  Start Branding -->
+        <div id="branding">
+            <div id="logo">NZMP Reseller Programme 2014</div>
+        </div>
+        <!--  End Branding -->
+        
+        <!-- ///////////// -->
+        
+        <!--  Start Login -->
+        <div id="login">
+            <apex:form id="loginForm" forceSSL="true">
+                <label for="username">LOGIN</label>
+                <apex:inputText id="username" value="{!username}" styleClass="username" style="color:#62BD18;background: none repeat scroll 0 0 #FFFFFF; border: 1px solid #999999;box-shadow: 0 0 8px rgba(0, 0, 0, 0.2) inset;height: 25px;margin: 0 5px 0 0;padding: 0 0 0 5px;width: 90px;"/>
+                <!--<input id="username" value="USERNAME" type="text" />-->
+                <apex:inputSecret id="password" value="{!password}" styleClass="password" style="color:#62BD18; background: none repeat scroll 0 0 #FFFFFF; border: 1px solid #999999;box-shadow: 0 0 8px rgba(0, 0, 0, 0.2) inset;height: 25px;margin: 0;padding: 0 0 0 5px;width: 90px;"/>
+                <!--<input id="password" value="PASSWORD" type="text" />-->
+                <apex:commandButton action="{!login}" value="{!$Label.site.login_button}" id="loginButton" styleClass="loginButton"/>
+                <!--<input type="submit" name="submit" value="Send" id="submit" />-->
+            </apex:form>
+            <p class="right padded"><a href="{!$Page.ForgotPassword}">Forgot Password?</a></p>
+        </div>
+        
+        <div style="float:right;width:300px;margin-top:8px;">
+            <apex:form id="loginError" forceSSL="true">
+                <apex:pageMessages id="error"/>            
+            </apex:form>
+        </div>
+        
+        <!--  End Login -->
+    </div>
+    <!--  End Header -->
+    
+    <!--  Start Content -->
+    <div id="content"> </div>
+    <!--  End Content -->
+    
+    <!-- ///////////// -->
+    
+    <!--  Start Footer -->
+    <div id="footer">
+        <div class="secondary-logo"><img src="{!URLFOR($Resource.ResellerPortalAssets, 'images/secondary-logo.png')}" alt="secondary logo" /></div>
+    </div>
+    <!--  END Footer -->
+    <div class="pattern-overlay-shadow"> </div>
+    
+</div>
+
+<img id="cycle-loader" src="resource/1404096098000/ResellerPortalAssets/images/ajax-loader.gif" />
+        <div id="maximage">
+            <div>
+                <img src="resource/1404096098000/ResellerPortalAssets/images/_es_0869.jpg" alt="" width="1400" height="1050" />
+                <div class="in-slide-content" style="display:none;">
+                    <p>NZMP ingredients <br/>have uncompromised <br/>standards for <br/>quality and <br/>integrity</p>
+                </div>
+                <div class="pattern-overlay-left"></div>
+            </div>
+            <div>
+                <img src="resource/1404096098000/ResellerPortalAssets/images/NZMP_02.jpg" alt="" width="1400" height="1050" />
+                <div class="in-slide-content" style="display:none;">
+                    <p>NZMP ingredients are <br/>manufactured through <br/>Fonterra’s world leading <br/>processes leveraging <br/>New Zealand’s <br/>extensive dairy <br/>knowledge</p>
+                </div>
+                <div class="pattern-overlay-left"></div>
+            </div>
+            <div>
+                <img src="resource/1404096098000/ResellerPortalAssets/images/NZMP-Authorised-Ingredient-Distributor_KS1_A_7758.jpg" alt="" width="1297" height="865" />
+                <div class="in-slide-content" style="display:none;">
+                    <p>All ingredients sourced <br/>from New Zealand are<br/> from predominantly <br/>grass fed, free <br/>range, naturally <br/>raised cows</p>
+                </div>
+                <div class="pattern-overlay-left"></div>
+            </div>
+            <div>
+                <img src="resource/1404096098000/ResellerPortalAssets/images/NZMP-Authorised-Ingredient-Distributor_KS1_D_0245_RT.jpg" alt="" width="1382" height="922" />
+                <div class="in-slide-content" style="display:none;">
+                    <p>NZMP ingredients are <br/>based on over 150 years<br/> of Fonterra farming <br/>expertise and <br/>innovation in <br/>harmony with <br/>nature</p>
+                </div>
+                <div class="pattern-overlay-left"></div>
+            </div>
+        </div>
+
+
+        <!-- Jquery -->
+        <script type="text/javascript" src="{!URLFOR($Resource.ResellerPortalAssets, 'js/jquery-1.8.2.min.js')}"></script>
+        <!-- Fading animation plugin -->
+        <script type="text/javascript" src="{!URLFOR($Resource.ResellerPortalAssets, 'js/jquery.cycle.lite.js')}"></script>
+        <!-- Full Screen background plugin -->
+        <script type="text/javascript" src="{!URLFOR($Resource.ResellerPortalAssets, 'js/jquery.maximage.js')}"></script>
+        <!-- Media Queries for IE --> 
+        <script type="text/javascript" src="{!URLFOR($Resource.ResellerPortalAssets, 'js/jquery.mediaqueries1.19.js')}"></script>
+
+        <!-- Fonterra spcific js --> 
+        <script type="text/javascript" src="{!URLFOR($Resource.ResellerPortalAssets, 'js/fonterra.js')}"></script>
+        
+        <script type="text/javascript" charset="utf-8">
+            $(function(){
+                $('#maximage').maximage({
+                    cycleOptions: {
+                        fx: 'fade',
+                        speed: 1000, // Has to match the speed for CSS transitions in jQuery.maximage.css (lines 30 - 33)
+                        pause: 0,
+                        before: function(last,current){
+                            if(!$.browser.msie){
+                                // Start HTML5 video when you arrive
+                                if($(current).find('video').length > 0) $(current).find('video')[0].play();
+                            }
+                        },
+                        after: function(last,current){
+                            if(!$.browser.msie){
+                                // Pauses HTML5 video when you leave it
+                                if($(last).find('video').length > 0) $(last).find('video')[0].pause();
+                            }
+                        }
+                    },
+                    onFirstImageLoaded: function(){
+                        jQuery('#cycle-loader').hide();
+                        jQuery('#maximage').fadeIn('fast');
+                    }
+                });
+    
+                // Helper function to Fill and Center the HTML5 Video
+                jQuery('video,object').maximage('maxcover');
+    
+                // To show it is dynamic html text
+                jQuery('.in-slide-content').delay(500).fadeIn();
+            });
+        </script>
+<!--  End main container -->
+</body>
+
+</apex:page>

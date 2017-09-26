@@ -1,0 +1,2711 @@
+<apex:page standardController="Account_Plan__c" extensions="AccountPlanDetailTabViewCtlr" action="{!pageAction}" title="Account Plan: {!Account_Plan__c.Name}">
+
+<meta name="viewport" content="minimum-scale=1.0"/>
+
+<link type="text/css" href="{!URLFOR($Resource.jqueryui1821custom, 'css/custom-theme/jquery-ui-1.8.21.custom.css')}" rel="stylesheet" />
+
+<script type="text/javascript" src="{!URLFOR($Resource.jqueryui1821custom, 'js/jquery-1.7.2.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.jqueryui1821custom, 'js/jquery-ui-1.8.21.custom.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.jqueryblockUI242, 'jqueryblockUI242.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.jquerypopupwindow)}"></script>
+
+<script type="text/javascript">
+$.blockUI.defaults.css.border = 'none';
+$.blockUI.defaults.css.backgroundColor = 'transparent';
+$.blockUI.defaults.css.opacity = 1.0;
+$.blockUI.defaults.overlayCSS.backgroundColor = '#f8f8f8';
+$.blockUI.defaults.overlayCSS.opacity =  0.5; 
+$.blockUI.defaults.message = '<span style="color: #666666; font-size: 11px; font-weight: bold;"><img src="/img/loading.gif"/>&nbsp;&nbsp;&nbsp;Loading...</span>';
+$.blockUI();
+</script>
+
+<style>
+.labelText {
+    color: #4A4A56;
+    font-weight: bold;
+}
+.ui-tabs .ui-tabs-panel {
+    padding: 0px;
+}
+a.actionLink {
+    color: #015BA7;
+    text-decoration: none;
+}
+a.btn2, a.btn2:hover {
+    color: #222;
+    text-decoration: none;
+    padding: 3px 4px 2px 4px;
+}
+.needs-v-capability-table-header {
+    font-weight: bold;
+    text-align: center;
+}
+.needs-v-capability-table-column {
+    text-align: center;
+}
+body .pbBody table.list tr.headerRow td.categories-table-header-help,
+td.labelCol.categories-table-header-help, 
+.apexp .editPage .bPageBlock .detailList .list tr td.labelCol.categories-table-header-help {
+    border: none;
+    background-image: none;
+    background-color: transparent;
+    text-align: left;
+    font-size: 11px;
+    padding: 0px;
+}
+xxxth.actionColumn, xxxtd.actionColumn {
+    display: none;
+}
+</style>
+
+<apex:sectionHeader title="Account Plan" subtitle="{!Account_Plan__c.Name}" help="/help/doc/user_ed.jsp?loc=help&target=co_edit.htm&section=CustomObjects&showSplash=true" printUrl="{!viewPdf2}"/>
+
+<chatter:feedWithFollowers entityId="{!Account_Plan__c.Id}"/>
+
+<div id="PageMessages">
+<apex:pageMessages escape="false"/>
+</div>
+
+<div id="AccountPlanTabs" style="border:none;">
+
+    <ul id="Tabs" style="display: none;">
+        <li><a href="#SnapshotTab">Snapshot</a></li>
+        <li><a href="#MetricsTab">Metrics</a></li>
+        <li><a href="#MarketTab">Market</a></li>
+        <li><a href="#CustomerCategoriesTab">Categories</a></li>
+        <li><a href="#ValueChainAnalysisTab">Value Chain</a></li>
+        <li><a href="#RelationshipPerformanceTab">Relationship</a></li>
+        <li><a href="#FinancialPerformanceTab">Financial</a></li>
+        <li><a href="#OperationalPerformanceTab">Operational</a></li>
+        <li><a href="#StakeholderAnalysisTab">Stakeholders</a></li>
+        <li><a href="#CompetitorsTab">Competitors</a></li>
+        <li><a href="#SWOTTab">SWOT</a></li>
+        <li><a href="#NeedsvCapabilityTab">Needs v Capability</a></li>
+        <li><a href="#OpportunitiesTab">Opportunities</a></li>
+        <li><a href="#FiveYearStrategyTab">5yr Strategy</a></li>
+        <li><a href="#OtherTab">Other</a></li>
+    </ul>
+
+    <div id="SnapshotTab">
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+<!-- 
+    <apex:commandButton action="{!edit}" id="editButton" value="Edit" rerender="SnapshotTab"/>
+ -->
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}Snapshot', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:outputLink id="viewPdfLink2" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!viewPdf2}', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview PDF</apex:outputLink> 
+    <apex:outputLink id="downloadPdfLink2" styleClass="btn btn2" value="{!downloadPdf2}" rendered="{!NOT(IsChromeFrame)}">Download PDF</apex:outputLink>
+    <apex:outputLink id="downloadPdfLink2b" value="{!downloadPdf2}" rendered="{!IsChromeFrame}" title="Right-click link and use [Save link as] to download]">Download PDF</apex:outputLink>
+<!-- 
+hdr={{!headers}}
+ie8={{!IsIE8}}
+cf={{!IsChromeFrame}}
+ie8cf={{!IsIE8ChromeFrame}}
+ -->
+    <apex:commandButton action="{!save}" id="saveButtonSnapshot" value="Save" style="display:none;"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonSnapshot" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+<apex:pageBlockSection title="Account Plan Detail" collapsible="false">
+<apex:outputField value="{!Account.OwnerId}">
+   <!-- <apex:inlineEditSupport showOnEdit="saveButtonSnapshot, cancelButtonSnapshot" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecord
+   .hasEditAccess)}"/>
+    &nbsp;<apex:commandLink action="{!changeOwnerRedirect}" value="[Change]" rendered="{!userRecordAccess.hasEditAccess}"/>-->
+</apex:outputField>
+
+<apex:outputField value="{!Account_Plan__c.Status__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSnapshot, cancelButtonSnapshot" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField value="{!Account_Plan__c.Account__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSnapshot, cancelButtonSnapshot" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField value="{!Account_Plan__c.Executive_Sponsor__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSnapshot, cancelButtonSnapshot" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField value="{!Account_Plan__c.Name}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSnapshot, cancelButtonSnapshot" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField value="{!Account_Plan__c.Fiscal_Year_End__c}">
+</apex:outputField>
+<apex:outputField value="{!Account_Plan__c.Account_Group__c}">
+</apex:outputField>
+<apex:outputField value="{!Account_Plan__c.Region__c}">
+</apex:outputField>
+<apex:outputField value="{!Account_Plan__c.Start_Date__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonOther, cancelButtonOther" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField value="{!Account_Plan__c.End_Date__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonOther, cancelButtonOther" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+<apex:pageBlockSection title="Customer Detail" collapsible="false">
+<apex:outputField id="S1ValidateFieldSize" value="{!Account_Plan__c.Customer_s_Vision__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSnapshot, cancelButtonSnapshot" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S2ValidateFieldSize" value="{!Account_Plan__c.Customer_Background__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSnapshot, cancelButtonSnapshot" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S3ValidateFieldSize" value="{!Account_Plan__c.Customer_Overview_Strategies__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSnapshot, cancelButtonSnapshot" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S4ValidateFieldSize" value="{!Account_Plan__c.Key_Challenges__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSnapshot, cancelButtonSnapshot" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+<apex:pageBlockSection columns="1">
+<apex:outputField id="S5ValidateFieldSize" value="{!Account_Plan__c.Customer_s_Financial_Performance__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSnapshot, cancelButtonSnapshot" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+</apex:pageBlock>
+
+<apex:actionFunction name="refreshCharts" action="{!refreshCharts}" rerender="OpportunityPipelineChart,FinancialPerformanceCharts"/>
+
+</apex:form>
+    </div>
+
+<div id="Tabs2" style="display: none;">
+
+    <div id="MetricsTab">
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}Metrics', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!save}" id="saveButtonMetrics" value="Save" style="display:none;"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonMetrics" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+
+<apex:pageBlockSection title="Summary" columns="1" collapsible="false">
+<apex:pageBlockSection id="SM1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+    <apex:outputField value="{!Account_Plan__c.Snapshot_Metrics__c}" styleClass="labelCol"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockTable rendered="{!ISNULL(customerSnapshotMetrics)}" value="{!customerSnapshotMetricsAggregate}" var="csma" width="100%">
+<apex:column headerValue="Metric Type">
+<apex:outputText value="{!csma['Metric_Type_For_Aggregate__c']}"/>
+</apex:column>
+<apex:column headerValue="LY Budget">
+<apex:outputText rendered="{!NOT(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM'))}" value="{0,number,#,###,##0}{!IF(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'%'),'%','')}"><apex:param value="{!csma['LY_Budget__c']}"/></apex:outputText><apex:outputText rendered="{!CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM')}" value="{0,number,#,###,##0.0}"><apex:param value="{!csma['LY_Budget__c']}"/></apex:outputText>
+</apex:column>
+<apex:column headerValue="LY Actual">
+<apex:outputText rendered="{!NOT(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM'))}" value="{0,number,#,###,##0}{!IF(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'%'),'%','')}"><apex:param value="{!csma['LY_Actual__c']}"/></apex:outputText><apex:outputText rendered="{!CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM')}" value="{0,number,#,###,##0.0}"><apex:param value="{!csma['LY_Actual__c']}"/></apex:outputText>
+</apex:column>
+<apex:column headerValue="YTD Actual">
+<apex:outputText rendered="{!NOT(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM'))}" value="{0,number,#,###,##0}{!IF(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'%'),'%','')}"><apex:param value="{!csma['YTD_Actual__c']}"/></apex:outputText><apex:outputText rendered="{!CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM')}" value="{0,number,#,###,##0.0}"><apex:param value="{!csma['YTD_Actual__c']}"/></apex:outputText>
+</apex:column>
+<apex:column headerValue="YTG Forecast">
+<apex:outputText rendered="{!NOT(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM'))}" value="{0,number,#,###,##0}{!IF(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'%'),'%','')}"><apex:param value="{!csma['YTG_Forecast__c']}"/></apex:outputText><apex:outputText rendered="{!CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM')}" value="{0,number,#,###,##0.0}"><apex:param value="{!csma['YTG_Forecast__c']}"/></apex:outputText>
+</apex:column>
+<apex:column headerValue="Full Year Forecast">
+<apex:outputText rendered="{!NOT(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM'))}" value="{0,number,#,###,##0}{!IF(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'%'),'%','')}"><apex:param value="{!csma['Full_Year_Forecast__c']}"/></apex:outputText><apex:outputText rendered="{!CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM')}" value="{0,number,#,###,##0.0}"><apex:param value="{!csma['Full_Year_Forecast__c']}"/></apex:outputText>
+</apex:column>
+<apex:column headerValue="TY Budget">
+<apex:outputText rendered="{!NOT(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM'))}" value="{0,number,#,###,##0}{!IF(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'%'),'%','')}"><apex:param value="{!csma['TY_Budget__c']}"/></apex:outputText><apex:outputText rendered="{!CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM')}" value="{0,number,#,###,##0.0}"><apex:param value="{!csma['TY_Budget__c']}"/></apex:outputText>
+</apex:column>
+<apex:column headerValue="TY+1 Forecast">
+<apex:outputText rendered="{!NOT(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM'))}" value="{0,number,#,###,##0}{!IF(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'%'),'%','')}"><apex:param value="{!csma['TY_1_Forecast__c']}"/></apex:outputText><apex:outputText rendered="{!CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM')}" value="{0,number,#,###,##0.0}"><apex:param value="{!csma['TY_1_Forecast__c']}"/></apex:outputText>
+</apex:column>
+<apex:column headerValue="TY+2 Forecast">
+<apex:outputText rendered="{!NOT(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM'))}" value="{0,number,#,###,##0}{!IF(CONTAINS(csma['Metric_Type_For_Aggregate__c'],'%'),'%','')}"><apex:param value="{!csma['TY_2_Forecast__c']}"/></apex:outputText><apex:outputText rendered="{!CONTAINS(csma['Metric_Type_For_Aggregate__c'],'CVM')}" value="{0,number,#,###,##0.0}"><apex:param value="{!csma['TY_2_Forecast__c']}"/></apex:outputText>
+</apex:column>
+</apex:pageBlockTable>
+
+<apex:pageBlockTable rendered="{!NOT(ISNULL(customerSnapshotMetrics))}" value="{!customerSnapshotMetrics}" var="csm" width="100%">
+<apex:column headerValue="Action">
+<apex:outputLink value="{!csm.Edit_URL__c}retURL=%2Fapex%2FAccountPlanDetailTabView?id%3D{!Account_Plan__c.Id}%26sfdc.override%3D1%26selectedTab%3DMetrics" styleClass="actionLink">Edit</apex:outputLink>
+</apex:column>
+<apex:column headerValue="Metric Type">
+<apex:outputField value="{!csm.Metric_Type__c}"/>
+</apex:column>
+<apex:column headerValue="LY Budget">
+<apex:outputField value="{!csm.LY_Budget__c}"/>
+</apex:column>
+<apex:column headerValue="LY Actual">
+<apex:outputField value="{!csm.LY_Actual__c}"/>
+</apex:column>
+<apex:column headerValue="YTD Actual">
+<apex:outputField value="{!csm.YTD_Actual__c}"/>
+</apex:column>
+<apex:column headerValue="YTG Forecast">
+<apex:outputField value="{!csm.YTG_Forecast__c}"/>
+</apex:column>
+<apex:column headerValue="Full Year Forecast">
+<apex:outputField value="{!csm.Full_Year_Forecast__c}"/>
+</apex:column>
+<apex:column headerValue="TY Budget">
+<apex:outputField value="{!csm.TY_Budget__c}"/>
+</apex:column>
+<apex:column headerValue="TY+1 Forecast">
+<apex:outputField value="{!csm.TY_1_Forecast__c}"/>
+</apex:column>
+<apex:column headerValue="TY+2 Forecast">
+<apex:outputField value="{!csm.TY_2_Forecast__c}"/>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Opportunity Pipeline" columns="1" collapsible="false">
+<apex:pageBlockSection id="SM2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+    <apex:outputField value="{!Account_Plan__c.Opportunity_Pipeline_Chart_URL__c}" styleClass="labelCol"/>
+</apex:pageBlockSection>
+<table>
+<tr>
+<td style="padding: 5px;">
+<apex:outputPanel id="OpportunityPipelineChart"><img src="{!Account_Plan__c.Account__r.Customer_s_Opty_Pipeline_Chart_URL__c}&rdm={!URLENCODE(TEXT(NOW()))}"/></apex:outputPanel>
+</td>
+</tr>
+</table>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+    </div>
+
+    <div id="MarketTab">
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}Market', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!save}" id="saveButtonMarket" value="Save" style="display:none;" onclick="return setImageSizeData(this, '{!$Component.imageSizeData}');"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonMarket" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+<apex:inputHidden id="imageSizeData" value="{!imageSizeData}"/>
+<apex:pageBlockSection title="Summary" columns="1" collapsible="false">
+<apex:outputField value="{!Account_Plan__c.Market_Graphic_Title__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonMarket, cancelButtonMarket" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+
+<apex:outputField value="{!Account_Plan__c.Market_101_Graphic__c}" rendered="{!NOT(IsIE8)}">
+    <apex:inlineEditSupport showOnEdit="saveButtonMarket, cancelButtonMarket" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+    <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+</apex:outputField>
+
+<apex:pageBlockSectionItem rendered="{!IsIE8}">
+<apex:outputLabel value="{!$ObjectType.Account_Plan__c.fields.Market_101_Graphic__c.label}" styleClass="labelText"/>
+<apex:outputPanel >
+<apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Market_101_Graphic__c}', 'Market')" id="Market_101_Graphic__cIE8InputField" rendered="{!IsIE8}">
+    <apex:outputField value="{!Account_Plan__c.Market_101_Graphic__c}"/>
+</apex:outputPanel>
+<apex:outputPanel id="Market_101_Graphic__c" style="display:none;" rendered="{!IsIE8}">
+    <apex:inputField value="{!Account_Plan__c.Market_101_Graphic__c}"/>
+</apex:outputPanel>
+</apex:outputPanel>
+</apex:pageBlockSectionItem>
+
+</apex:pageBlockSection>
+<apex:pageBlockSection title="Insights" columns="1" collapsible="false">
+<apex:outputField id="M1ValidateFieldSize" value="{!Account_Plan__c.Market_101_Insights__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonMarket, cancelButtonMarket" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+</apex:pageBlock>
+</apex:form>
+    </div>
+ 
+    <div id="CustomerCategoriesTab">
+<apex:form id="CustomerCategoriesForm">
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}CustomerCategories', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!addCategory}" id="addCategory" value="Add Category" disabled="{!numberOfCategories == maxCategories}" rendered="{!userRecordAccess.hasEditAccess}"/>
+    <apex:commandButton action="{!save}" id="saveButtonCustomerCategories" value="Save" style="display:none;" onclick="return setImageSizeData(this, '{!$Component.imageSizeData}');"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonCustomerCategories" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+<apex:inputHidden id="imageSizeData" value="{!imageSizeData}"/>
+<apex:outputPanel rendered="{!numberOfCategories > 0}">
+<apex:pageBlockSection title="Customer Category 1" columns="1" collapsible="false">
+    <apex:pageBlockTable value="{!dummyRow}" var="d">
+        <apex:column width="24%">
+            <apex:facet name="header">
+                <apex:pageBlockSection id="C1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+                    <apex:outputField value="{!Account_Plan__c.Category_1__c}"/>
+                </apex:pageBlockSection>
+            </apex:facet>
+            <apex:outputField value="{!Account_Plan__c.Category_1__c}">
+                <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+            </apex:outputField>
+        </apex:column>
+        <apex:column width="24%">
+            <apex:facet name="header">
+                <apex:pageBlockSection id="C1bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+                    <apex:outputField value="{!Account_Plan__c.Group_Category_1__c}"/>
+                </apex:pageBlockSection>
+            </apex:facet>
+            <apex:outputField value="{!Account_Plan__c.Group_Category_1__c}">
+                <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+            </apex:outputField>
+        </apex:column>
+        <apex:column width="24%">
+            <apex:facet name="header">
+                <apex:pageBlockSection id="C2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+                    <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_1__c}"/>
+                </apex:pageBlockSection>
+            </apex:facet>
+            
+            <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_1__c}" rendered="{!NOT(IsIE8)}">
+                <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+                <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+            </apex:outputField>
+            <apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Customer_Product_Graphic_1__c}', 'CustomerCategories')" id="Customer_Product_Graphic_1__cIE8InputField" rendered="{!IsIE8}">
+                <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_1__c}"/>
+            </apex:outputPanel>
+            <apex:outputPanel id="Customer_Product_Graphic_1__c" style="display:none;" rendered="{!IsIE8}">
+                <apex:inputField value="{!Account_Plan__c.Customer_Product_Graphic_1__c}"/>
+            </apex:outputPanel>
+        </apex:column>
+        <apex:column width="24%">
+            <apex:facet name="header">
+                <apex:pageBlockSection id="C3HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+                    <apex:outputField value="{!Account_Plan__c.of_total_revenue_1__c}"/>
+                </apex:pageBlockSection>
+            </apex:facet>
+            <apex:outputField value="{!Account_Plan__c.of_total_revenue_1__c}">
+                <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+            </apex:outputField>
+        </apex:column>
+        <apex:column headerValue="Action">
+            <apex:commandLink action="{!removeCategory}" value="Remove" styleClass="actionLink" rendered="{!userRecordAccess.hasEditAccess}">
+                <apex:param name="removeCategory" value="1" assignTo="{!removeCategory}"/>
+            </apex:commandLink>
+        </apex:column>
+    </apex:pageBlockTable>
+    <apex:pageBlockTable value="{!dummyRow}" var="d">
+    <apex:column width="14%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C4HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Brands_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField id="C4ValidateFieldSize" value="{!Account_Plan__c.Brands_1__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    <apex:column width="14%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C5HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Formats_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField id="C5ValidateFieldSize" value="{!Account_Plan__c.Formats_1__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    <apex:column width="14%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C6HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Channels_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField id="C6ValidateFieldSize" value="{!Account_Plan__c.Channels_1__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    <apex:column width="14%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C7HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Positioning_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField id="C7ValidateFieldSize" value="{!Account_Plan__c.Positioning_1__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    <apex:column width="14%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C8HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Share_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField id="C8ValidateFieldSize" value="{!Account_Plan__c.Share_1__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    <apex:column width="14%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C9HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Competitors_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField id="C9ValidateFieldSize" value="{!Account_Plan__c.Competitors_1__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    <apex:column width="14%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C10HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Ingredients_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField id="C10ValidateFieldSize" value="{!Account_Plan__c.Ingredients_1__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    </apex:pageBlockTable>
+</apex:pageBlockSection>
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!numberOfCategories > 1}">
+<apex:pageBlockSection title="Customer Category 2" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+    <apex:column width="24%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Category_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField value="{!Account_Plan__c.Category_2__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    <apex:column width="24%">
+        <apex:facet name="header">
+            <apex:pageBlockSection id="C1bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+                <apex:outputField value="{!Account_Plan__c.Group_Category_1__c}"/>
+            </apex:pageBlockSection>
+        </apex:facet>
+        <apex:outputField value="{!Account_Plan__c.Group_Category_2__c}">
+            <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+        </apex:outputField>
+    </apex:column>
+    <apex:column width="24%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+
+    <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_2__c}" rendered="{!NOT(IsIE8)}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+        <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+    </apex:outputField>
+    <apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Customer_Product_Graphic_2__c}', 'CustomerCategories')" id="Customer_Product_Graphic_2__cIE8InputField" rendered="{!IsIE8}">
+        <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_2__c}"/>
+    </apex:outputPanel>
+    <apex:outputPanel id="Customer_Product_Graphic_2__c" style="display:none;" rendered="{!IsIE8}">
+        <apex:inputField value="{!Account_Plan__c.Customer_Product_Graphic_2__c}"/>
+    </apex:outputPanel>
+    
+    </apex:column>
+    <apex:column width="24%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C3HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.of_total_revenue_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField value="{!Account_Plan__c.of_total_revenue_2__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    <apex:column headerValue="Action">
+        <apex:commandLink action="{!removeCategory}" value="Remove" styleClass="actionLink" rendered="{!userRecordAccess.hasEditAccess}">
+            <apex:param name="removeCategory" value="2" assignTo="{!removeCategory}"/>
+        </apex:commandLink>
+    </apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C4HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Brands_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C4ValidateFieldSize" value="{!Account_Plan__c.Brands_2__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C5HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Formats_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C5ValidateFieldSize" value="{!Account_Plan__c.Formats_2__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C6HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Channels_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C6ValidateFieldSize" value="{!Account_Plan__c.Channels_2__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C7HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Positioning_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C7ValidateFieldSize" value="{!Account_Plan__c.Positioning_2__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C8HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Share_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C8ValidateFieldSize" value="{!Account_Plan__c.Share_2__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C9HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Competitors_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C9ValidateFieldSize" value="{!Account_Plan__c.Competitors_2__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C10HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Ingredients_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C10ValidateFieldSize" value="{!Account_Plan__c.Ingredients_2__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!numberOfCategories > 2}">
+<apex:pageBlockSection title="Customer Category 3" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+    <apex:column width="24%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Category_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField value="{!Account_Plan__c.Category_3__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    <apex:column width="24%">
+        <apex:facet name="header">
+            <apex:pageBlockSection id="C1bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+                <apex:outputField value="{!Account_Plan__c.Group_Category_1__c}"/>
+            </apex:pageBlockSection>
+        </apex:facet>
+        <apex:outputField value="{!Account_Plan__c.Group_Category_3__c}">
+            <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+        </apex:outputField>
+    </apex:column>  
+    <apex:column width="24%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    
+    <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_3__c}" rendered="{!NOT(IsIE8)}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+        <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+    </apex:outputField>
+    <apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Customer_Product_Graphic_3__c}', 'CustomerCategories')" id="Customer_Product_Graphic_3__cIE8InputField" rendered="{!IsIE8}">
+        <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_3__c}"/>
+    </apex:outputPanel>
+    <apex:outputPanel id="Customer_Product_Graphic_3__c" style="display:none;" rendered="{!IsIE8}">
+        <apex:inputField value="{!Account_Plan__c.Customer_Product_Graphic_3__c}"/>
+    </apex:outputPanel>
+    
+    </apex:column>
+    <apex:column width="24%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C3HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.of_total_revenue_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField value="{!Account_Plan__c.of_total_revenue_3__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    <apex:column headerValue="Action">
+        <apex:commandLink action="{!removeCategory}" value="Remove" styleClass="actionLink" rendered="{!userRecordAccess.hasEditAccess}">
+            <apex:param name="removeCategory" value="3" assignTo="{!removeCategory}"/>
+        </apex:commandLink>
+    </apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C4HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Brands_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C4ValidateFieldSize" value="{!Account_Plan__c.Brands_3__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C5HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Formats_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C5ValidateFieldSize" value="{!Account_Plan__c.Formats_3__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C6HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Channels_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C6ValidateFieldSize" value="{!Account_Plan__c.Channels_3__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C7HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Positioning_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C7ValidateFieldSize" value="{!Account_Plan__c.Positioning_3__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C8HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Share_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C8ValidateFieldSize" value="{!Account_Plan__c.Share_3__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C9HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Competitors_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C9ValidateFieldSize" value="{!Account_Plan__c.Competitors_3__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C10HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Ingredients_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C10ValidateFieldSize" value="{!Account_Plan__c.Ingredients_3__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!numberOfCategories > 3}">
+<apex:pageBlockSection title="Customer Category 4" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+    <apex:column width="24%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Category_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField value="{!Account_Plan__c.Category_4__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    
+    <apex:column width="24%">
+        <apex:facet name="header">
+            <apex:pageBlockSection id="C1bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+                <apex:outputField value="{!Account_Plan__c.Group_Category_1__c}"/>
+            </apex:pageBlockSection>
+        </apex:facet>
+        <apex:outputField value="{!Account_Plan__c.Group_Category_4__c}">
+            <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+        </apex:outputField>
+    </apex:column>
+    
+    <apex:column width="24%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    
+    <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_4__c}" rendered="{!NOT(IsIE8)}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+        <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+    </apex:outputField>
+    <apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Customer_Product_Graphic_4__c}', 'CustomerCategories')" id="Customer_Product_Graphic_4__cIE8InputField" rendered="{!IsIE8}">
+        <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_4__c}"/>
+    </apex:outputPanel>
+    <apex:outputPanel id="Customer_Product_Graphic_4__c" style="display:none;" rendered="{!IsIE8}">
+        <apex:inputField value="{!Account_Plan__c.Customer_Product_Graphic_4__c}"/>
+    </apex:outputPanel>
+    
+    </apex:column>
+    <apex:column width="24%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C3HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.of_total_revenue_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField value="{!Account_Plan__c.of_total_revenue_4__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    <apex:column headerValue="Action">
+        <apex:commandLink action="{!removeCategory}" value="Remove" styleClass="actionLink" rendered="{!userRecordAccess.hasEditAccess}">
+            <apex:param name="removeCategory" value="4" assignTo="{!removeCategory}"/>
+        </apex:commandLink>
+    </apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C4HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Brands_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C4ValidateFieldSize" value="{!Account_Plan__c.Brands_4__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C5HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Formats_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C5ValidateFieldSize" value="{!Account_Plan__c.Formats_4__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C6HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Channels_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C6ValidateFieldSize" value="{!Account_Plan__c.Channels_4__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C7HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Positioning_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C7ValidateFieldSize" value="{!Account_Plan__c.Positioning_4__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C8HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Share_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C8ValidateFieldSize" value="{!Account_Plan__c.Share_4__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C9HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Competitors_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C9ValidateFieldSize" value="{!Account_Plan__c.Competitors_4__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C10HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Ingredients_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C10ValidateFieldSize" value="{!Account_Plan__c.Ingredients_4__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!numberOfCategories > 4}">
+<apex:pageBlockSection title="Customer Category 5" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+    <apex:column width="24%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Category_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField value="{!Account_Plan__c.Category_5__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+
+    <apex:column width="24%">
+        <apex:facet name="header">
+            <apex:pageBlockSection id="C1bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+                <apex:outputField value="{!Account_Plan__c.Group_Category_1__c}"/>
+            </apex:pageBlockSection>
+        </apex:facet>
+        <apex:outputField value="{!Account_Plan__c.Group_Category_5__c}">
+            <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+        </apex:outputField>
+    </apex:column>
+
+    <apex:column width="24%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    
+    <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_5__c}" rendered="{!NOT(IsIE8)}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+        <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+    </apex:outputField>
+    <apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Customer_Product_Graphic_5__c}', 'CustomerCategories')" id="Customer_Product_Graphic_5__cIE8InputField" rendered="{!IsIE8}">
+        <apex:outputField value="{!Account_Plan__c.Customer_Product_Graphic_5__c}"/>
+    </apex:outputPanel>
+    <apex:outputPanel id="Customer_Product_Graphic_5__c" style="display:none;" rendered="{!IsIE8}">
+        <apex:inputField value="{!Account_Plan__c.Customer_Product_Graphic_5__c}"/>
+    </apex:outputPanel>
+    
+    </apex:column>
+    <apex:column width="24%">
+    <apex:facet name="header">
+        <apex:pageBlockSection id="C3HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+            <apex:outputField value="{!Account_Plan__c.of_total_revenue_1__c}"/>
+        </apex:pageBlockSection>
+    </apex:facet>
+    <apex:outputField value="{!Account_Plan__c.of_total_revenue_5__c}">
+        <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+    </apex:outputField>
+    </apex:column>
+    <apex:column headerValue="Action">
+        <apex:commandLink action="{!removeCategory}" value="Remove" styleClass="actionLink" rendered="{!userRecordAccess.hasEditAccess}">
+            <apex:param name="removeCategory" value="5" assignTo="{!removeCategory}"/>
+        </apex:commandLink>
+    </apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C4HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Brands_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C4ValidateFieldSize" value="{!Account_Plan__c.Brands_5__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C5HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Formats_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C5ValidateFieldSize" value="{!Account_Plan__c.Formats_5__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C6HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Channels_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C6ValidateFieldSize" value="{!Account_Plan__c.Channels_5__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C7HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Positioning_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C7ValidateFieldSize" value="{!Account_Plan__c.Positioning_5__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C8HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Share_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C8ValidateFieldSize" value="{!Account_Plan__c.Share_5__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C9HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Competitors_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C9ValidateFieldSize" value="{!Account_Plan__c.Competitors_5__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="14%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="C10HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Ingredients_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="C10ValidateFieldSize" value="{!Account_Plan__c.Ingredients_5__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+</apex:outputPanel>
+
+<apex:pageBlockSection title="Insights" columns="1" collapsible="false">
+<apex:outputField id="C11ValidateFieldSize" value="{!Account_Plan__c.Category_Insights__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCustomerCategories, cancelButtonCustomerCategories" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+    </div>
+
+    <div id="ValueChainAnalysisTab">
+<apex:form id="ValueChainAnalysisForm">
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}ValueChainAnalysis', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!addProduct}" id="addProduct" value="Add Product" disabled="{!numberOfProducts == maxProducts}" rendered="{!userRecordAccess.hasEditAccess}"/>
+    <apex:commandButton action="{!save}" id="saveButtonValueChainAnalysis" value="Save" style="display:none;" onclick="return setImageSizeData(this, '{!$Component.imageSizeData}');"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonValueChainAnalysis" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+<apex:inputHidden id="imageSizeData" value="{!imageSizeData}"/>
+<apex:outputPanel rendered="{!numberOfProducts > 0}">
+<apex:pageBlockSection title="Product 1" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="48%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Product_1_Name__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.Product_1_Name__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="48%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Product_1_Graphic__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+
+<apex:outputField value="{!Account_Plan__c.Product_1_Graphic__c}" rendered="{!NOT(IsIE8)}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+    <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+</apex:outputField>
+<apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Product_1_Graphic__c}', 'ValueChainAnalysis')" id="Product_1_Graphic__cIE8InputField" rendered="{!IsIE8}">
+    <apex:outputField value="{!Account_Plan__c.Product_1_Graphic__c}"/>
+</apex:outputPanel>
+<apex:outputPanel id="Product_1_Graphic__c" style="display:none;" rendered="{!IsIE8}">
+    <apex:inputField value="{!Account_Plan__c.Product_1_Graphic__c}"/>
+</apex:outputPanel>
+
+</apex:column>
+<apex:column headerValue="Action">
+    <apex:commandLink action="{!removeProduct}" value="Remove" styleClass="actionLink" rendered="{!userRecordAccess.hasEditAccess}">
+        <apex:param name="removeProduct" value="1" assignTo="{!removeProduct}"/>
+    </apex:commandLink>
+</apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P3HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Dairy_Ingredients__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P3ValidateFieldSize" value="{!Account_Plan__c.P1_Cost_of_Dairy_Ingredients__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P4HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_all_Ingredients__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P4ValidateFieldSize" value="{!Account_Plan__c.P1_Cost_of_all_Ingredients__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P5HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Manufacturing__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P5ValidateFieldSize" value="{!Account_Plan__c.P1_Cost_of_Manufacturing__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P6HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Sale_to_Brand_Owner__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P6ValidateFieldSize" value="{!Account_Plan__c.P1_Cost_of_Sale_to_Brand_Owner__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P7HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Wholesale__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P7ValidateFieldSize" value="{!Account_Plan__c.P1_Cost_of_Wholesale__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P8HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Retail__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P8ValidateFieldSize" value="{!Account_Plan__c.P1_Cost_of_Retail__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P3bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Dairy_Ingredients_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P1_Cost_of_Dairy_Ingredients_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P4bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_all_Ingredients_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P1_Cost_of_all_Ingredients_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P5bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Manufacturing_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P1_Cost_of_Manufacturing_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P6bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Sale_to_Brand_Owner_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P1_Cost_of_Sale_to_Brand_Owner_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P7bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Wholesale_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P1_Cost_of_Wholesale_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P8bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Retail_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P1_Cost_of_Retail_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!numberOfProducts > 1}">
+<apex:pageBlockSection title="Product 2" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="48%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Product_1_Name__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.Product_2_Name__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="48%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Product_1_Graphic__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+
+<apex:outputField value="{!Account_Plan__c.Product_2_Graphic__c}" rendered="{!NOT(IsIE8)}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+    <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+</apex:outputField>
+<apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Product_2_Graphic__c}', 'ValueChainAnalysis')" id="Product_2_Graphic__cIE8InputField" rendered="{!IsIE8}">
+    <apex:outputField value="{!Account_Plan__c.Product_2_Graphic__c}"/>
+</apex:outputPanel>
+<apex:outputPanel id="Product_2_Graphic__c" style="display:none;" rendered="{!IsIE8}">
+    <apex:inputField value="{!Account_Plan__c.Product_2_Graphic__c}"/>
+</apex:outputPanel>
+
+</apex:column>
+<apex:column headerValue="Action">
+    <apex:commandLink action="{!removeProduct}" value="Remove" styleClass="actionLink" rendered="{!userRecordAccess.hasEditAccess}">
+        <apex:param name="removeProduct" value="2" assignTo="{!removeProduct}"/>
+    </apex:commandLink>
+</apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P3HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Dairy_Ingredients__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P3ValidateFieldSize" value="{!Account_Plan__c.P2_Cost_of_Dairy_Ingredients__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P4HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_all_Ingredients__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P4ValidateFieldSize" value="{!Account_Plan__c.P2_Cost_of_all_Ingredients__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P5HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Manufacturing__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P5ValidateFieldSize" value="{!Account_Plan__c.P2_Cost_of_Manufacturing__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P6HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Sale_to_Brand_Owner__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P6ValidateFieldSize" value="{!Account_Plan__c.P2_Cost_of_Sale_to_Brand_Owner__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P7HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Wholesale__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P7ValidateFieldSize" value="{!Account_Plan__c.P2_Cost_of_Wholesale__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P8HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Retail__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P8ValidateFieldSize" value="{!Account_Plan__c.P2_Cost_of_Retail__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P3bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Dairy_Ingredients_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P2_Cost_of_Dairy_Ingredients_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P4bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_all_Ingredients_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P2_Cost_of_all_Ingredients_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P5bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Manufacturing_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P2_Cost_of_Manufacturing_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P6bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Sale_to_Brand_Owner_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P2_Cost_of_Sale_to_Brand_Owner_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P7bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Wholesale_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P2_Cost_of_Wholesale_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P8bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Retail_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P2_Cost_of_Retail_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!numberOfProducts > 2}">
+<apex:pageBlockSection title="Product 3" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="48%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Product_1_Name__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.Product_3_Name__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="48%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Product_1_Graphic__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+
+<apex:outputField value="{!Account_Plan__c.Product_3_Graphic__c}" rendered="{!NOT(IsIE8)}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+    <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+</apex:outputField>
+<apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Product_3_Graphic__c}', 'ValueChainAnalysis')" id="Product_3_Graphic__cIE8InputField" rendered="{!IsIE8}">
+    <apex:outputField value="{!Account_Plan__c.Product_3_Graphic__c}"/>
+</apex:outputPanel>
+<apex:outputPanel id="Product_3_Graphic__c" style="display:none;" rendered="{!IsIE8}">
+    <apex:inputField value="{!Account_Plan__c.Product_3_Graphic__c}"/>
+</apex:outputPanel>
+
+</apex:column>
+<apex:column headerValue="Action">
+    <apex:commandLink action="{!removeProduct}" value="Remove" styleClass="actionLink" rendered="{!userRecordAccess.hasEditAccess}">
+        <apex:param name="removeProduct" value="3" assignTo="{!removeProduct}"/>
+    </apex:commandLink>
+</apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P3HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Dairy_Ingredients__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P3ValidateFieldSize" value="{!Account_Plan__c.P3_Cost_of_Dairy_Ingredients__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P4HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_all_Ingredients__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P4ValidateFieldSize" value="{!Account_Plan__c.P3_Cost_of_all_Ingredients__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P5HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Manufacturing__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P5ValidateFieldSize" value="{!Account_Plan__c.P3_Cost_of_Manufacturing__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P6HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Sale_to_Brand_Owner__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P6ValidateFieldSize" value="{!Account_Plan__c.P3_Cost_of_Sale_to_Brand_Owner__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P7HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Wholesale__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P7ValidateFieldSize" value="{!Account_Plan__c.P3_Cost_of_Wholesale__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P8HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Retail__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P8ValidateFieldSize" value="{!Account_Plan__c.P3_Cost_of_Retail__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P3bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Dairy_Ingredients_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P3_Cost_of_Dairy_Ingredients_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P4bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_all_Ingredients_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P3_Cost_of_all_Ingredients_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P5bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Manufacturing_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P3_Cost_of_Manufacturing_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P6bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Sale_to_Brand_Owner_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P3_Cost_of_Sale_to_Brand_Owner_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P7bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Wholesale_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P3_Cost_of_Wholesale_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P8bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Retail_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P3_Cost_of_Retail_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!numberOfProducts > 3}">
+<apex:pageBlockSection title="Product 4" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="48%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Product_1_Name__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.Product_4_Name__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="48%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Product_1_Graphic__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+
+<apex:outputField value="{!Account_Plan__c.Product_4_Graphic__c}" rendered="{!NOT(IsIE8)}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+    <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+</apex:outputField>
+<apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Product_4_Graphic__c}', 'ValueChainAnalysis')" id="Product_4_Graphic__cIE8InputField" rendered="{!IsIE8}">
+    <apex:outputField value="{!Account_Plan__c.Product_4_Graphic__c}"/>
+</apex:outputPanel>
+<apex:outputPanel id="Product_4_Graphic__c" style="display:none;" rendered="{!IsIE8}">
+    <apex:inputField value="{!Account_Plan__c.Product_4_Graphic__c}"/>
+</apex:outputPanel>
+
+</apex:column>
+<apex:column headerValue="Action">
+    <apex:commandLink action="{!removeProduct}" value="Remove" styleClass="actionLink" rendered="{!userRecordAccess.hasEditAccess}">
+        <apex:param name="removeProduct" value="4" assignTo="{!removeProduct}"/>
+    </apex:commandLink>
+</apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P3HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Dairy_Ingredients__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P3ValidateFieldSize" value="{!Account_Plan__c.P4_Cost_of_Dairy_Ingredients__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P4HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_all_Ingredients__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P4ValidateFieldSize" value="{!Account_Plan__c.P4_Cost_of_all_Ingredients__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P5HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Manufacturing__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P5ValidateFieldSize" value="{!Account_Plan__c.P4_Cost_of_Manufacturing__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P6HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Sale_to_Brand_Owner__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P6ValidateFieldSize" value="{!Account_Plan__c.P4_Cost_of_Sale_to_Brand_Owner__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P7HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Wholesale__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P7ValidateFieldSize" value="{!Account_Plan__c.P4_Cost_of_Wholesale__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P8HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Retail__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P8ValidateFieldSize" value="{!Account_Plan__c.P4_Cost_of_Retail__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P3bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Dairy_Ingredients_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P4_Cost_of_Dairy_Ingredients_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P4bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_all_Ingredients_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P4_Cost_of_all_Ingredients_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P5bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Manufacturing_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P4_Cost_of_Manufacturing_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P6bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Sale_to_Brand_Owner_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P4_Cost_of_Sale_to_Brand_Owner_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P7bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Wholesale_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P4_Cost_of_Wholesale_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P8bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Retail_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P4_Cost_of_Retail_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!numberOfProducts > 4}">
+<apex:pageBlockSection title="Product 5" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="48%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Product_1_Name__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.Product_5_Name__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="48%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Product_1_Graphic__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+
+<apex:outputField value="{!Account_Plan__c.Product_5_Graphic__c}" rendered="{!NOT(IsIE8)}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+    <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+</apex:outputField>
+<apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Product_5_Graphic__c}', 'ValueChainAnalysis')" id="Product_5_Graphic__cIE8InputField" rendered="{!IsIE8}">
+    <apex:outputField value="{!Account_Plan__c.Product_5_Graphic__c}"/>
+</apex:outputPanel>
+<apex:outputPanel id="Product_5_Graphic__c" style="display:none;" rendered="{!IsIE8}">
+    <apex:inputField value="{!Account_Plan__c.Product_5_Graphic__c}"/>
+</apex:outputPanel>
+
+</apex:column>
+<apex:column headerValue="Action">
+    <apex:commandLink action="{!removeProduct}" value="Remove" styleClass="actionLink" rendered="{!userRecordAccess.hasEditAccess}">
+        <apex:param name="removeProduct" value="5" assignTo="{!removeProduct}"/>
+    </apex:commandLink>
+</apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P3HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Dairy_Ingredients__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P3ValidateFieldSize" value="{!Account_Plan__c.P5_Cost_of_Dairy_Ingredients__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P4HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_all_Ingredients__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P4ValidateFieldSize" value="{!Account_Plan__c.P5_Cost_of_all_Ingredients__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P5HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Manufacturing__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P5ValidateFieldSize" value="{!Account_Plan__c.P5_Cost_of_Manufacturing__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P6HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Sale_to_Brand_Owner__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P6ValidateFieldSize" value="{!Account_Plan__c.P5_Cost_of_Sale_to_Brand_Owner__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P7HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Wholesale__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P7ValidateFieldSize" value="{!Account_Plan__c.P5_Cost_of_Wholesale__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P8HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Retail__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="P8ValidateFieldSize" value="{!Account_Plan__c.P5_Cost_of_Retail__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P3bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Dairy_Ingredients_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P5_Cost_of_Dairy_Ingredients_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P4bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_all_Ingredients_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P5_Cost_of_all_Ingredients_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P5bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Manufacturing_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P5_Cost_of_Manufacturing_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P6bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Sale_to_Brand_Owner_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P5_Cost_of_Sale_to_Brand_Owner_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P7bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Wholesale_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P5_Cost_of_Wholesale_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="16%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="P8bHelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.P1_Cost_of_Retail_pct__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.P5_Cost_of_Retail_pct__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+</apex:outputPanel>
+
+<apex:pageBlockSection title="Insights" columns="1" collapsible="false">
+<apex:outputField id="P9ValidateFieldSize" value="{!Account_Plan__c.Value_Chain_Analysis_Insights__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonValueChainAnalysis, cancelButtonValueChainAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+    </div>
+
+    <div id="RelationshipPerformanceTab">
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}RelationshipPerformance', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!save}" id="saveButtonRelationshipPerformance" value="Save" style="display:none;" onclick="return setImageSizeData(this, '{!$Component.imageSizeData}');"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonRelationshipPerformance" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+<apex:inputHidden id="imageSizeData" value="{!imageSizeData}"/>
+<apex:pageBlockSection title="Performance" collapsible="false">
+<apex:outputPanel >
+<apex:pageBlockSection id="R1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+    <apex:outputField value="{!Account_Plan__c.CVM_results__c}" styleClass="labelCol"/>
+</apex:pageBlockSection>
+<apex:pageBlockTable value="{!cvmResults}" var="cr">
+<apex:column headerValue="Date">
+<apex:outputField value="{!cr.Date__c}"/>
+</apex:column>
+<apex:column headerValue="Category">
+<apex:outputField value="{!cr.Category__c}"/>
+</apex:column>
+<apex:column headerValue="Weight">
+<apex:outputField value="{!cr.Weighting__c}"/>
+</apex:column>
+<apex:column headerValue="RVS">
+<apex:outputField value="{!cr.RVS__c}"/>
+</apex:column>
+<apex:column headerValue="Last FY">
+<apex:outputField value="{!cr.CVM_1__c}"/>
+</apex:column>
+<apex:column headerValue="Last FY-1">
+<apex:outputField value="{!cr.CVM_2__c}"/>
+</apex:column>
+<apex:column headerValue="Last FY-2">
+<apex:outputField value="{!cr.CVM_3__c}"/>
+</apex:column>
+<apex:column headerValue="Rgnl Res?">
+<apex:outputField value="{!cr.Regional_Result__c}"/>
+</apex:column>
+</apex:pageBlockTable>
+</apex:outputPanel>
+
+<apex:outputField value="{!Account_Plan__c.Fonterra_s_share_of_customer_s_business__c}" rendered="{!NOT(IsIE8)}">
+    <apex:inlineEditSupport showOnEdit="saveButtonRelationshipPerformance, cancelButtonRelationshipPerformance" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+    <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+</apex:outputField>
+
+<apex:pageBlockSectionItem rendered="{!IsIE8}">
+<apex:outputLabel value="{!$ObjectType.Account_Plan__c.fields.Fonterra_s_share_of_customer_s_business__c.label}" styleClass="labelText"/>
+<apex:outputPanel >
+<apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Fonterra_s_share_of_customer_s_business__c}', 'RelationshipPerformance')" id="Fonterra_s_share_of_customer_s_business__cIE8InputField" rendered="{!IsIE8}">
+    <apex:outputField value="{!Account_Plan__c.Fonterra_s_share_of_customer_s_business__c}"/>
+</apex:outputPanel>
+<apex:outputPanel id="Fonterra_s_share_of_customer_s_business__c" style="display:none;" rendered="{!IsIE8}">
+    <apex:inputField value="{!Account_Plan__c.Fonterra_s_share_of_customer_s_business__c}"/>
+</apex:outputPanel>
+</apex:outputPanel>
+</apex:pageBlockSectionItem>
+
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Insights" collapsible="false">
+<apex:outputField id="R1ValidateFieldSize" value="{!Account_Plan__c.CVM_Insights__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonRelationshipPerformance, cancelButtonRelationshipPerformance" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="R2ValidateFieldSize" value="{!Account_Plan__c.Share_of_Business_Insights__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonRelationshipPerformance, cancelButtonRelationshipPerformance" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+    </div>
+    
+    <div id="FinancialPerformanceTab">
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}FinancialPerformance', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!save}" id="saveButtonFinancialPerformance" value="Save" style="display:none;"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonFinancialPerformance" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+
+<apex:pageBlockSection title="Summary" columns="1" collapsible="false">
+<apex:pageBlockSection id="FP1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+    <apex:outputField value="{!Account_Plan__c.Financial_Performance_Charts__c}" styleClass="labelCol"/>
+</apex:pageBlockSection>
+<apex:outputPanel id="FinancialPerformanceCharts">
+<table>
+<tr>
+<td style="padding: 5px;">
+<img src="{!Account_Plan__c.Account__r.Customer_s_Financial_Perf_Chart_URL_1__c}&rdm={!URLENCODE(TEXT(NOW()))}"/>
+</td>
+<td style="padding: 15px;" rowspan="2">
+<img src="{!Account_Plan__c.Account__r.Customer_s_Financial_Perf_Chart_URL_3__c}&rdm={!URLENCODE(TEXT(NOW()))}"/>
+</td>
+</tr>
+<tr>
+<td style="padding: 5px;">
+<img src="{!Account_Plan__c.Account__r.Customer_s_Financial_Perf_Chart_URL_2__c}&rdm={!URLENCODE(TEXT(NOW()))}"/>
+</td>
+</tr>
+</table>
+</apex:outputPanel>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Commentary" columns="1" collapsible="false">
+<apex:outputField id="FP2ValidateFieldSize" value="{!Account_Plan__c.Financial_Performance_Commentary__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFinancialPerformance, cancelButtonFinancialPerformance" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="FP3ValidateFieldSize" value="{!Account_Plan__c.Payment_Performance__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFinancialPerformance, cancelButtonFinancialPerformance" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Insights" columns="1" collapsible="false">
+<apex:outputField id="FP4ValidateFieldSize" value="{!Account_Plan__c.Financial_perf_Insights__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFinancialPerformance, cancelButtonFinancialPerformance" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+</apex:pageBlock>
+</apex:form>
+    </div>
+
+    <div id="OperationalPerformanceTab">
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}OperationalPerformance', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!save}" id="saveButtonOperationalPerformance" value="Save" style="display:none;" onclick="return setImageSizeData(this, '{!$Component.imageSizeData}');"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonOperationalPerformance" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+<apex:inputHidden id="imageSizeData" value="{!imageSizeData}"/>
+<apex:pageBlockSection title="Performance" collapsible="false">
+
+<apex:outputField value="{!Account_Plan__c.DIFOT__c}" rendered="{!NOT(IsIE8)}">
+    <apex:inlineEditSupport showOnEdit="saveButtonOperationalPerformance, cancelButtonOperationalPerformance" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+    <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+</apex:outputField>
+<apex:pageBlockSectionItem rendered="{!IsIE8}">
+<apex:outputLabel value="{!$ObjectType.Account_Plan__c.fields.DIFOT__c.label}" styleClass="labelText"/>
+<apex:outputPanel >
+<apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.DIFOT__c}', 'OperationalPerformance')" id="DIFOT__cIE8InputField" rendered="{!IsIE8}">
+    <apex:outputField value="{!Account_Plan__c.DIFOT__c}"/>
+</apex:outputPanel>
+<apex:outputPanel id="DIFOT__c" style="display:none;" rendered="{!IsIE8}">
+    <apex:inputField value="{!Account_Plan__c.DIFOT__c}"/>
+</apex:outputPanel>
+</apex:outputPanel>
+</apex:pageBlockSectionItem>
+
+<apex:outputField value="{!Account_Plan__c.Complaints__c}" rendered="{!NOT(IsIE8)}">
+    <apex:inlineEditSupport showOnEdit="saveButtonOperationalPerformance, cancelButtonOperationalPerformance" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+    <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+</apex:outputField>
+<apex:pageBlockSectionItem rendered="{!IsIE8}">
+<apex:outputLabel value="{!$ObjectType.Account_Plan__c.fields.Complaints__c.label}" styleClass="labelText"/>
+<apex:outputPanel >
+<apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Complaints__c}', 'OperationalPerformance')" id="Complaints__cIE8InputField" rendered="{!IsIE8}">
+    <apex:outputField value="{!Account_Plan__c.Complaints__c}"/>
+</apex:outputPanel>
+<apex:outputPanel id="Complaints__c" style="display:none;" rendered="{!IsIE8}">
+    <apex:inputField value="{!Account_Plan__c.Complaints__c}"/>
+</apex:outputPanel>
+</apex:outputPanel>
+</apex:pageBlockSectionItem>
+
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Insights" columns="1" collapsible="false">
+<apex:outputField id="OP1ValidateFieldSize" value="{!Account_Plan__c.Section_4_3_Insights__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonOperationalPerformance, cancelButtonOperationalPerformance" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+    </div>
+
+    <div id="StakeholderAnalysisTab">
+<apex:pageBlock mode="detail">
+<apex:pageBlockSection title="Stakeholder Analysis" columns="1" collapsible="false">
+<apex:relatedList list="Account_Plan__r" subject="{!Account_Plan__c.Id}" title=""/>
+
+<table border="0" cellpadding="0" cellspacing="0" style="font-size: 0.9em;"><tbody><tr>
+<td style="width: 90px; padding-left: 15px;">
+<span class="labelText">Key to Attitude</span>
+</td><td style="width: 20px;">
+<img src="/resource/ImageBlue" alt="Blue" height="15" width="15" border="0"/>
+</td><td style="width: 16%;">
+<div class="labelText">Champion</div>Person inside the business who is actively working on behalf of Fonterra
+</td><td style="width: 20px;">
+<img src="/resource/ImageGreen" alt="Green" height="15" width="15" border="0"/>
+</td><td style="width: 16%;">
+<div class="labelText">Ally/Supporter</div>Someone who favours Fonterra
+</td><td style="width: 20px;">
+<img src="/resource/ImageYellow" alt="Yellow" height="15" width="15" border="0"/>
+</td><td style="width: 16%;">
+<div class="labelText">Coach</div>Will provide information, but will not actively promote Fonterra
+</td><td style="width: 20px;">
+<img src="/resource/ImageOrange" alt="Orange" height="15" width="15" border="0"/>
+</td><td style="width: 16%;">
+<div class="labelText">Know us / neutral</div>Have no preference towards supplier
+</td><td style="width: 20px;">
+<img src="/resource/ImageRed" alt="Red" height="15" width="15" border="0"/>
+</td><td style="width: 16%;">
+<div class="labelText">Opponent</div>Someone who favors a competitor / is against Fonterra
+</td>
+</tr></tbody></table>
+
+</apex:pageBlockSection>
+</apex:pageBlock>
+
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}StakeholderAnalysis', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!save}" id="saveButtonStakeholderAnalysis" value="Save" style="display:none;"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonStakeholderAnalysis" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+<apex:pageBlockSection title="Engagement Strategy" columns="1" collapsible="false">
+<apex:outputField value="{!Account_Plan__c.Customer_Target__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonStakeholderAnalysis, cancelButtonStakeholderAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="20%" value="{!Account_Plan__c.Customer_Target__r.Target_Visits_Q1__c}"/>
+<apex:column width="20%" value="{!Account_Plan__c.Customer_Target__r.Target_Visits_Q2__c}"/>
+<apex:column width="20%" value="{!Account_Plan__c.Customer_Target__r.Target_Visits_Q3__c}"/>
+<apex:column width="20%" value="{!Account_Plan__c.Customer_Target__r.Target_Visits_Q4__c}"/>
+<apex:column width="20%" value="{!Account_Plan__c.Customer_Target__r.Target_Visits_Total__c}"/>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Insights" columns="1" collapsible="false">
+<apex:outputField id="SH1ValidateFieldSize" value="{!Account_Plan__c.Section_3_1_Insights__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonStakeholderAnalysis, cancelButtonStakeholderAnalysis" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+    </div>
+
+    <div id="CompetitorsTab">
+<apex:relatedList list="Competitor_Analyses__r" subject="{!Account_Plan__c.Id}"/>
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}Competitors', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!save}" id="saveButtonCompetitors" value="Save" style="display:none;" onclick="return setImageSizeData(this, '{!$Component.imageSizeData}');"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonCompetitors" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+<apex:inputHidden id="imageSizeData" value="{!imageSizeData}"/>
+<apex:pageBlockSection title="Summary" collapsible="false">
+
+<apex:outputField value="{!Account_Plan__c.Customers_Business_by_Product__c}" rendered="{!NOT(IsIE8)}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCompetitors, cancelButtonCompetitors" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+    <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+</apex:outputField>
+<apex:pageBlockSectionItem rendered="{!IsIE8}">
+<apex:outputLabel value="{!$ObjectType.Account_Plan__c.fields.Customers_Business_by_Product__c.label}" styleClass="labelText"/>
+<apex:outputPanel >
+<apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Customers_Business_by_Product__c}', 'Competitors')" id="Customers_Business_by_Product__cIE8InputField" rendered="{!IsIE8}">
+    <apex:outputField value="{!Account_Plan__c.Customers_Business_by_Product__c}"/>
+</apex:outputPanel>
+<apex:outputPanel id="Customers_Business_by_Product__c" style="display:none;" rendered="{!IsIE8}">
+    <apex:inputField value="{!Account_Plan__c.Customers_Business_by_Product__c}"/>
+</apex:outputPanel>
+</apex:outputPanel>
+</apex:pageBlockSectionItem>
+
+<apex:outputField value="{!Account_Plan__c.Customers_Business_by_Competitor__c}" rendered="{!NOT(IsIE8)}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCompetitors, cancelButtonCompetitors" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+    <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+</apex:outputField>
+<apex:pageBlockSectionItem rendered="{!IsIE8}">
+<apex:outputLabel value="{!$ObjectType.Account_Plan__c.fields.Customers_Business_by_Competitor__c.label}" styleClass="labelText"/>
+<apex:outputPanel >
+<apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Customers_Business_by_Competitor__c}', 'Competitors')" id="Customers_Business_by_Competitor__cIE8InputField" rendered="{!IsIE8}">
+    <apex:outputField value="{!Account_Plan__c.Customers_Business_by_Competitor__c}"/>
+</apex:outputPanel>
+<apex:outputPanel id="Customers_Business_by_Competitor__c" style="display:none;" rendered="{!IsIE8}">
+    <apex:inputField value="{!Account_Plan__c.Customers_Business_by_Competitor__c}"/>
+</apex:outputPanel>
+</apex:outputPanel>
+</apex:pageBlockSectionItem>
+
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Insights" columns="1" collapsible="false">
+<apex:outputField id="CA1ValidateFieldSize" value="{!Account_Plan__c.Competitors_Insights__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonCompetitors, cancelButtonCompetitors" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+    </div>
+
+    <div id="SWOTTab">
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}SWOT', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!save}" id="saveButtonSWOT" value="Save" style="display:none;"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonSWOT" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+
+<apex:pageBlockSection title="Customer" collapsible="false">
+<apex:outputField id="S1ValidateFieldSize" value="{!Account_Plan__c.SWOT_Cust_Strengths__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSWOT, cancelButtonSWOT" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S2ValidateFieldSize" value="{!Account_Plan__c.SWOT_Cust_Weaknesses__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSWOT, cancelButtonSWOT" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S3ValidateFieldSize" value="{!Account_Plan__c.SWOT_Cust_Opportunities__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSWOT, cancelButtonSWOT" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S4ValidateFieldSize" value="{!Account_Plan__c.SWOT_Cust_Threats__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSWOT, cancelButtonSWOT" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S5ValidateFieldSize" value="{!Account_Plan__c.SWOT_Cust_Thingsto_develop_capitilise_on__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSWOT, cancelButtonSWOT" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S6ValidateFieldSize" value="{!Account_Plan__c.SWOT_Cust_Things_to_monitor_mitigate__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSWOT, cancelButtonSWOT" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection id="SWOTFonterraSection" title="SWOT of Fonterra from Customer Point of View" collapsible="false">
+<apex:outputField id="S7ValidateFieldSize" value="{!Account_Plan__c.SWOT_Font_Strengths__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSWOT, cancelButtonSWOT" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S8ValidateFieldSize" value="{!Account_Plan__c.SWOT_Font_Weaknesses__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSWOT, cancelButtonSWOT" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S9ValidateFieldSize" value="{!Account_Plan__c.SWOT_Font_Opportunities__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSWOT, cancelButtonSWOT" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S10ValidateFieldSize" value="{!Account_Plan__c.SWOT_Font_Threats__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSWOT, cancelButtonSWOT" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S11ValidateFieldSize" value="{!Account_Plan__c.SWOT_Font_Thingsto_develop_capitilise_on__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSWOT, cancelButtonSWOT" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+<apex:outputField id="S12ValidateFieldSize" value="{!Account_Plan__c.SWOT_Font_Things_to_monitor_mitigate__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonSWOT, cancelButtonSWOT" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+    </div>
+
+    <div id="NeedsvCapabilityTab">
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}NeedsvCapability', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!save}" id="saveButtonNeedsvCapability" value="Save" style="display:none;"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonNeedsvCapability" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+
+<apex:pageBlockSection title="Customer's Needs" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d" headerClass="needs-v-capability-table-header" rowClasses="needs-v-capability-table-header">
+<apex:column width="20%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="NC1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Customer_Need_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="NC1ValidateFieldSize" value="{!Account_Plan__c.Customer_Need_1__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column headerValue="2" width="20%">
+<apex:outputField id="NC2ValidateFieldSize" value="{!Account_Plan__c.Customer_Need_2__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column headerValue="3" width="20%">
+<apex:outputField id="NC3ValidateFieldSize" value="{!Account_Plan__c.Customer_Need_3__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column headerValue="4" width="20%">
+<apex:outputField id="NC4ValidateFieldSize" value="{!Account_Plan__c.Customer_Need_4__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column headerValue="5" width="20%">
+<apex:outputField id="NC5ValidateFieldSize" value="{!Account_Plan__c.Customer_Need_5__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Potential Opportunities" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d" headerClass="needs-v-capability-table-header" columnClasses="needs-v-capability-table-column">
+<apex:column width="20%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="NC2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Priority_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="NC6ValidateFieldSize" value="{!Account_Plan__c.Priority_1__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column headerValue="2" width="20%">
+<apex:outputField id="NC7ValidateFieldSize" value="{!Account_Plan__c.Priority_2__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column headerValue="3" width="20%">
+<apex:outputField id="NC8ValidateFieldSize" value="{!Account_Plan__c.Priority_3__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column headerValue="4" width="20%">
+<apex:outputField id="NC9ValidateFieldSize" value="{!Account_Plan__c.Priority_4__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column headerValue="5" width="20%">
+<apex:outputField id="NCV10alidateFieldSize" value="{!Account_Plan__c.Priority_5__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Fonterra's Strengths" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d" headerClass="needs-v-capability-table-header" rowClasses="needs-v-capability-table-header">
+<apex:column width="20%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="NC3HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Fonterra_Strength_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="NC11ValidateFieldSize" value="{!Account_Plan__c.Fonterra_Strength_1__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column headerValue="2" width="20%">
+<apex:outputField id="NC12ValidateFieldSize" value="{!Account_Plan__c.Fonterra_Strength_2__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column headerValue="3" width="20%">
+<apex:outputField id="NC13ValidateFieldSize" value="{!Account_Plan__c.Fonterra_Strength_3__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column headerValue="4" width="20%">
+<apex:outputField id="NC14ValidateFieldSize" value="{!Account_Plan__c.Fonterra_Strength_4__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column headerValue="5" width="20%">
+<apex:outputField id="NC15ValidateFieldSize" value="{!Account_Plan__c.Fonterra_Strength_5__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonNeedsvCapability, cancelButtonNeedsvCapability" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+    </div>
+
+    <div id="OpportunitiesTab">
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons location="top">
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}Opportunities', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!save}" id="saveButtonNeedsvCapability" value="Save" style="display:none;"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonNeedsvCapability" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+</apex:pageBlock>
+<c:RelatedList rendered="{!isParentAccountPlan && $ObjectType.Opportunity.accessible}" objectName="Opportunity" fieldsCSV="Account.Id,Account.Name,Name,StageName,Amount,Probability,CloseDate,Owner.Id,Owner.Name" hideFieldsCSV="Account.Id,Owner.Id" filter="IsClosed = false " pageSize="5" parentFieldId="{!Account_Plan__c.Account__c & ',' & Account_Plan__c.Account__c}" parentFieldName="Account.ParentId,AccountId" orderByFieldName="Amount desc nulls last, Probability desc nulls last" urlForNewRecord="{!URLFOR($Action.Opportunity.New,null)}" hideActionLinks="{!NOT(userRecordAccess.hasEditAccess)}" hideButtons="{!NOT(userRecordAccess.hasEditAccess)}"/>
+<!--<c:RelatedList rendered="{!isParentAccountPlan}" objectName="Key_Initiative__c" fieldsCSV="Account__r.Id,Account__r.Name,Name,Strategy_Detail__c,Status__c,Target_Date__c,Owner.Id,Owner.Name" hideFieldsCSV="Account__r.Id,Owner.Id" filter="Status__c = 'Active' " pageSize="5" parentFieldId="{!Account_Plan__c.Account__c & ',' & Account_Plan__c.Account__c}" parentFieldName="Account__r.ParentId,Account__c" orderByFieldName="Target_Date__c asc nulls last" urlForNewRecord="{!URLFOR($Action.Key_Initiative__c.New,null)}" hideActionLinks="{!NOT(userRecordAccess.hasEditAccess)}" hideButtons="true"/> <!--hideButtons="{!NOT(userRecordAccess.hasEditAccess)}"/>-->
+<c:RelatedList rendered="{!isParentAccountPlan && $ObjectType.Key_Initiative__c.accessible}" objectName="Key_Initiative__c" fieldsCSV="Account__r.Id,Account__r.Name,Name,Strategy_Detail__c,Status__c,Target_Date__c" hideFieldsCSV="Account__r.Id" filter=" (Target_Date_string__c >= '{!TEXT(Account_Plan__c.Start_Date__c)}') AND (Target_Date_string__c <= '{!TEXT(Account_Plan__c.End_Date__c)}')" pageSize="5" parentFieldId="{!Account_Plan__c.Account__c & ',' & Account_Plan__c.Account__c}" parentFieldName="Account__r.ParentId,Account__c" orderByFieldName="Target_Date__c asc nulls last" urlForNewRecord="{!URLFOR($Action.Key_Initiative__c.New,null)}" hideActionLinks="{!NOT(userRecordAccess.hasEditAccess)}" hideButtons="true"/> <!--hideButtons="{!NOT(userRecordAccess.hasEditAccess)}"/>-->
+<c:RelatedList rendered="{!NOT(isParentAccountPlan)&& $ObjectType.Opportunity.accessible}" objectName="Opportunity" fieldsCSV="AccountId,Name,StageName,Amount,Probability,CloseDate,Owner.Id,Owner.Name" hideFieldsCSV="AccountId,Owner.Id" filter="IsClosed = false " pageSize="5" parentFieldId="{!Account_Plan__c.Account__c}" parentFieldName="AccountId" orderByFieldName="Amount desc nulls last, Probability desc nulls last" urlForNewRecord="{!URLFOR($Action.Opportunity.New,null)}" hideActionLinks="{!NOT(userRecordAccess.hasEditAccess)}" hideButtons="{!NOT(userRecordAccess.hasEditAccess)}"/>
+<!--<c:RelatedList rendered="{!NOT(isParentAccountPlan)}" objectName="Key_Initiative__c" fieldsCSV="Account__c,Name,Strategy_Detail__c,Status__c,Target_Date__c,Owner.Id,Owner.Name" hideFieldsCSV="Account__c,Owner.Id" filter="Status__c = 'Active' " pageSize="5" parentFieldId="{!Account_Plan__c.Account__c}" parentFieldName="Account__c" orderByFieldName="Target_Date__c asc nulls last" urlForNewRecord="{!URLFOR($Action.Key_Initiative__c.New,null)}" hideActionLinks="{!NOT(userRecordAccess.hasEditAccess)}" hideButtons="true"/> <!-- hideButtons="{!NOT(userRecordAccess.hasEditAccess)}"/>--> 
+<c:RelatedList rendered="{!NOT(isParentAccountPlan) && $ObjectType.Key_Initiative__c.accessible}" objectName="Key_Initiative__c" fieldsCSV="Account__c,Name,Strategy_Detail__c,Status__c,Target_Date__c" hideFieldsCSV="Account__c" filter="(Target_Date_string__c >= '{!TEXT(Account_Plan__c.Start_Date__c)}') AND (Target_Date_string__c <= '{!TEXT(Account_Plan__c.End_Date__c)}') " pageSize="5" parentFieldId="{!Account_Plan__c.Account__c}" parentFieldName="Account__c" orderByFieldName="Target_Date__c asc nulls last" urlForNewRecord="{!URLFOR($Action.Key_Initiative__c.New,null)}" hideActionLinks="{!NOT(userRecordAccess.hasEditAccess)}" hideButtons="true"/> <!-- hideButtons="{!NOT(userRecordAccess.hasEditAccess)}"/>--> 
+</apex:form>
+<!-- 
+<apex:relatedList list="Opportunities" subject="{!Account_Plan__c.Account__c}"/>
+<apex:relatedList list="Strategic_Initiatives__r" subject="{!Account_Plan__c.Account__c}"/>
+ -->
+    </div>
+
+    <div id="FiveYearStrategyTab">
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+    <apex:outputLink id="previewSlide" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!previewSlide}FiveYearStrategy', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview Slide</apex:outputLink>
+    <apex:commandButton action="{!save}" id="saveButtonFiveYearStrategy" value="Save" style="display:none;"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonFiveYearStrategy" value="Cancel" style="display:none;"/>
+</apex:pageBlockButtons>
+
+<apex:pageBlockSection title="Customer Positioning Statement" columns="1" collapsible="false">
+<apex:outputField id="ST1ValidateFieldSize" value="{!Account_Plan__c.Customer_Positioning_Statement__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFiveYearStrategy, cancelButtonFiveYearStrategy" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Horizon Revenue Goal" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="33%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="FYS1HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Horizon_Revenue_Goal_0_1_yr__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.Horizon_Revenue_Goal_0_1_yr__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFiveYearStrategy, cancelButtonFiveYearStrategy" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="33%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="FYS2HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Horizon_Revenue_Goal_1_2_yrs__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.Horizon_Revenue_Goal_1_2_yrs__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFiveYearStrategy, cancelButtonFiveYearStrategy" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="33%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="FYS3HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Horizon_Revenue_Goal_3_5_yrs__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField value="{!Account_Plan__c.Horizon_Revenue_Goal_3_5_yrs__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFiveYearStrategy, cancelButtonFiveYearStrategy" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Horizon Strategic Goal" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="33%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="FYS4HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Strategic_Goal_1__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="ST2ValidateFieldSize" value="{!Account_Plan__c.Strategic_Goal_1__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFiveYearStrategy, cancelButtonFiveYearStrategy" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="33%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="FYS5HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Strategic_Goal_2__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="ST3ValidateFieldSize" value="{!Account_Plan__c.Strategic_Goal_2__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFiveYearStrategy, cancelButtonFiveYearStrategy" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="33%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="FYS6HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Strategic_Goal_3__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="ST4ValidateFieldSize" value="{!Account_Plan__c.Strategic_Goal_3__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFiveYearStrategy, cancelButtonFiveYearStrategy" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Horizon Theme" columns="1" collapsible="false">
+<apex:pageBlockTable value="{!dummyRow}" var="d">
+<apex:column width="33%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="FYS7HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Horizon_Theme_0_1_yr__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="ST5ValidateFieldSize" value="{!Account_Plan__c.Horizon_Theme_0_1_yr__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFiveYearStrategy, cancelButtonFiveYearStrategy" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="33%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="FYS8HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Horizon_Theme_1_2_yrs__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="ST6ValidateFieldSize" value="{!Account_Plan__c.Horizon_Theme_1_2_yrs__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFiveYearStrategy, cancelButtonFiveYearStrategy" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+<apex:column width="33%">
+<apex:facet name="header">
+    <apex:pageBlockSection id="FYS9HelpColumnHeader" showHeader="false" columns="1" collapsible="false">
+        <apex:outputField value="{!Account_Plan__c.Horizon_Theme_3_5_yrs__c}"/>
+    </apex:pageBlockSection>
+</apex:facet>
+<apex:outputField id="ST7ValidateFieldSize" value="{!Account_Plan__c.Horizon_Theme_3_5_yrs__c}">
+    <apex:inlineEditSupport showOnEdit="saveButtonFiveYearStrategy, cancelButtonFiveYearStrategy" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}"/>
+</apex:outputField>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+    </div>
+
+    <div id="OtherTab">
+<apex:form >
+<apex:pageBlock mode="detail">
+<apex:pageBlockButtons >
+<!-- 
+    <apex:outputLink id="viewPdfLink" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!viewPdf}', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview PDF (old)</apex:outputLink>
+ -->
+    <apex:outputLink id="viewPdfLink2" styleClass="btn btn2" value="#" onclick="$.popupWindow('{!viewPdf2}', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">Preview PDF</apex:outputLink>
+    <apex:outputLink id="downloadPdfLink2" styleClass="btn btn2" value="{!downloadPdf2}" rendered="{!NOT(IsChromeFrame)}">Download PDF</apex:outputLink>
+    <apex:outputLink id="downloadPdfLink2b" value="{!downloadPdf2}" rendered="{!IsChromeFrame}" title="Right-click link and use [Save link as] to download]">Download PDF</apex:outputLink>
+<!-- 
+    <apex:commandButton action="{!refreshCharts}" id="refreshChartsButtonOther" value="Refresh Charts"/>
+ -->
+ <!-- 
+    <apex:commandButton action="{!clearAllGraphics}" id="clearAllGraphicsButtonOther" value="Clear All Graphics" onclick="var r=confirm('Are you sure?'); return r;" rendered="{!userRecordAccess.hasEditAccess}"/>
+ -->
+
+    <apex:commandButton action="{!save}" id="saveButtonOther" value="Save" style="display:none;" onclick="return setImageSizeData(this, '{!$Component.imageSizeData}');"/>
+    <apex:commandButton action="{!cancel}" onclick="resetInlineEdit()" id="cancelButtonOther" value="Cancel" style="display:none;"/>
+<!--    <apex:commandButton action="{!cloneAndRedirect}" id="cloneButtonOther" value="Clone" rendered="{!userRecordAccess.hasEditAccess}"/>-->
+    <apex:commandButton action="{!sharingRedirect}" id="sharingButtonOther" value="Sharing" rendered="{!AND(renderSharingRedirect, userRecordAccess.hasEditAccess)}"/>
+</apex:pageBlockButtons>
+<apex:inputHidden id="imageSizeData" value="{!imageSizeData}"/>
+<apex:pageBlockSection title="Account Plan Detail" collapsible="false">
+
+<apex:outputField value="{!Account_Plan__c.Account_Plan_Customer_Graphic__c}" rendered="{!NOT(IsIE8)}">
+    <apex:inlineEditSupport showOnEdit="saveButtonOther, cancelButtonOther" hideOnEdit="editButton" event="{!inlineEditSupportEvent}" resetFunction="resetInlineEdit" disabled="{!NOT(userRecordAccess.hasEditAccess)}" rendered="{!NOT(isIPad)}"/>
+    <apex:outputText value="[Image edit unavailable on iPad.]" rendered="{!isIPad}"/>
+</apex:outputField>
+<apex:pageBlockSectionItem rendered="{!IsIE8}">
+<apex:outputLabel value="{!$ObjectType.Account_Plan__c.fields.Account_Plan_Customer_Graphic__c.label}" styleClass="labelText"/>
+<apex:outputPanel >
+<apex:outputPanel ondblclick="inlineEditInputField(this, '{!$Component.Account_Plan_Customer_Graphic__c}', 'Other')" id="Account_Plan_Customer_Graphic__cIE8InputField" rendered="{!IsIE8}">
+    <apex:outputField value="{!Account_Plan__c.Account_Plan_Customer_Graphic__c}"/>
+</apex:outputPanel>
+<apex:outputPanel id="Account_Plan_Customer_Graphic__c" style="display:none;" rendered="{!IsIE8}">
+    <apex:inputField value="{!Account_Plan__c.Account_Plan_Customer_Graphic__c}"/>
+</apex:outputPanel>
+</apex:outputPanel>
+</apex:pageBlockSectionItem>
+
+<apex:outputPanel >
+</apex:outputPanel>
+</apex:pageBlockSection>
+<!-- 
+<apex:pageBlockSection title="Collaboration" collapsible="false">
+<apex:pageBlockSectionItem >
+    <apex:outputLabel value="PDF"/>
+    <apex:outputPanel >
+    <apex:outputLink id="viewPdfLink2" value="#" onclick="$.popupWindow('{!viewPdf2}', {width: 1024+50, height: 768-60, center: false, scrollbars: true, left: (screen.width-1024-60), top: (screen.height-768)});">View PDF</apex:outputLink>
+    &nbsp;&nbsp;&nbsp;
+    <apex:outputLink id="downloadPdfLink2" value="{!downloadPdf2}">Download PDF</apex:outputLink>
+    &nbsp;&nbsp;&nbsp;
+    <apex:commandLink id="attachPdf2" value="Attach PDF" action="{!attachPdf2}"/>
+    </apex:outputPanel>
+</apex:pageBlockSectionItem>
+-->
+<apex:pageBlockSection title="Share" collapsible="false">
+<apex:pageBlockSectionItem >
+    <apex:outputLabel value="Email"/>
+    <apex:outputPanel >
+    <apex:commandLink id="emailPdf2" value="Email PDF to:" action="{!emailPdf2}" onclick="$.blockUI();"/>&nbsp;&nbsp;&nbsp;<apex:inputText style="vertical-align:top; margin-top:-2px;" value="{!emailPdfTo}" size="40"/><br/>
+    <div style="padding:3px 0px 0px 0px;">with message:&nbsp;<apex:inputTextarea style="vertical-align:top; margin-top:-2px;" value="{!emailPdfMessage}" cols="42" rows="5"/></div>
+    </apex:outputPanel>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+    <apex:outputLabel value="Chatter"/>
+    <apex:outputPanel >
+    <apex:commandLink id="postPdf2Link" value="Chatter PDF Link to Account" action="{!postPdf2Link}" onclick="$.blockUI();"/>
+<!-- 
+    &nbsp;&nbsp;&nbsp;
+    <apex:commandLink id="postPdf2" value="Chatter post PDF" action="{!postPdf2}" onclick="$.blockUI();"/>
+ -->
+    </apex:outputPanel>
+</apex:pageBlockSectionItem>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="System Information" collapsible="false">
+<apex:outputField value="{!Account_Plan__c.CreatedById}">&nbsp;
+    <apex:outputField value="{!Account_Plan__c.CreatedDate}"/>
+</apex:outputField>
+<apex:outputField value="{!Account_Plan__c.LastModifiedById}">&nbsp;
+    <apex:outputField value="{!Account_Plan__c.LastModifiedDate}"/>
+</apex:outputField>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+
+<apex:relatedList list="NotesAndAttachments" subject="{!Account_Plan__c.Id}"/>
+<apex:relatedList list="ProcessSteps" subject="{!Account_Plan__c.Id}"/>
+
+    </div>
+
+</div>
+
+</div>
+
+<apex:outputText escape="false" rendered="{!refreshFinancialPerformanceCharts}">
+<!-- 
+    <iframe id="accountFrame" src="/{!Account_Plan__c.Account__c}" style="height: 1px; width: 1px;"/>
+ -->
+    <script type="text/javascript">
+
+        $('span[id$=OpportunityPipelineChart]').html('<span><img src="/img/loading.gif"/>&nbsp;&nbsp;&nbsp;Refreshing...</span>');
+        $('span[id$=FinancialPerformanceCharts]').html('<span><img src="/img/loading.gif"/>&nbsp;&nbsp;&nbsp;Refreshing...</span>');
+
+        var accountWindow = $.popupWindow('/{!Account_Plan__c.Account__c}', {height:50, width:50, left:0, top:0});
+        setTimeout('accountWindow.close(); refreshCharts();', 8000);
+/*
+        var chartRefreshInterval = setInterval('checkChartRefresh()', 300);
+        function checkChartRefresh() {
+            if (top.location.hash.match("chartsRefreshed")) {
+                clearInterval(chartRefreshInterval);
+                top.location.hash = '';
+                refreshCharts();
+            }
+        }
+*/
+    </script>
+</apex:outputText>
+ 
+<script type="text/javascript">
+    $(function(){
+        var index = $('#AccountPlanTabs a[href="#{!selectedTab}Tab"]').parent().index();
+        $('#AccountPlanTabs').tabs({
+            selected: index
+        })
+    });
+
+    if ($('#PageMessages').html().match('Error:')) {
+        $("input.btn").each(function(i) {
+            if (this.id.match("saveButton") || this.id.match("cancelButton")) {
+                $(this).show();
+            }
+        });
+    }
+
+    $('input.btn').each(function(i) {
+        if (this.id.match("saveButton") || this.id.match("cancelButton")) {
+            $(this).bind("click", function() {$.blockUI();});
+        }
+    });
+
+    //$('#Tabs').css('visibility', 'visible');
+    $('#Tabs').show();
+    $('#Tabs2').show();
+    //$.unblockUI();
+
+    function resetInlineEdit(){}
+
+    var saveButton = null;
+    var imageSizeDataInputId = null;
+    var saveClicked = true;
+
+    function setImageSizeData(saveButtonClicked, imageSizeDataInputIdToUse) {    
+        saveButton = saveButtonClicked;
+        imageSizeDataInputId = imageSizeDataInputIdToUse;
+        if (saveClicked) {
+            setTimeout('buildImageSizeData()', 500);
+            return false;
+        } else {
+            saveClicked = true;
+        }
+        return true;
+    }
+
+    function buildImageSizeData() {
+        var tab = saveButton.id.split('saveButton')[1];
+        var imageSizeData = '';
+        var copyImage = null;
+        if ({!NOT(IsIE8)}) {
+            $('div#' + tab + 'Tab img[src*=refid]').each(function() {
+                $(this).removeAttr('width');
+                $(this).removeAttr('height');
+                imageSizeData += $(this).attr('src').split('refid=')[1].split('"')[0] + '=' + $(this).css('width') + $(this).css('height') + ':';
+            });
+        } else {
+            $('div#' + tab + 'Tab iframe').contents().find('img[src*=refid]').each(function() {
+                $(this).removeAttr('width');
+                $(this).removeAttr('height');
+                copyImage = new Image();
+                copyImage.src = $(this).attr("src");
+                imageSizeData += $(this).attr('src').split('refid=')[1].split('"')[0] + '=' + copyImage.width + 'px' + copyImage.height + 'px:';
+                copyImage = null;
+            });
+        }
+        imageSizeDataInputId = imageSizeDataInputId.replace(/:/g,'\\:');
+        $('#' + imageSizeDataInputId).attr('value', imageSizeData);
+        //alert(imageSizeData);
+        saveClicked = false;
+        //$('#'+saveButton.id).trigger('click');
+        saveButton.click();
+        saveButton = null;
+        imageSizeDataInputId = null;
+    }
+
+    function inlineEditInputField(outputField, inputFieldId, saveButtonSuffix) {
+        if ({!userRecordAccess.hasEditAccess}) {
+            $(outputField).hide();
+            $('span#'+inputFieldId.replace(/:/g,'\\:')).show();
+            $('input[id$='+'saveButton'+saveButtonSuffix+']').show();
+            $('input[id$='+'cancelButton'+saveButtonSuffix+']').show();
+        }
+    }
+
+$(document).ready(function() {
+    
+    $('div[id$=HelpColumnHeader] td.data2Col').html('');
+    $('div[id$=HelpColumnHeader] td').attr("class", "labelCol categories-table-header-help");
+
+    $('span[id$=ValidateFieldSize]').each(function() { 
+        var idSelector = $(this).attr('id').replace(/:/g,'_');
+        $(this).find('span.inlineEditWrite').bind("dblclick", function() {
+            var inlineTextArea = $('textarea#'+idSelector);
+            if (inlineTextArea != null) {
+                var inlineTextAreaDialog = inlineTextArea.parents('div[id$=Dialog]');
+                var inlineTextAreaDialogHelp = inlineTextAreaDialog.find('span.helpButton script');
+                if ((inlineTextAreaDialogHelp != null) && inlineTextAreaDialogHelp.html() != null) {
+                    //looking for help text like '~190 chars, ~50 cols, ~6 lines'
+                    var inlineTextAreaDialogHelpMatchSizes = inlineTextAreaDialogHelp.html().match(/~[\d]+/g);
+                    if ((inlineTextAreaDialogHelpMatchSizes != null) && (inlineTextAreaDialogHelpMatchSizes.length == 3)) {
+                        var helpText = inlineTextAreaDialogHelp.html().split('[')[1].split(']')[0];
+                        inlineTextArea.attr('maxlength', inlineTextAreaDialogHelpMatchSizes[0].match(/[\d]+/));
+                        inlineTextArea.attr('cols', inlineTextAreaDialogHelpMatchSizes[1].match(/[\d]+/));
+                        inlineTextArea.attr('rows', inlineTextAreaDialogHelpMatchSizes[2].match(/[\d]+/));
+                        var minWidth = (parseInt(inlineTextAreaDialogHelpMatchSizes[1].match(/[\d]+/)) * 6);
+                        if (minWidth < 350) {
+                            minWidth = 350;
+                        }
+                        inlineTextAreaDialog.css('width', minWidth + 'px');
+                        inlineTextAreaDialog.css('max-width', '1920px');
+                        var marginLeft = parseInt(inlineTextAreaDialog.css('margin-left').split('px')[0]);
+                        inlineTextAreaDialog.css('margin-left' , (marginLeft-150) + 'px');
+                        inlineTextAreaDialog.find('div.textCounter').css('display' , 'none');
+                        inlineTextAreaDialogHelp.before('<span style="font-size: 0.6em;">' + helpText + '</span>');
+                    }
+                }
+            }       
+        });
+    });
+
+    $('span[id$=IE8InputField] span table div').css('min-height', '13px');
+    if ({!userRecordAccess.hasEditAccess}) {
+        $('span[id$=IE8InputField] span table div').mouseover(function() {$(this).toggleClass('inlineEditWriteOn')});
+        $('span[id$=IE8InputField] span table div').mouseout(function() {$(this).toggleClass('inlineEditWriteOn')});
+    }
+
+        $('span[class$=inlineEditWrite]').click(function() {$(this).find('input').focus(); $(this).find('select').focus()});
+
+    $.unblockUI();
+});
+
+</script>
+
+</apex:page>

@@ -1,0 +1,2 @@
+<apex:page standardController="Account" action="{!URLFOR($Action.Account.Submit,Account.Id)}">
+</apex:page>

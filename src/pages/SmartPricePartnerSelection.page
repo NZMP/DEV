@@ -1,0 +1,5 @@
+<apex:page standardController="Opportunity" >
+    <flow:interview name="PartnerSelection" finishLocation="/{!$CurrentPage.parameters.newid}">
+        <apex:param name="newid" value="{!$CurrentPage.parameters.newid}"/>
+    </flow:interview>
+</apex:page>

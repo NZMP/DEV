@@ -1,0 +1,49 @@
+<apex:page >
+
+  <style>
+.bPageBlock {background-color: white !important;width:100%;}
+.Title {font-weight:bold; font-size: 30px; color: #3399FF;}
+.Header {font-weight:bold; text-align: center; font-size: 20px; color: #3399FF;  }
+.Link {font-weight:bold; padding-left: 120px; font-size: 15px; color: #3399FF;  }
+.Space {font-weight:bold; font-size: 15px; color: #FFFFFF;}
+               </style>
+               
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel styleClass="Title">My Capability</apex:outputLabel>   
+                </apex:pageBlockSectionitem> 
+                <apex:pageblockSection columns="3" >                          
+                   <apex:pageblockSection columns="1">   
+                       <apex:pageBlockSectionitem dataStyle="text-align:center;">                
+                            <apex:outputLink value="{! $Page.Onboarding_Welcome}"><apex:image width="240" height="220" url="{!URLFOR($Resource.OnboardingImages,'Images/Welcome.png')}"/></apex:outputLink> 
+                         </apex:pageBlockSectionitem>
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">                    
+                            <apex:outputLabel styleClass="Header">Newbie</apex:outputLabel>
+                         </apex:pageBlockSectionitem>                                       
+                     </apex:pageblockSection>                                      
+
+                    <apex:pageblockSection columns="1" > 
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">                   
+                            <apex:outputLink value="{! $Page.Onboarding_YourWorld}"><apex:image width="240" height="220" url="{!URLFOR($Resource.OnboardingImages,'Images/World.png')}"/></apex:outputLink> 
+                         </apex:pageBlockSectionitem>
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                            <apex:outputLabel styleClass="Header">Your World</apex:outputLabel>
+                         </apex:pageBlockSectionitem>
+                       </apex:pageblockSection> 
+                     <apex:pageblockSection columns="1" > 
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">  
+                            <apex:outputLink value="{! $Page.Onboarding_Now}"><apex:image width="240" height="220" url="{!URLFOR($Resource.OnboardingImages,'Images/One.png')}"/></apex:outputLink>                    
+                         </apex:pageBlockSectionitem>
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                            <apex:outputLabel styleClass="Header">The Now</apex:outputLabel>   
+                         </apex:pageBlockSectionitem>                      
+                    </apex:pageblockSection> 
+                     
+                                        
+                </apex:pageblockSection>
+            </apex:pageblockSection>  
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

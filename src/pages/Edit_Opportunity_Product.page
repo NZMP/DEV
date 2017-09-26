@@ -1,0 +1,35 @@
+<apex:page standardController="OpportunityLineItem" extensions="EditOpportunityProductController">
+<apex:outputPanel rendered="false">
+    {!OpportunityLineItem.id}
+</apex:outputPanel>
+  <apex:form >
+        <apex:pageBlock title="Select Products & Services" mode="edit" id="maindetails">
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Save" action="{!save}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+            
+            <apex:pageBlockSection columns="1" collapsible="false">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Search Products & Services:"/>
+                    <apex:outputPanel >
+                        <apex:inputText value="{!productName}"/>&nbsp;
+                        <apex:commandbutton value="Search" action="{!findProduct}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                   <apex:outputLabel value=""/>
+                   <apex:outputLabel value="{!showingCount}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                     <apex:outputLabel value="Select Products & Services:"/>
+                    <apex:selectList id="newProd" multiselect="false" size="1" value="{!cloneRecord.PricebookEntryId}">
+                        <apex:selectOptions value="{!productList}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,14 @@
+<apex:page showHeader="false" sidebar="false" >
+ 
+
+  
+  <script>
+    function redirectToLogin(){
+      window.parent.location="/_ui/core/userprofile/UserProfilePage";
+    }   
+    setTimeout("redirectToLogin()", 500);
+  </script>
+  Reloading...
+
+
+</apex:page>

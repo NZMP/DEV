@@ -1,0 +1,1706 @@
+<apex:page standardController="Revised_Account_Plan__c" extensions="AccountPlanExCon" title="Account Plan: {!IF(accountPlan.Name != null, accountPlan.Name, '')}">          
+    <script type="text/javascript">
+        // Removes &success=1 parameter
+        var uri = window.location.toString();
+        if (uri.indexOf("&success=1") > 0) {
+            var clean_uri = uri.replace("&success=1", "");
+            window.history.replaceState({}, document.title, clean_uri);
+        }       
+        function fiveYearConga() {
+          /*
+            var url; 
+            var Id = "{!accountPlan.Id}"; 
+            var TemplateId = 'a1rO00000001htB'; 
+            var OutputName = '{!accountPlan.Account_Name__r.Name} 5 Year Strategy'; 
+            var BackgroundModeParameter = "3"; 
+            var serverUrl = "{!$Api.Partner_Server_URL_290}"; 
+            var BML = "Generating Five Year Strategy Document"; 
+            url = "https://composer.congamerge.com/composer8/index.html?sessionId=" + "{!$Api.Session_ID}" 
+            + "&serverUrl=" + serverUrl 
+            + "&Id=" + Id 
+            + "&TemplateId=" + TemplateId 
+            + "&DS7=" + BackgroundModeParameter 
+            + "&OFN=" + OutputName 
+            + "&BML=" + BML; 
+            
+            window.open(url);
+            */
+             window.open('{!URLFOR($Action.Revised_Account_Plan__c.PreviewDownload_Slide
+,accountplan.Id)}', '' ,'scrollbars=yes,menubar=no,height=600,width=800,resizable=yes, toolbar=no,location=no,status=yes'); 
+            
+        }
+        
+        function previewAccountPlan() {
+            window.open('{!URLFOR($Action.Revised_Account_Plan__c.Preview_Download_Account_Plan
+,accountplan.Id)}', '' ,'scrollbars=yes,menubar=no,height=600,width=800,resizable=yes, toolbar=no,location=no,status=yes'); 
+        }
+        
+        function previewExecSummary() {
+            window.open('{!URLFOR($Action.Revised_Account_Plan__c.Preview_Download_Exec_Summary
+,accountplan.Id)}', '' ,'scrollbars=yes,menubar=no,height=600,width=800,resizable=yes, toolbar=no,location=no,status=yes'); 
+        }
+
+        function emailExecSummary() {
+            window.open('{!URLFOR($Action.Revised_Account_Plan__c.Email_Exec_Summary
+,accountplan.Id)}', '' ,'scrollbars=yes,menubar=no,height=600,width=800,resizable=yes, toolbar=no,location=no,status=yes'); 
+        }
+        
+        function doSearch(ev) {
+            if (window.event && window.event.keyCode == 13 || ev.which == 13) {
+                searchServer();
+                return false;
+            } 
+            else {
+                return true;
+            }
+        }
+        
+        /****** CVM METRICS JS *****/       
+
+        function setVisibilityCVM(isResellerAP){        
+            // nonreseller AP has only one graph 
+            var startIndex = 1;
+            var endIndex = 2;
+            
+            if(isResellerAP){
+                startIndex = 2;
+                endIndex = 6;
+            }
+            
+            for(i=startIndex; i<endIndex; i++){
+                var divId = "CVMdiv" + i.toString();
+                document.getElementById(divId).style.visibility="visible";
+            }
+        }
+        
+        function unsetVisibilityCVM(isResellerAP){
+
+            // nonreseller AP has only one graph 
+            var startIndex = 1;
+            var endIndex = 2;
+            
+            if(isResellerAP){
+                startIndex = 2;
+                endIndex = 6;
+            }
+        
+            for(i=startIndex; i<endIndex; i++){
+                var divId = "CVMdiv" + i.toString();
+                var frameId = "CVMframe" + i.toString();
+                document.getElementById(divId).style.visibility="hidden";
+                document.getElementById(divId).style.display="block";
+                document.getElementById(frameId).contentWindow.location.reload(true);
+            }      
+        }
+        
+        var paramCVM = false;
+        var firstLoadCVM = true;
+        function showDivCVM(isResellerAP){
+        
+            if(!firstLoadCVM){
+                if(paramCVM){
+                    setVisibilityCVM(isResellerAP);
+                }
+                else{
+                    unsetVisibilityCVM(isResellerAP);
+                    paramCVM = true;
+                }
+            }
+        }
+        
+        function on_loadCVM(isResellerAP){
+           showDivCVM(isResellerAP);
+           firstLoadCVM = false;
+        }
+                
+        /****** RESELLER GROWTH / GROWTH METRICS JS *****/      
+
+        function setVisibilityG(isResellerAP){      
+            // nonreseller AP has a div id 1 to 4
+            var startIndex = 1;
+            var endIndex = 5;
+            
+            if(isResellerAP){
+                startIndex = 5;
+                endIndex = 8;
+            }
+            
+            for(i=startIndex; i<endIndex; i++){
+                var divId = "GMdiv" + i.toString();
+                document.getElementById(divId).style.visibility="visible";
+            }
+        }
+        
+        function unsetVisibilityG(isResellerAP){
+            var startIndex = 1;
+            var endIndex = 5;
+            
+            if(isResellerAP){
+                startIndex = 5;
+                endIndex = 8;
+            }
+        
+            for(i=startIndex; i<endIndex; i++){
+                var divId = "GMdiv" + i.toString();
+                var frameId = "GMframe" + i.toString();
+                document.getElementById(divId).style.visibility="hidden";
+                document.getElementById(divId).style.display="block";
+                document.getElementById(frameId).contentWindow.location.reload(true);
+            }      
+        }
+        
+        var param = false;
+        var firstLoadG = true;
+        function showDivG(isResellerAP){
+        
+            if(!firstLoadG){                
+                if(param){
+                    setVisibilityG(isResellerAP);
+                }
+                else{
+                    unsetVisibilityG(isResellerAP);
+                    param = true;
+                }
+            }
+        }
+        
+        function on_loadG (isResellerAP){
+           showDivG(isResellerAP);
+           firstLoadG = false;
+        }
+
+        /****** FINANCIAL METRICS JS*****/
+        var paramFM = false;
+        var firstLoadFM = true;
+        function showDivFM(){
+        
+            if(!firstLoadFM){
+                //alert(firstLoadFM);
+                if(paramFM){
+                    document.getElementById("FMdiv1").style.visibility="visible";
+                    document.getElementById("FMdiv2").style.visibility="visible";
+                 }
+                else{
+                    document.getElementById("FMdiv1").style.visibility="hidden";
+                    document.getElementById("FMdiv1").style.display="block";
+                    document.getElementById('FMframe1').contentWindow.location.reload(true);
+                    
+                    document.getElementById("FMdiv2").style.visibility="hidden";
+                    document.getElementById("FMdiv2").style.display="block";
+                    document.getElementById('FMframe2').contentWindow.location.reload(true);
+                    
+                    paramFM = true;
+                }
+            }
+        }
+        function on_loadFM(){
+           showDivFM();
+           firstLoadFM = false;
+        }
+        
+    </script>
+    <style type="text/css">
+        .activeTab {background-color: #1797c0; color:white; font-weight: bold; background-image: none;}
+        .inactiveTab { background-image: linear-gradient(rgb(229, 242, 246), rgb(205, 232, 240)); color:#353535; }
+        .rich-tab-header {padding: 6px 10px 6px 10px;}
+        .engagementFieldLine {width:98%; height:17px;}
+        .errorMsg {white-space:initial}
+    </style>
+    <apex:sectionHeader subtitle="{!IF(accountPlan.Name != null, accountPlan.Name, 'New Account Plan')}" title="Account Plan"/>
+    <!-- Status --> 
+    <apex:actionStatus id="idStatus">
+        <apex:facet name="start"> 
+            <apex:outputPanel style="top:300px; background-color:#FFFFFF; opacity:1; width:100%; height:100%; display:block; position:relative; z-index:40">
+                <apex:outputPanel style="left:0; position:absolute; text-align:center; top:0; z-index:80; width:100%; height:100%; display:block;">
+                    <apex:outputPanel style=" width:105px;">
+                        <apex:image url="/img/loading.gif" />
+                        <apex:outputText style="color: #666666; font-weight: bold; margin-left: 6px;" value="{!HTMLENCODE(' Processing ...')}" />
+                    </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:outputPanel>                   
+        </apex:facet> 
+    </apex:actionStatus>           
+    <apex:form id="idForm">
+        <apex:actionFunction name="removeEngagementPlanRow" action="{!removeEPRow}" rerender="idEngagementPlanSection, engagementScript" status="idStatus">
+            <apex:param name="rowNum" value="" assignTo="{!selectedRowEP}" />
+        </apex:actionFunction> 
+        <apex:actionFunction name="searchServer" action="{!runAccountSearch}" rerender="acctsResultsTable" status="searchAcctStatus"/>
+        <apex:pageBlock mode="mainDetail">          
+            <apex:pageBlockButtons location="bottom"> 
+                <apex:commandButton action="{!save}" id="saveButton" value="Save" rendered="{!NOT(bHistoricalAccountPlan) || bIsAdmin}" />
+                <apex:commandButton value="Clone" 
+                                    action="{!cloneAP}"
+                                    rendered="{!IF((accountPlan != null && accountPlan.Id != null) , true, false)}" /> 
+                <apex:commandButton action="{!cancel}" immediate="true" id="cancelButton" value="Cancel" />                 
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+        <apex:pagemessages id="idMessages" />        
+        <apex:actionFunction action="{!tabMethod}" name="setCurrentTab" rerender="relatedLists" >
+            <apex:param name="firstParam" assignTo="{!tabInFocus}" value="" />
+        </apex:actionFunction>
+        <apex:tabPanel switchType="client" id="AccountTabPanel" tabClass="activeTab" inactiveTabClass="inactiveTab" value="{!TabInFocus}">
+            <!-- TAB: CUSTOMER OVERVIEW -->    
+            <apex:tab label="Customer Overview" name="1" id="tabOne" onTabEnter="setCurrentTab('1');">
+                <apex:outputPanel >                             
+                    <apex:pageBlock >
+                        <apex:pageBlockButtons location="top">
+                           <apex:commandButton value="Preview/Download Account Plan" id="previewAccountPlan" action="{!save}"  status="idStatus" oncomplete="previewAccountPlan(); return false;" rendered="{!IF(accountplan.id != null, true, false)}">
+                                <apex:param value="true" name="loadConga" assignTo="{!loadConga}" />
+                           </apex:commandButton>    
+                           <apex:commandButton value="Preview/Download Exec Summary" id="previewExecSummary" action="{!save}"  status="idStatus" oncomplete="previewExecSummary(); return false;" rendered="{!IF(accountplan.id != null, true, false)}">
+                                <apex:param value="true" name="loadConga" assignTo="{!loadConga}" />
+                           </apex:commandButton>
+                           <apex:commandButton value="Email Exec Summary" id="emailExecSummary" action="{!save}" status="idStatus" oncomplete="emailExecSummary(); return false;" rendered="{!IF(accountplan.id != null, true, false)}" >
+                                <apex:param value="true" name="loadConga" assignTo="{!loadConga}" />
+                           </apex:commandButton>
+                        </apex:pageBlockButtons>                                    
+                        <!-- SECTION: DETAILS -->
+                        <apex:pageBlockSection title="Details" columns="2" collapsible="true">
+                           <apex:outputField value="{!accountPlan.Account_Name__c}" >
+                           </apex:outputField>
+                            <apex:outputField value="{!accountPlan.Account_Planning_Status__c}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit" rendered="{!NOT(bHistoricalAccountPlan) || bIsAdmin}"/>  
+                            </apex:outputField>
+                            <apex:outputField value="{!accountPlan.Name}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>
+                            <apex:outputField value="{!accountPlan.Fiscal_Year__c}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>
+                            <apex:outputField value="{!accountPlan.Start_Date__c}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>
+                            <apex:outputField value="{!accountPlan.Commentary__c}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>
+                            <apex:outputField value="{!accountPlan.End_Date__c}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>
+                        </apex:pageBlockSection>      
+                        <apex:pageBlockSection columns="2" rendered="{!isResellerAP}">
+                            <apex:outputField value="{!account.Markets__c}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>
+                            <apex:outputPanel />
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Agreements" for="agreementTable"/>
+                                <apex:pageBlockTable value="{!listAgreements}" var="agree" id="agreementTable">
+                                     <apex:column headerValue="Name" >
+                                        <apex:outputLink value="/{!agree.Id}" target="_blank">{!agree.Agreement_Name__c}</apex:outputLink>
+                                     </apex:column>
+                                     <apex:column headerValue="Status" value="{!agree.Status__c}"/>
+                                     <apex:column headerValue="Start Date" value="{!agree.Start_Date__c}"/>
+                                     <apex:column headerValue="End Date" value="{!agree.End_Date__c}"/>
+                                </apex:pageBlockTable>
+                            </apex:pageBlockSectionItem>                            
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Audit Dates" for="auditTable"/>
+                                <apex:pageBlockTable value="{!mapAuditWrapper}" var="key" id="auditTable">
+                                    <apex:column headerValue="Conducted on"> 
+                                        <apex:outputLink value="/{!mapAuditWrapper[key].audit.Id}" target="_blank">
+                                            <apex:outputText value="{0,date,MM'/'dd'/'yyyy}" >
+                                                <apex:param value="{!mapAuditWrapper[key].audit.Conducted_On__c}" /> 
+                                            </apex:outputText>
+                                        </apex:outputLink>
+                                    </apex:column>
+                                    <apex:column headerValue="Next assessment" value=" {!IF(mapAuditWrapper[key].audit.Next_Assessment_Due__c=null,'Not entered',mapAuditWrapper[key].audit.Next_Assessment_Due__c)}" />
+                                    
+                                </apex:pageBlockTable>
+                            </apex:pageBlockSectionItem>
+                        </apex:pageBlockSection>
+                        
+                                    
+                         <!-- SECTION: OVERVIEW (not reseller) -->
+                        <apex:pageBlockSection title="Overview" columns="2" rendered="{!NOT(isResellerAP)}">
+                            <apex:outputField value="{!accountPlan.Customer_Background__c}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>                     
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Fonterra Share of Business (%)" for="idShareOfBusiness" />
+                                <apex:outputField value="{!accountPlan.Fonterra_Share_of_Business__c}" id="idShareOfBusiness">
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit" rendered="{!NOT(bHistoricalAccountPlan)}"/> 
+                                </apex:outputField>
+                            </apex:pageBlockSectionItem> 
+                            <apex:outputField value="{!accountPlan.Vision__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>
+                            <apex:outputField value="{!accountPlan.Market_Insight__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>
+                            <apex:outputField value="{!accountPlan.Strategies_Goals__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>
+                            <apex:outputField value="{!accountPlan.Major_Risks_Threats_Challenges__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>
+                        </apex:pageBlockSection>
+                        
+                        <!-- SECTION: ANNUAL PLAN (Reseller) -->
+                        <apex:pageBlockSection title="Annual Plan" columns="2" rendered="{!isResellerAP}">
+                            <apex:pageBlockSectionItem helpText="{!$Label.ACCTPLAN_Reseller_Market_Knowledge_Insight_HelpText}">
+                                <apex:outputLabel value="Market Knowledge / Insight"/>
+                                <apex:outputField value="{!accountPlan.Market_Insight__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$Label.ACCTPLAN_Reseller_Vision_and_Goals_HelpText}">
+                                <apex:outputLabel value="Resellers Vision and Goals"/>
+                                <apex:outputField value="{!accountPlan.Vision__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem helpText="{!$Label.ACCTPLAN_Reseller_Learnings_From_Last_Year_HelpText}">
+                                <apex:outputLabel value="Learnings From Last Year"/>
+                                <apex:outputField value="{!accountPlan.Learnings_from_last_year__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:pageBlockSectionItem>
+                                
+                            <apex:pageBlockSectionItem helpText="{!$Label.ACCTPLAN_Reseller_Annual_Objectives_HelpText}">
+                                <apex:outputLabel value="Resellers Annual Objectives"/>
+                                <apex:outputField value="{!accountPlan.Key_Annual_Objectives__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem helpText="{!$Label.ACCTPLAN_Reseller_Strategies_for_Business_Development_HelpText}">
+                                <apex:outputLabel value="Strategies for Business Development"/>
+                                <apex:outputField value="{!accountPlan.Business_Development__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$Label.ACCTPLAN_Reseller_Resources_Required_HelpText}">
+                                <apex:outputLabel value="Resources Required"/>
+                                <apex:outputField value="{!accountPlan.Resource_Requirements__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:pageBlockSectionItem>
+ 
+                        </apex:pageBlockSection>               
+                        <!-- RELATED LIST: CUSTOMER'S NEEDS & RANKINGS -->
+                        <apex:pageBlockSection title="Customer's Needs & Ranking" columns="1" collapsible="true" rendered="{!NOT(isResellerAP)}">
+                            <apex:pageBlockTable value="{!listAccount}" var="need" rendered="{!(NOT(ISBLANK(listAccount)) || listAccount.size > 0) && NOT(bHistoricalAccountPlan)}">
+                                <apex:column width="20%" headerValue="Customer Need 1" value="{!need.Customer_Needs_1__c}"/>
+                                <apex:column width="20%" headerValue="2" value="{!need.Customer_Needs_2__c}"/>
+                                <apex:column width="20%" headerValue="3" value="{!need.Customer_Needs_3__c}"/>
+                                <apex:column width="20%" headerValue="4" value="{!need.Customer_Needs_4__c}"/>
+                                <apex:column width="20%" headerValue="5" value="{!need.Customer_Needs_5__c}"/>                                                             
+                            </apex:pageBlockTable>
+                            <apex:outputText value="There are no Customer Needs from the Account to be displayed" rendered="{!(ISBLANK(listAccount) || listAccount.size = 0) && NOT(bHistoricalAccountPlan)}" />
+                            <apex:pageBlockTable value="{!listAccountPlan}" var="need" rendered="{!(NOT(ISBLANK(listAccountPlan)) || listAccountPlan.size > 0) && bHistoricalAccountPlan}">
+                                <apex:column width="20%" headerValue="Customer Need 1" value="{!need.Customer_Need_1__c}"/>
+                                <apex:column width="20%" headerValue="2" value="{!need.Customer_Need_2__c}"/>
+                                <apex:column width="20%" headerValue="3" value="{!need.Customer_Need_3__c}"/>
+                                <apex:column width="20%" headerValue="4" value="{!need.Customer_Need_4__c}"/>
+                                <apex:column width="20%" headerValue="5" value="{!need.Customer_Need_5__c}"/>                                                             
+                            </apex:pageBlockTable>
+                        </apex:pageBlockSection>
+                        
+                        <!-- RELATED LIST: Opportunities -->
+                        <apex:pageBlockSection title="Opportunities" columns="1" rendered="{!isResellerAP}">
+                            <apex:pageBlockTable value="{!listResellerOpportunities}" var="resellerOppty" rendered="{!NOT(ISBLANK(listResellerOpportunities)) || listResellerOpportunities.size > 0}">
+                                <apex:column >
+                                    <apex:facet name="header">Opportunity Name</apex:facet>
+                                    <apex:outputLink value="/{!resellerOppty.Id}" target="_blank">{!resellerOppty.Name}</apex:outputLink> 
+                                </apex:column>
+                                <apex:column headerValue="Customer Name">
+                                    <apex:outputField value="{!resellerOppty.Customer_Name__c}" />  
+                                </apex:column>
+                                <apex:column headerValue="Description">
+                                    <apex:outputField value="{!resellerOppty.Description}" />  
+                                </apex:column>
+                                <apex:column headerValue="Close Date">
+                                    <apex:outputField value="{!resellerOppty.CloseDate}" />  
+                                </apex:column>
+                                <apex:column headerValue="Stage">
+                                    <apex:outputField value="{!resellerOppty.StageName}" />  
+                                </apex:column>
+                                <apex:column headerValue="Issues to Resolve">
+                                    <apex:outputField value="{!resellerOppty.Issues_to_Resolve__c}" />  
+                                </apex:column>
+                                <apex:column headerValue="Support Required">
+                                    <apex:outputField value="{!resellerOppty.Support_Required__c}" />  
+                                </apex:column>
+                                <!-- ProductCode, Name, Quantity, UnitPrice -->
+                            </apex:pageBlockTable>
+                            <apex:outputText rendered="{!ISBLANK(listResellerOpportunities) || listResellerOpportunities.size = 0}" value="There are no Opportunity records to display." />
+                            
+                        </apex:pageBlockSection>  
+                        
+                        <!-- RELATED LIST: KEY INITIATIVES -->
+                        <apex:pageBlockSection title="Key Initiatives" columns="1" rendered="{!isResellerAP}">
+                            <apex:pageBlockTable value="{!listKeyInititatives}" var="cvm" rendered="{!NOT(ISBLANK(listKeyInititatives)) || listKeyInititatives.size > 0}">
+                                <apex:column >
+                                        <apex:facet name="header">Key Initiative Name</apex:facet>
+                                             <apex:outputLink value="/{!cvm.Id}">{!cvm.name}</apex:outputLink>                          
+                                </apex:column>                        
+                                <apex:column value="{!cvm.Status2__c}"/>
+                                   <apex:column value="{!cvm.Status__c}"/>
+                                   <apex:column value="{!cvm.LastModifiedDate}"/>
+                                <apex:column value="{!cvm.Target_Date__c}"/>
+                                <apex:column value="{!cvm.RecordTypeId}"/> 
+                            </apex:pageBlockTable>
+                            <apex:outputText rendered="{!ISBLANK(listKeyInititatives) || listKeyInititatives.size = 0}" value="There are no Key Initiative records to display." />
+                        </apex:pageBlockSection>
+                    </apex:pageBlock>
+                </apex:outputPanel>                                           
+            </apex:tab>
+            <!-- TAB: FINANCIAL METRICS -->
+            <apex:tab label="Financial Metrics" name="2" id="tabTwo" onTabEnter="on_loadFM();setCurrentTab('2');">
+                <apex:outputPanel >                     
+                    <apex:pageBlock >
+                        <apex:pageBlockButtons location="top">
+                            <apex:commandButton value="Key Metrics Dashboard" onclick="window.open('{!openKeyMetricsDashboard}', 'wKeyMetricsDashboard', 'width=screen.width, height=screen.height, scrollbars=yes'); return false;" immediate="true" rendered="{!NOT(isResellerAP)}"/>
+                            <apex:commandButton value="Create Opportunity" onclick="window.open('{!URLFOR($Action.Opportunity.New, null, ['accid'=account.Id])}', 'wOpportunity', 'width=screen.width, height=screen'); return false;" immediate="true" />
+                            <apex:commandButton value="Create Initiative" onclick="window.open('{!URLFOR($Action.Key_Initiative__c.New, null, ['CF00N90000003u0SZ'=account.Name,'CF00N90000003u0SZ_lkid'=account.Id])}', 'wInitiative', 'width=screen.width, height=screen'); return false;"  immediate="true" />                             
+                        </apex:pageBlockButtons>                                                                       
+                        <!-- SECTION: KEY METRICS -->
+                        <apex:pageBlockSection title="Key Metrics" columns="2" collapsible="true">                     
+                            <apex:outputField value="{!accountplan.Volume_Invoiced_YTD__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>     
+                            <apex:outputField value="{!accountplan.Price_Achievement_YTD__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>                      
+                            <apex:outputField value="{!accountplan.Volume_Invoiced_LY__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>       
+                            <apex:outputField value="{!accountplan.Price_Achievement_LY__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>        
+                            <apex:outputField value="{!accountplan.Volume_Invoiced_Tracking_YTD_vs_LY__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>                                                                            
+                            <apex:outputField value="{!accountplan.PA_Tracking_YTD_vs_Target__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>      
+                            <apex:outputText value="" />                                                                   
+                            <apex:outputText value="" />                        
+                            <apex:outputField value="{!accountplan.Volume_Contracted_YTD__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>                               
+                            <apex:outputField value="{!accountplan.Revenue_YTD__c}" > 
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>                           
+                            <apex:outputField value="{!accountplan.Volume_Contracted_LY__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>                                                                                                                                                                                                                                         
+                            <apex:outputField value="{!accountplan.Revenue_LY__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>
+                            <apex:outputField value="{!accountplan.Vol_Contracted_Tracking_YTD_vs_LY__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField> 
+                            <apex:outputField value="{!accountPlan.Revenue_Tracking__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>                                                                                 
+                            <apex:pageBlockSectionItem />   
+                            <apex:outputText value="{0,date,dd/MM/YYYY}" label="YTD Key Metrics as at">
+                                <apex:param value="{!accountplan.YTD_Key_Metrics_as_at__c}" />
+                            </apex:outputText>                  
+                            
+<!--                             <apex:outputField value="{!account.Key_Metrics_Last_Update__c}" > -->
+<!--                                 <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/> -->
+<!--                             </apex:outputField>                                                                                                                                                            -->
+                        </apex:pageBlockSection>      
+                        <!-- SECTION: REPORTS -->
+                         <apex:pageBlockSection title="Reports" columns="2" collapsible="true">
+                            <apex:pageBlockSectionItem >
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="FMdiv1"></div>
+                                <iframe src="/apex/apexChart?reportId=00O90000007qtO3&accountId={!account.Id}&objType=keyMat&stDate={!YEAR(accountPlan.Start_Date__c)+1}-{!MONTH(accountPlan.Start_Date__c)}-{!DAY(accountPlan.Start_Date__c)}T00:00:00Z&endDate={!YEAR(accountPlan.Start_Date__c)-2}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c),startMonth,1)-1)}T00:00:00Z" height="220px" width="280px" 
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless" id="FMframe1" onload="on_loadFM()" ></iframe>  
+                            </div>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="FMdiv2"></div>                               
+                                <iframe src="/apex/apexChart?reportId=00O90000007qtO2&accountId={!account.Id}&objType=keyMat&stDate={!YEAR(accountPlan.Start_Date__c)+1}-{!MONTH(accountPlan.Start_Date__c)}-{!DAY(accountPlan.Start_Date__c)}T00:00:00Z&endDate={!YEAR(accountPlan.Start_Date__c)-1}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c),startMonth,1)-1)}T00:00:00Z" height="220px" width="280px"
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless" id="FMframe2"  ></iframe>                                   
+                            </div> 
+                            </apex:pageBlockSectionItem>                          
+                        </apex:pageBlockSection>                                 
+                    <!-- SECTION: INSIGHTS AND GUIDING QUESTIONS -->
+                    <apex:pageBlockSection title="Insights and Guiding Questions" collapsible="true" columns="1">
+                        <apex:pageblockSectionItem >
+                            <apex:outputpanel layout="none" >
+                                <table style="width:100%; border:0; cellpadding:0; cellspacing:0;" class="list">
+                                    <tr class="dataRow;">
+                                        <td style="width:50%">
+                                            <apex:outputPanel rendered="{!NOT(isResellerAP)}">
+                                                <ul>
+                                                    <li><apex:outputText value="{!$Label.SOB_Question_1}" /></li>
+                                                    <li><apex:outputText value="{!$Label.SOB_Question_2}" /></li> 
+                                                    <li><apex:outputText value="{!$Label.SOB_Question_3}" /></li> 
+                                                    <li><apex:outputText value="{!$Label.SOB_Question_4}" /></li> 
+                                                    <li><apex:outputText value="{!$Label.SOB_Question_5}" /></li>
+                                                </ul> 
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!isResellerAP}">
+                                                <ul>
+                                                    <li><apex:outputText value="{!$Label.SOB_Question_6}" /></li>
+                                                    <li><apex:outputText value="{!$Label.SOB_Question_7}" /></li> 
+                                                    <li><apex:outputText value="{!$Label.SOB_Question_8}" /></li> 
+                                                </ul>
+                                            </apex:outputPanel>
+                                        </td>
+                                        <td rowspan="5" style="vertical-align:text-top">
+                                            <strong>Financial Metrics Insights</strong>
+                                            <br />
+                                            <apex:outputField value="{!accountPlan.Financial_Metrics_Insights__c}">  
+                                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                            </apex:outputField>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </apex:outputpanel>
+                        </apex:pageblockSectionItem>
+                    </apex:pageBlockSection>  
+                    </apex:pageBlock>                                         
+                </apex:outputPanel>
+            </apex:tab>
+            <!-- TAB: OPERATIONAL METRICS -->
+            <apex:tab label="Operational Metrics" name="3" id="tabThree" onTabEnter="setCurrentTab('3');"> 
+                <apex:outputPanel >       
+                     <apex:pageBlock >
+                        <apex:pageBlockButtons location="top">
+                            <apex:commandButton value="Key Metrics Dashboard" onclick="window.open('{!openKeyMetricsDashboard}', 'wKeyMetricsDashboard', 'width=screen.width, height=screen.height, scrollbars=yes'); return false;" />
+                            <apex:commandButton value="Create Opportunity" onclick="window.open('{!URLFOR($Action.Opportunity.New, null, ['accid'=account.Id])}', 'wOpportunity', 'width=screen.width, height=screen.height'); return false;"/>
+                            <apex:commandButton value="Create Initiative" onclick="window.open('{!URLFOR($Action.Key_Initiative__c.New, null, ['CF00N90000003u0SZ'=account.Name,'CF00N90000003u0SZ_lkid'=account.Id])}', 'wInitiative', 'width=screen.width, height=screen.height'); return false;" />    
+                        </apex:pageBlockButtons>
+                        <!-- SECTION: OPERATIONAL METRICS-->
+                        <apex:pageBlockSection title="Operational Metrics" columns="1" collapsible="true">
+                            <apex:pageBlockTable value="{!operationalMetricsWrapperList}" var="item">
+                                <apex:column headerValue="Measure" width="20%">
+                                    <apex:outputField value="{!item.tempAP.Measure_Label__c}" />                                                                                                        
+                                </apex:column> 
+                                <apex:column headerValue="Measure" width="20%">
+                                    <apex:outputField value="{!item.tempAP.DIFOT__c}" rendered="{!IF(item.fieldName='DIFOT__c', true, false)}">
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                                                                                         
+                                    <apex:outputField value="{!item.tempAP.DSO__c}" rendered="{!IF(item.fieldName='DSO__c', true, false)}">
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                                                                                         
+                                    <apex:outputField value="{!item.tempAP.Complaints__c}" rendered="{!IF(item.fieldName='Complaints__c', true, false)}">
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                                                                                         
+                                    <apex:outputField value="{!item.tempAP.Perfect_Order_Consumption__c}" rendered="{!IF(item.fieldName='Perfect_Order_Consumption__c', true, false)}">
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                                                                                         
+                                   <apex:outputField value="{!item.tempAP.C2S_Consumption__c}" rendered="{!IF(item.fieldName='C2S_Consumption__c', true, false)}">
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                                                                                         
+                                </apex:column>
+                                <apex:column headerValue="Current Performance" width="20%">                                 
+                                    <apex:outputText value="{!item.tempAP.Display_Flag__c}" escape="false" />                                                                                                                                                                                  
+                                </apex:column>
+                                <apex:column headerValue="Insights" width="60%">
+                                    <apex:outputField value="{!item.tempAP.DIFOT_Insights__c}" rendered="{!IF(item.fieldName='DIFOT__c', true, false)}">
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                     
+                                    <apex:outputField value="{!item.tempAP.DSO_Insights__c}" rendered="{!IF(item.fieldName='DSO__c', true, false)}">
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                     
+                                    <apex:outputField value="{!item.tempAP.Complaints_Insights__c}" rendered="{!IF(item.fieldName='Complaints__c', true, false)}">
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                     
+                                    <apex:outputField value="{!item.tempAP.Perfect_Order_Consumption_Insights__c}" rendered="{!IF(item.fieldName='Perfect_Order_Consumption__c', true, false)}">
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                     
+                                    <apex:outputField value="{!item.tempAP.C2S_Consumption_Insights__c}" rendered="{!IF(item.fieldName='C2S_Consumption__c', true, false)}">
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                     
+                                </apex:column>
+                            </apex:pageBlockTable>
+                        </apex:pageBlockSection>
+                     </apex:pageBlock>
+                    </apex:outputPanel>                   
+                </apex:tab>       
+                <!-- TAB: GROWTH METRICS -->
+                <apex:tab label="{!IF(isResellerAP,'Reseller Growth' ,'Growth Metrics')}" name="4" id="tabFour" onTabEnter="on_loadG({!isResellerAP});setCurrentTab('4');">            
+                <apex:outputPanel >
+                <apex:pageBlock > 
+                    <apex:pageBlockButtons location="top">
+                        <apex:commandButton value="Growth Metrics Dashboard" rendered="false"
+                                        onclick="window.open('{!openGrowthMetricsDashboard}', 'wGrowthMetricsDashboard', 'width=screen.width, height=screen.height, scrollbars=yes'); return false;" />
+                        <apex:commandButton value="Create Opportunity" onclick="window.open('{!URLFOR($Action.Opportunity.New, null, ['accid'=account.Id])}', 'wOpportunity', 'width=screen.width, height=screen.height'); return false;"/>
+                        <apex:commandButton value="Create Initiative" onclick="window.open('{!URLFOR($Action.Key_Initiative__c.New, null, ['CF00N90000003u0SZ'=account.Name,'CF00N90000003u0SZ_lkid'=account.Id])}', 'wInitiative', 'width=screen.width, height=screen.height'); return false;" />              
+                    </apex:pageBlockButtons>   
+                    <!-- SECTION: REPORTS for non-reseller APs-->                                                                                                                        
+                    <apex:pageBlockSection title="Opportunties" columns="4" collapsible="true" rendered="{!NOT(isResellerAP)}">
+                            
+                        <apex:pageBlockSectionItem >
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="GMdiv1"></div>                    
+                                <iframe src="/apex/apexChart?reportId=00O90000007qtO1&accountId={!account.Id}&objType=oppty&stDate={!YEAR(accountPlan.Start_Date__c)}-{!MONTH(accountPlan.Start_Date__c)}-{!DAY(accountPlan.Start_Date__c)}T00:00:00Z&endDate={!YEAR(accountPlan.Start_Date__c)+1}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)+1,startMonth,1)-1)}T00:00:00Z" height="210px" width="280px"
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless" id="GMframe1" onload="on_loadG({!isResellerAP})" ></iframe>  
+                            </div>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="GMdiv2"></div>                                   
+                                <iframe src="/apex/apexChart?reportId=00O90000007qtO0&accountId={!account.Id}&objType=oppty&stDate={!YEAR(accountPlan.Start_Date__c)}-{!MONTH(accountPlan.Start_Date__c)}-{!DAY(accountPlan.Start_Date__c)}T00:00:00Z&endDate={!YEAR(accountPlan.Start_Date__c)+1}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)+1,startMonth,1)-1)}T00:00:00Z" height="210px" width="280px"
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless" id="GMframe2" ></iframe>  
+                            </div>
+                        </apex:pageBlockSectionItem>    
+                        <apex:pageBlockSectionItem >
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;"  id="GMdiv3"></div>                                                    
+                                <iframe src="/apex/apexChart?reportId=00O90000007qtNz&accountGroup={!account.Account_Group__c}&objType=opptyByAccountGroup&stDate={!YEAR(accountPlan.Start_Date__c)}-{!MONTH(accountPlan.Start_Date__c)}-{!DAY(accountPlan.Start_Date__c)}T00:00:00Z&endDate={!YEAR(accountPlan.Start_Date__c)+1}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)+1,startMonth,1)-1)}T00:00:00Z" height="210px" width="280px"
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless" id="GMframe3" ></iframe>  
+                            </div>
+                        </apex:pageBlockSectionItem>    
+                        <apex:pageBlockSectionItem >
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="GMdiv4"></div>                                                    
+                                <iframe src="/apex/apexChart?reportId=00O90000007qtNy&accountId={!account.Id}&objType=oppty&stDate={!YEAR(accountPlan.Start_Date__c)}-{!IF(DAY(accountPlan.Start_Date__c) = 1, MONTH(accountPlan.Start_Date__c)-1, MONTH(accountPlan.Start_Date__c))}-{!IF(DAY(accountPlan.Start_Date__c) = 1, DAY(DATE(YEAR(accountPlan.Start_Date__c),MONTH(accountPlan.Start_Date__c),1)-1), DAY(accountPlan.Start_Date__c)-1)}T59:59:59Z&endDate={!YEAR(accountPlan.Start_Date__c)+1}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)+1,startMonth,1)-1)}T00:00:00Z" height="210px" width="280px" 
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless" id="GMframe4" ></iframe>  
+                            </div>
+                        </apex:pageBlockSectionItem>                            
+                    </apex:pageBlockSection> 
+                    <!-- SECTION: REPORTS for reseller APs-->
+                    <apex:pageBlockSection title="Opportunties" columns="3" collapsible="true" rendered="{!isResellerAP}">
+                        <apex:pageBlockSectionItem >
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="GMdiv5"></div>                    
+                                <iframe src="/apex/apexChart?reportId=00Op0000000GVwr&accountId={!account.Id}&objType=oppty&stDate={!YEAR(accountPlan.Start_Date__c)}-{!MONTH(accountPlan.Start_Date__c)}-{!DAY(accountPlan.Start_Date__c)}T00:00:00Z&endDate={!YEAR(accountPlan.Start_Date__c)+1}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)+1,startMonth,1)-1)}T00:00:00Z" height="210px" width="280px"
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless" id="GMframe5" onload="on_loadG({!isResellerAP})"></iframe>  
+                            </div>
+                        </apex:pageBlockSectionItem>    
+                        
+                        <apex:pageBlockSectionItem >
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="GMdiv6"></div>                                                    
+                                <iframe src="/apex/apexChart?reportId=00Op0000000GVx6&accountId={!account.Id}&objType=oppty&stDate={!YEAR(accountPlan.Start_Date__c)}-{!IF(DAY(accountPlan.Start_Date__c) = 1, MONTH(accountPlan.Start_Date__c)-1, MONTH(accountPlan.Start_Date__c))}-{!IF(DAY(accountPlan.Start_Date__c) = 1, DAY(DATE(YEAR(accountPlan.Start_Date__c),MONTH(accountPlan.Start_Date__c),1)-1), DAY(accountPlan.Start_Date__c)-1)}T59:59:59Z&endDate={!YEAR(accountPlan.Start_Date__c)+1}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)+1,startMonth,1)-1)}T00:00:00Z" height="210px" width="280px" 
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless"  id="GMframe6" ></iframe>  
+                            </div>
+                        </apex:pageBlockSectionItem> 
+                                             
+                        <apex:pageBlockSectionItem >
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="GMdiv7"></div>                                                    
+                                <iframe src="/apex/apexChart?reportId=00Op0000000GVy4&accountId={!account.Id}&objType=oppty&stDate={!YEAR(accountPlan.Start_Date__c)}-{!IF(DAY(accountPlan.Start_Date__c) = 1, MONTH(accountPlan.Start_Date__c)-1, MONTH(accountPlan.Start_Date__c))}-{!IF(DAY(accountPlan.Start_Date__c) = 1, DAY(DATE(YEAR(accountPlan.Start_Date__c),MONTH(accountPlan.Start_Date__c),1)-1), DAY(accountPlan.Start_Date__c)-1)}T59:59:59Z&endDate={!YEAR(accountPlan.Start_Date__c)+1}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)+1,startMonth,1)-1)}T00:00:00Z" height="210px" width="280px" 
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless"  id="GMframe7"></iframe>  
+                            </div>
+                        </apex:pageBlockSectionItem> 
+                    </apex:pageBlockSection>
+                    
+                    <!-- RELATED LIST: KEY INITIATIVES -->
+                    <apex:pageBlockSection title="Key Initiatives" collapsible="true" columns="1">                              
+                        <apex:pageBlockTable value="{!listKeyInititatives}" var="cvm" rendered="{!NOT(ISBLANK(listCVMActionPlan)) || listCVMActionPlan.size > 0}">
+                            <apex:column >
+                                    <apex:facet name="header">Key Initiative Name</apex:facet>
+                                         <apex:outputLink value="/{!cvm.Id}">{!cvm.name}</apex:outputLink>                          
+                            </apex:column>                        
+                            <apex:column value="{!cvm.Status2__c}"/>
+                               <apex:column value="{!cvm.Status__c}"/>
+                               <apex:column value="{!cvm.LastModifiedDate}"/>
+                            <apex:column value="{!cvm.Target_Date__c}"/>
+                            <apex:column value="{!cvm.RecordTypeId}"/> 
+                       </apex:pageBlockTable>                      
+                        <apex:outputText rendered="{!ISBLANK(listKeyInititatives) || listKeyInititatives.size = 0}" value="There are no Key Initiative records to display." />
+                    </apex:pageBlockSection>
+                    <!-- SECTION: INSIGHTS AND  GUIDING QUESTIONS-->
+                    <apex:pageBlockSection title="Insights and Guiding Questions" collapsible="true" columns="1">                                                     
+                        <apex:pageblockSectionItem >
+                        <apex:outputpanel layout="none">
+                            <table style="width:100%; border:0; cellpadding:0; cellspacing:0;" class="list">
+                                <tr class="dataRow;">
+                                    <td style="width:50%">
+                                        <ul>
+                                            <li><apex:outputText value="{!$Label.MI_Question_1}" /></li>
+                                            <li><apex:outputText value="{!$Label.MI_Question_2}" /></li> 
+                                            <li><apex:outputText value="{!$Label.MI_Question_3}" /></li> 
+                                            <li><apex:outputText value="{!$Label.MI_Question_4}" /></li> 
+                                            <li><apex:outputText value="{!$Label.MI_Question_5}" /></li>
+                                            <li><apex:outputText value="{!$Label.MI_Question_6}" /></li>
+                                            <li><apex:outputText value="{!$Label.MI_Question_7}" /></li>
+                                            <li><apex:outputText value="{!$Label.MI_Question_8}" /></li>
+                                        </ul> 
+                                    </td>
+                                    <td  style="vertical-align:text-top">
+                                        <strong>Growth Metrics Insights</strong>
+                                        <br />
+                                        <apex:outputField value="{!accountPlan.Growth_Metrics_Insights__c}">  
+                                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                        </apex:outputField>
+                                    </td>
+                                </tr>
+                            </table>
+                            </apex:outputpanel>
+                        </apex:pageblockSectionItem>
+                    </apex:pageBlockSection>                          
+                </apex:pageBlock>
+                </apex:outputPanel>                
+            </apex:tab>
+            <!-- TAB: CVM METRICS -->
+            <apex:tab label="CVM Metrics" name="5" id="tabFive" onTabEnter="on_loadCVM({!isResellerAP});setCurrentTab('5');">        
+                <apex:pageBlock >
+<!--                    <apex:outputtext value="/apex/apexChart?reportId=00OO0000000P66h&accountId={!account.Id}&objType=cvm&stDate={!YEAR(accountPlan.Start_Date__c)+1}-{!IF(DAY(accountPlan.Start_Date__c) = 1, MONTH(accountPlan.Start_Date__c)-1, MONTH(accountPlan.Start_Date__c))}-{!IF(DAY(accountPlan.Start_Date__c) = 1, DAY(DATE(YEAR(accountPlan.Start_Date__c),MONTH(accountPlan.Start_Date__c),1)-1), DAY(accountPlan.Start_Date__c)-1)}T59:59:59Z&endDate={!YEAR(accountPlan.Start_Date__c)-3}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)-3,startMonth,1)-1)}T00:00:00Z" /> -->
+                    
+                    <apex:pageBlockButtons location="top">
+                        <apex:commandButton value="Growth Metrics Dashboard" rendered="false"
+                                            onclick="window.open('{!openGrowthMetricsDashboard}', 'wGrowthMetricsDashboard', 'width=screen.width, height=screen.height, scrollbars=yes'); return false;" />
+                        <apex:commandButton value="Create Opportunity" onclick="window.open('{!URLFOR($Action.Opportunity.New, null, ['accid'=account.Id])}', 'wOpportunity', 'width=screen.width, height=screen.height'); return false;"/>
+                        <apex:commandButton value="Create Initiative" onclick="window.open('{!URLFOR($Action.Key_Initiative__c.New, null, ['CF00N90000003u0SZ'=account.Name,'CF00N90000003u0SZ_lkid'=account.Id])}', 'wInitiative', 'width=screen.width, height=screen.height'); return false;" />    
+                    </apex:pageBlockButtons>
+                    <!-- SECTION: REPORTS -->                                                   
+                   <apex:pageBlockSection title="Reports" collapsible="true" rendered="{!NOT(isResellerAP)}" >    
+                        <apex:pageBlockSectionItem >
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="CVMdiv1"></div>                                                
+                                <iframe src="/apex/apexChart?reportId=00O90000007qtNx&accountId={!account.Id}&objType=cvm&stDate={!YEAR(accountPlan.Start_Date__c)+1}-{!IF(DAY(accountPlan.Start_Date__c) = 1, MONTH(accountPlan.Start_Date__c)-1, MONTH(accountPlan.Start_Date__c))}-{!IF(DAY(accountPlan.Start_Date__c) = 1, DAY(DATE(YEAR(accountPlan.Start_Date__c),MONTH(accountPlan.Start_Date__c),1)-1), DAY(accountPlan.Start_Date__c)-1)}T59:59:59Z&endDate={!YEAR(accountPlan.Start_Date__c)-3}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)-3,startMonth,1)-1)}T00:00:00Z" height="215px" width="280px"
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless" id="CVMframe1" onload="on_loadCVM({!isResellerAP})"></iframe>  
+                            </div>
+                        </apex:pageBlockSectionItem>                                    
+                    </apex:pageBlockSection>
+                    <apex:pageBlockSection title="Reports" collapsible="true" rendered="{!isResellerAP}" columns="4">
+                        <apex:pageBlockSectionItem ><!-- CVM Metrics -->
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="CVMdiv2"></div>                                                
+                                <iframe src="/apex/apexChart?reportId=00O90000007qtNx&accountId={!account.Id}&objType=cvm&stDate={!YEAR(accountPlan.Start_Date__c)+1}-{!IF(DAY(accountPlan.Start_Date__c) = 1, MONTH(accountPlan.Start_Date__c)-1, MONTH(accountPlan.Start_Date__c))}-{!IF(DAY(accountPlan.Start_Date__c) = 1, DAY(DATE(YEAR(accountPlan.Start_Date__c),MONTH(accountPlan.Start_Date__c),1)-1), DAY(accountPlan.Start_Date__c)-1)}T59:59:59Z&endDate={!YEAR(accountPlan.Start_Date__c)-3}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)-3,startMonth,1)-1)}T00:00:00Z" height="215px" width="280px"
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless" id="CVMframe2" onload="on_loadCVM({!isResellerAP})"></iframe>  
+                            </div>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ><!-- CVM Image and Reputation -->
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="CVMdiv3"></div>                                                
+                                <iframe src="/apex/apexChart?reportId=00Op0000000P7rl&accountId={!account.Id}&objType=cvm&stDate={!YEAR(accountPlan.Start_Date__c)+1}-{!IF(DAY(accountPlan.Start_Date__c) = 1, MONTH(accountPlan.Start_Date__c)-1, MONTH(accountPlan.Start_Date__c))}-{!IF(DAY(accountPlan.Start_Date__c) = 1, DAY(DATE(YEAR(accountPlan.Start_Date__c),MONTH(accountPlan.Start_Date__c),1)-1), DAY(accountPlan.Start_Date__c)-1)}T59:59:59Z&endDate={!YEAR(accountPlan.Start_Date__c)-3}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)-3,startMonth,1)-1)}T00:00:00Z" height="215px" width="280px"
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless" id="CVMframe3"  ></iframe>  
+                            </div>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ><!-- CVM Product Performance -->
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="CVMdiv4"></div>                                                
+                                <iframe src="/apex/apexChart?reportId=00Op0000000P7rq&accountId={!account.Id}&objType=cvm&stDate={!YEAR(accountPlan.Start_Date__c)+1}-{!IF(DAY(accountPlan.Start_Date__c) = 1, MONTH(accountPlan.Start_Date__c)-1, MONTH(accountPlan.Start_Date__c))}-{!IF(DAY(accountPlan.Start_Date__c) = 1, DAY(DATE(YEAR(accountPlan.Start_Date__c),MONTH(accountPlan.Start_Date__c),1)-1), DAY(accountPlan.Start_Date__c)-1)}T59:59:59Z&endDate={!YEAR(accountPlan.Start_Date__c)-3}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)-3,startMonth,1)-1)}T00:00:00Z" height="215px" width="280px"
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless" id="CVMframe4"  ></iframe>  
+                            </div>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ><!-- CVM Supply Chain Flexibility/Op Performance -->
+                            <div style="position:relative;">
+                            <div style="position:absolute;top:-15;left:-35; width:300px;height:250px;" id="CVMdiv5"></div>                                                
+                                <iframe src="/apex/apexChart?reportId=00Op0000000P7rv&accountId={!account.Id}&objType=cvm&stDate={!YEAR(accountPlan.Start_Date__c)+1}-{!IF(DAY(accountPlan.Start_Date__c) = 1, MONTH(accountPlan.Start_Date__c)-1, MONTH(accountPlan.Start_Date__c))}-{!IF(DAY(accountPlan.Start_Date__c) = 1, DAY(DATE(YEAR(accountPlan.Start_Date__c),MONTH(accountPlan.Start_Date__c),1)-1), DAY(accountPlan.Start_Date__c)-1)}T59:59:59Z&endDate={!YEAR(accountPlan.Start_Date__c)-3}-{!startMonth-1}-{!DAY(DATE(YEAR(accountPlan.Start_Date__c)-3,startMonth,1)-1)}T00:00:00Z" height="215px" width="280px"
+                                        style="overflow-y:hidden;" scrolling="no"
+                                        seamless="seamless" id="CVMframe5" ></iframe>  
+                            </div>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>           
+                    <!-- RELATED LIST: KEY INITIATIVES -->
+                    <apex:pageBlockSection title="Key Initiatives" collapsible="true" columns="1">                              
+                        <apex:pageBlockTable value="{!listCVMActionPlan}" var="cvm" rendered="{!NOT(ISBLANK(listCVMActionPlan)) || listCVMActionPlan.size > 0}">
+                            <apex:column >
+                                    <apex:facet name="header">Key Initiative Name</apex:facet>
+                                         <apex:outputLink value="/{!cvm.Id}">{!cvm.name}</apex:outputLink>                          
+                            </apex:column>                        
+                            <apex:column value="{!cvm.name}"/>
+                            <apex:column value="{!cvm.Status2__c}"/>
+                               <apex:column value="{!cvm.Status__c}"/>
+                               <apex:column value="{!cvm.LastModifiedDate}"/>
+                            <apex:column value="{!cvm.Target_Date__c}"/>
+                            <apex:column value="{!cvm.RecordTypeId}"/> 
+                           </apex:pageBlockTable>                      
+                            <apex:outputText rendered="{!ISBLANK(listCVMActionPlan) || listCVMActionPlan.size = 0}" value="There are no Key Initiative records to display." />                        
+                    </apex:pageBlockSection>                                                               
+                    <!-- SECTION: INSIGHTS AND GUIDING QUESTIONS -->
+                    <apex:pageBlockSection title="Insights Guiding Questions" collapsible="true"  columns="1">
+                        <apex:pageblockSectionItem >
+                        <apex:outputpanel layout="none">
+                            <table style="width:100%; border:0; cellpadding:0; cellspacing:0;" class="list">
+                                <tr class="dataRow;">
+                                    <td style="width:50%">
+                                        <ul>
+                                            <li><apex:outputText value="{!$Label.LHS_Question_1}" /></li>
+                                            <li><apex:outputText value="{!$Label.LHS_Question_2}" /></li> 
+                                            <li><apex:outputText value="{!$Label.LHS_Question_3}" /></li> 
+                                            <li><apex:outputText value="{!$Label.LHS_Question_4}" /></li> 
+                                            <li><apex:outputText value="{!$Label.LHS_Question_5}" /></li>
+                                            <li><apex:outputText value="{!$Label.LHS_Question_6}" /></li>
+                                        </ul> 
+                                    </td>
+                                    <td style="vertical-align:text-top">
+                                        <strong>CVM Insights</strong>
+                                        <br />
+                                        <apex:outputField value="{!accountPlan.CVM_Insights__c}">  
+                                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                        </apex:outputField>
+                                    </td>
+                                </tr>
+                            </table>
+                            </apex:outputpanel>
+                        </apex:pageblockSectionItem>
+                    </apex:pageBlockSection>                          
+                </apex:pageBlock>                 
+            </apex:tab>
+            <!-- TAB: ASSOCIATED -->
+            <apex:tab label="Associated" name="5B" id="tabFiveB" onTabEnter="setCurrentTab('5B');" rendered="{!isResellerAP}">
+                
+                <table width="100%" border="0">
+                    <tr>
+                        <td>
+                            <apex:pageBlock id="associationPageBlock">
+                                <apex:pageBlockSection title="Current Associations" collapsible="true" columns="1">                              
+                                    <apex:pageBlockTable value="{!listPartnerWrappers}" var="part">
+                                        
+                                        <apex:column headerValue="Account Name">
+                                            <apex:outputLink value="/{!part.AccountTo.Id}" target="_blank">{!part.AccountTo.Name}</apex:outputLink>
+                                        </apex:column>
+                                        <apex:column headerValue="Markets">
+                                            <apex:outputField value="{!part.AccountTo.Markets__c}" />  
+                                        </apex:column>
+                                        <apex:column headerValue="Industry">
+                                            <apex:outputField value="{!part.AccountTo.Industry}" />
+                                        </apex:column>
+                                        <apex:column headerValue="Est. Annual Volume" title="Annual volume of what Fonterra sell to them.">
+                                            <apex:outputField value="{!part.AccountTo.Estimated_Annual_Volume__c}"/>
+                                        </apex:column>
+                                        <apex:column headerValue="Action">
+                                            <apex:outputPanel rendered="{!part.toDelete}">
+                                                <span class="inlineEditModified"><em><apex:outputText value="Deleted" /></em></span>
+                                                <apex:commandLink styleClass="inlineEditUndoLink" title="Undo" style="display: inline;" action="{!undoRemoveAssociation}" rerender="associationPageBlock" >
+                                                    <img width="16px" height="16px" src="/s.gif" alt="Undo" class="inlineEditUndo"/>
+                                                    <apex:param name="rowIndex" value="{!part.rowIndex}" />
+                                                </apex:commandLink>
+                                            </apex:outputPanel>
+                                            <apex:commandLink value="-Remove" action="{!removeAssociation}" id="removeAssociationLink" rerender="associationPageBlock" rendered="{!NOT(part.toDelete)}">
+                                                <apex:param name="rowIndex" value="{!part.rowIndex}" />
+                                            </apex:commandLink>
+                                        </apex:column>
+                                    </apex:pageBlockTable>                          
+                                
+                                </apex:pageBlockSection>
+                            </apex:pageBlock>
+                        </td>
+                        <td>
+                            <apex:pageBlock id="associationSearchPageBlock" title="Add associations">
+                                <apex:pageBlockSection columns="1">
+                                    <apex:pageBlockSectionItem >
+                                        <apex:outputLabel value="Search for Account Name" for="accountNameSearch"/>
+                                        <apex:outputPanel >
+                                            <apex:inputText onkeypress="return doSearch(event);" id="accountNameSearch" value="{!strAcctNameSearch}"/>&nbsp;&nbsp;
+                                            <apex:commandButton action="{!runAccountSearch}" value="Search" rerender="acctsResultsTable" status="searchAcctStatus" title="Click to search for accounts."/>
+                                            <apex:actionStatus id="searchAcctStatus" >
+                                                <apex:facet name="start">
+                                                    <apex:outputPanel >
+                                                        <apex:image value="/img/loading.gif" />
+                                                        <apex:outputText value="  Searching..."/>
+                                                    </apex:outputPanel>
+                                                </apex:facet>
+                                            </apex:actionStatus>
+                                        </apex:outputPanel>
+                                    </apex:pageBlockSectionItem>
+                                    
+                                    <apex:pageBlockTable value="{!mapAcctsSearched}" var="acctSearched" id="acctsResultsTable">
+                                        <apex:column headerValue="Name">
+                                            <apex:outputField value="{!mapAcctsSearched[acctSearched].Name}"/>
+                                        </apex:column>
+                                        <apex:column headerValue="Country">
+                                            <apex:outputField value="{!mapAcctsSearched[acctSearched].Markets__c}" />  
+                                        </apex:column>
+                                        <apex:column headerValue="Industry">
+                                            <apex:outputField value="{!mapAcctsSearched[acctSearched].Industry}" />
+                                        </apex:column>
+                                        <apex:column headerValue="Est. Annual Volume" title="Annual volume of what Fonterra sell to them.">
+                                            <apex:outputField value="{!mapAcctsSearched[acctSearched].Estimated_Annual_Volume__c}"/>
+                                        </apex:column>
+                                        <apex:column headerValue="Action">
+                                            <apex:commandLink value="+Add" action="{!addAssociation}" id="addAssociationLink" rerender="associationPageBlock,associationSearchPageBlock">
+                                                <apex:param name="acctSelectedId" value="{!mapAcctsSearched[acctSearched].Id}" />
+                                            </apex:commandLink>
+                                        </apex:column>
+                                    </apex:pageBlockTable>
+                                    
+                                </apex:pageBlockSection>
+                            </apex:pageBlock>
+                        </td>
+                    </tr>
+                </table>
+                
+                
+            </apex:tab>
+            <!-- TAB: ACTION PLAN -->
+            <apex:tab label="Action Plan" name="5C" id="tabFiveC" onTabEnter="setCurrentTab('5C');" rendered="{!isResellerAP}">
+            
+                <apex:pageBlock >
+                    <apex:pageBlockButtons location="top">
+                        <apex:commandButton value="Create Opportunity" onclick="window.open('{!URLFOR($Action.Opportunity.New, null, ['accid'=account.Id])}', 'wOpportunity', 'width=screen.width, height=screen.height'); return false;"/>
+                        <apex:commandButton value="Create Initiative" onclick="window.open('{!URLFOR($Action.Key_Initiative__c.New, null, ['CF00N90000003u0SZ'=account.Name,'CF00N90000003u0SZ_lkid'=account.Id])}', 'wInitiative', 'width=screen.width, height=screen.height'); return false;" />    
+                    </apex:pageBlockButtons>
+                
+                    <apex:pageBlockSection title="Key Inititatives" collapsible="true" columns="1">
+                        <apex:pageBlockSectionItem >
+                            <apex:pageBlockTable value="{!listKeyInititatives}" var="cvm" rendered="{!NOT(ISBLANK(listKeyInititatives)) || listKeyInititatives.size > 0}">
+                                <apex:column >
+                                    <apex:facet name="header">Key Initiative Name</apex:facet>
+                                    <apex:outputLink value="/{!cvm.Id}">{!cvm.name}</apex:outputLink>                          
+                                </apex:column>                        
+                                <apex:column value="{!cvm.Status2__c}"/>
+                                <apex:column value="{!cvm.Status__c}"/>
+                                <apex:column value="{!cvm.LastModifiedDate}"/>
+                                <apex:column value="{!cvm.Target_Date__c}"/>
+                                <apex:column value="{!cvm.RecordTypeId}"/> 
+                            </apex:pageBlockTable>  
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputText rendered="{!ISBLANK(listKeyInititatives) || listKeyInititatives.size = 0}" value="There are no Key Initiative records to display." />
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                    <apex:repeat value="{!mapAuditWrapper}" var="wrapKey" id="auditWrapperRepeat">
+                        <apex:pageBlockSection title="Audit - {!mapAuditWrapper[wrapKey].audit.Warehouse_Office_Assessed__c} - {!mapAuditWrapper[wrapKey].auditConductedDate}" collapsible="true" columns="1">
+                            <apex:outputField value="{!mapAuditWrapper[wrapKey].audit.Total_Audit_Score__c}"/>
+                            <apex:outputField value="{!mapAuditWrapper[wrapKey].audit.General_Questions_Score__c}"/>
+                            <apex:outputField value="{!mapAuditWrapper[wrapKey].audit.Warehouse_Facilities_Score__c}"/>
+                            <apex:outputField value="{!mapAuditWrapper[wrapKey].audit.Stock_Management_System_Score__c}"/>
+                            <apex:pageBlockSectionItem />
+                            <apex:pageBlockSectionItem ><!-- dataStyle="text-align:center; width: 100%; max-width: %100;" -->
+                                <apex:outputlabel value="Risk Ratings" for="auditRiskRatings" />
+                                <apex:outputPanel >
+                                    <apex:outputText value="No audit notes to display." rendered="{!mapAuditWrapper[wrapKey].intAuditNoteMapSize == 0 }"/>  
+                                    <apex:pageBlockTable value="{!mapAuditWrapper[wrapKey].mapAuditNoteWrapper}" var="noteWrapper" id="auditRiskRatings" 
+                                        rendered="{!mapAuditWrapper[wrapKey].intAuditNoteMapSize > 0 }">
+                                        <apex:column headerValue="Question" >
+                                            <apex:outputLink value="/{!mapAuditWrapper[wrapKey].mapAuditNoteWrapper[noteWrapper].auditNote.Id}" target="_blank">
+                                                {!mapAuditWrapper[wrapKey].mapAuditNoteWrapper[noteWrapper].auditNote.Audit_Question__c}
+                                            </apex:outputLink>
+                                        </apex:column>
+                                        <apex:column headerValue="Description" value="{!mapAuditWrapper[wrapKey].mapAuditNoteWrapper[noteWrapper].auditNote.Description__c}"/>
+                                        <apex:column headerValue="Risk Rating" value="{!mapAuditWrapper[wrapKey].mapAuditNoteWrapper[noteWrapper].auditNote.Risk_Rating__c}" >
+                                            <apex:facet name="header">
+                                                <apex:outputText value="Risk Rating" title="Risk Ratings calculated by likelihood and consequence on an audit note."/>
+                                            </apex:facet>
+                                        </apex:column>
+                                        <apex:column >
+                                            <apex:facet name="header">
+                                                <apex:outputText value="Open Action Items" title="Completed actions are not displayed."/>
+                                            </apex:facet>
+                                            <apex:outputPanel >
+                                                <apex:outputText value="No open action items to display." rendered="{!mapAuditWrapper[wrapKey].mapAuditNoteWrapper[noteWrapper].intAuditTaskListSize == 0}"/>
+                                                <apex:pageBlockTable value="{!mapAuditWrapper[wrapKey].mapAuditNoteWrapper[noteWrapper].listAuditTasks}" var="noteTask" id="auditAuditTasks" 
+                                                    rendered="{!mapAuditWrapper[wrapKey].mapAuditNoteWrapper[noteWrapper].intAuditTaskListSize > 0}">
+                                                    <apex:column headerValue="Subject" value="{!noteTask.Subject}"/>
+                                                    <apex:column headerValue="Status" value="{!noteTask.Status}"/>
+                                                    <apex:column headerValue="Due Date" value="{!noteTask.ActivityDate}"/>
+                                                    <apex:column headerValue="Owner" value="{!noteTask.OwnerId }"/>
+                                                </apex:pageBlockTable>
+                                            </apex:outputPanel>                     
+                                        </apex:column>
+                                    </apex:pageBlockTable>
+                                </apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem /> 
+                        </apex:pageBlockSection>
+                    </apex:repeat>
+                </apex:pageBlock>
+            </apex:tab>
+            <!-- TAB: ENGAGEMENT PLAN -->
+            <apex:tab label="Engagement Plan" name="6" id="tabSix" onTabEnter="setCurrentTab('6');" rendered="{!NOT(isResellerAP)}">
+            <apex:outputPanel >                               
+                <apex:pageBlock >
+                    <apex:pageBlockButtons location="top">
+                        <apex:commandButton value="Create Opportunity" onclick="window.open('{!URLFOR($Action.Opportunity.New, null, ['accid'=account.Id])}', 'wOpportunity', 'width=screen.width, height=screen.height'); return false;"/>
+                            <apex:commandButton value="Create Initiative" onclick="window.open('{!URLFOR($Action.Key_Initiative__c.New, null, ['CF00N90000003u0SZ'=account.Name,'CF00N90000003u0SZ_lkid'=account.Id])}', 'wInitiative', 'width=screen.width, height=screen.height'); return false;" />      
+                    </apex:pageBlockButtons>            
+                     <!-- RELATED LIST: CUSTOMER TARGETS -->
+                     <apex:pageBlockSection title="Customer Targets" collapsible="true" columns="1">                              
+                         <apex:pageBlockTable value="{!listCustomerTargets}" var="cust" rendered="{!NOT(ISBLANK(listCustomerTargets)) || listCustomerTargets.size > 0}">
+                            <apex:column headerValue="Customer Target Name">
+                                <apex:facet name="header">Customer Target Name</apex:facet>
+                                     <apex:outputLink value="/{!cust.Id}">{!cust.Name}</apex:outputLink>                            
+                            </apex:column>                            
+                            <apex:column value="{!cust.Year__c}" />
+                            <apex:column value="{!cust.Status__c}" />
+                            <apex:column value="{!cust.Target_Visits_Total__c}" />
+                            <apex:column value="{!cust.Actuals_Total__c}" />
+                            <apex:column value="{!cust.Q1_on_target__c}" />
+                            <apex:column value="{!cust.Q2_on_target__c}" />
+                            <apex:column value="{!cust.Q3_on_target__c}" />
+                            <apex:column value="{!cust.Q4_on_target__c}" />                                                                                                 
+                        </apex:pageBlockTable>                       
+                            <apex:outputText rendered="{!ISBLANK(listCustomerTargets) || listCustomerTargets.size = 0}" value="There are no Customer Target records to display." />                         
+                    </apex:pageBlockSection>       
+                    <!-- SECTION: ENGAGEMENT PLAN -->
+                    <apex:pageBlockSection title="Engagement Plan" collapsible="true" columns="1" id="idEngagementPlanSection">                              
+                        <apex:outputpanel layout="none">
+                         <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list">
+                            <tr>
+                                <th class="headerRow" style="width:20%;">Customer Department</th>
+                                <th class="headerRow" style="width:29%;">Objective</th>
+                                <th class="headerRow" style="width:17%;">Responsibility</th>
+                                <th class="headerRow" style="width:28%;">Approach</th>
+                                <th class="headerRow" style="width:20%;">Action</th>
+                            </tr>
+                            <apex:repeat value="{!engagementPlanWrapper}" var="plan">
+                            <tr>
+                                <td width="20%" style="border-bottom:0px;"><apex:outputText value="{!plan.strDepartmentName}" /></td>
+                                <td colspan="4" width="90%" style="border-bottom:0px;">
+                                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <apex:repeat value="{!plan.listEPInnerWrapper}" var="inner"> 
+                                        <tr style="border-top:none;">
+                                            <td style="width:36%;border:0px;" class="formatEngagementTD">
+                                                <apex:inputField value="{!inner.engagementPlan.Objective__c}" styleClass="engagementFieldLine" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                                <apex:outputField value="{!inner.engagementPlan.Objective__c}" styleClass="engagementFieldLine" rendered="{!bHistoricalAccountPlan}"/>
+                                            </td>
+                                            <td style="width:21%;border:0px;" class="formatEngagementTD">
+                                                <apex:inputField id="responsiblityField" value="{!inner.engagementPlan.Responsibility__c}" rendered="{!NOT(bHistoricalAccountPlan)}" />
+                                                <apex:outputField value="{!inner.engagementPlan.Responsibility__c}" rendered="{!bHistoricalAccountPlan}" />
+                                            </td>
+                                            <td style="width:35%;border:0px;" class="formatEngagementTD">
+                                                <apex:inputField value="{!inner.engagementPlan.Approach__c}" styleClass="engagementFieldLine" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                                <apex:outputField value="{!inner.engagementPlan.Approach__c}" styleClass="engagementFieldLine" rendered="{!bHistoricalAccountPlan}"/>
+                                            </td>                                           
+                                             <td style="text-align:right;padding-right:2px;border:0px;" class="formatEngagementTD">
+                                                <apex:outputLink onclick="removeEngagementPlanRow({!inner.engagementPlan.Display_Order__c}); return false;" rendered="{!NOT(bHistoricalAccountPlan)}">
+                                                -Remove
+                                                </apex:outputLink>
+                                            </td>
+                                        </tr>
+                                        </apex:repeat>
+                                        <apex:outputpanel layout="none" rendered="{!NOT(bHistoricalAccountPlan)}" >
+                                            <tr>
+                                                <td colspan="4" style="text-align:right;border:0px;">
+                                                    <apex:commandLink value="+Add" action="{!addEPRow}" rerender="idEngagementPlanSection,engagementScript" status="idStatus" rendered="{!NOT(bHistoricalAccountPlan)}">
+                                                        <apex:param name="departmentStr" value="{!plan.strDepartmentName}" assignTo="{!departmentStr}"/>
+                                                    </apex:commandLink>
+                                                </td>
+                                            </tr>
+                                        </apex:outputpanel>
+                                    </table>
+                                </td>
+                            </tr>
+                            </apex:repeat>
+                         </table>
+                        </apex:outputpanel>
+                    </apex:pageBlockSection>                            
+                </apex:pageBlock>
+                </apex:outputPanel>                  
+            </apex:tab>       
+             <!-- TAB: COMPETITORS -->
+            <apex:tab label="Competitors" name="7" id="tabSeven" onTabEnter="setCurrentTab('7');" rendered="{!NOT(isResellerAP)}">
+            <apex:outputPanel >             
+                <apex:pageBlock >     
+                    <apex:pageBlockButtons location="top">
+                        <apex:commandButton value="Create Opportunity" onclick="window.open('{!URLFOR($Action.Opportunity.New, null, ['accid'=account.Id])}', 'wOpportunity', 'width=screen.width, height=screen.height'); return false;"/>
+                        <apex:commandButton value="Create Initiative" onclick="window.open('{!URLFOR($Action.Key_Initiative__c.New, null, ['CF00N90000003u0SZ'=account.Name,'CF00N90000003u0SZ_lkid'=account.Id])}', 'wInitiative', 'width=screen.width, height=screen.height'); return false;" />
+                       </apex:pageBlockButtons>                      
+                     <!-- RELATED LIST: COMPETITORS -->    
+                    <apex:pageBlockSection title="Competitors" collapsible="true" columns="1" rendered="{!listDisplayCompetitorASnapshot.size = 0}">
+                        <apex:pageBlockTable value="{!listDisplayCompetitorA}" var="comp" rendered="{!NOT(ISBLANK(listDisplayCompetitorA)) || listDisplayCompetitorA.size > 0}">
+                               <apex:column headerValue="Competitor Analysis Name">
+                                    <apex:outputLink value="/{!comp.Id}">
+                                        <apex:outputField value="{!comp.Name}" />
+                                    </apex:outputLink>
+                               </apex:column>
+                               <apex:column headerValue="Account Top 3 Competitors">
+                                <apex:outputText value="Fonterra" rendered="{!comp.Competitor__c == null}"/>
+                                <apex:outputField value="{!comp.Competitor__c}" rendered="{!comp.Competitor__c != null}"/>                            
+                               </apex:column>                                                                                               
+                               <apex:column headerValue="Total Share of Business">
+                                    <apex:outputField value="{!comp.Share_Percent__c}" />
+                               </apex:column>
+                               <apex:column value="{!comp.Commodity_Class__c}"/>
+                        </apex:pageBlockTable>                                                              
+                            <apex:outputText rendered="{!ISBLANK(listDisplayCompetitorA) || listDisplayCompetitorA.size = 0}" value="There are no Competitors records to display." />                             
+                    </apex:pageBlockSection>     
+                    <!-- RELATED LIST: COMPETITORS Snapshot -->                                                    
+                    <apex:pageBlockSection title="Competitors" collapsible="true" columns="1" rendered="{!listDisplayCompetitorASnapshot.size > 0}">
+                        <apex:pageBlockTable value="{!listDisplayCompetitorASnapshot}" var="comp" rendered="{!NOT(ISBLANK(listDisplayCompetitorASnapshot))}">
+                               <apex:column headerValue="Competitor Analysis Name">
+                                    <apex:outputLink value="/{!comp.Id}">
+                                        <apex:outputField value="{!comp.Name}" />
+                                    </apex:outputLink>
+                               </apex:column>
+                               <apex:column headerValue="Account Top 3 Competitors">
+                                <apex:outputText value="Fonterra" rendered="{!comp.Competitor__c == null}"/>
+                                <apex:outputField value="{!comp.Competitor__c}" rendered="{!comp.Competitor__c != null}"/>                            
+                               </apex:column>                                                                                               
+                               <apex:column headerValue="Total Share of Business">
+                                    <apex:outputField value="{!comp.Share_Percent__c}" />
+                               </apex:column>
+                               <apex:column value="{!comp.Commodity_Class__c}"/>
+                        </apex:pageBlockTable>                                                              
+                            <apex:outputText rendered="{!ISBLANK(listDisplayCompetitorASnapshot)}" value="There are no Competitors records to display." />                             
+                    </apex:pageBlockSection>                                                     
+
+
+                    <!-- RELATED LIST: COMPETITORS BY OPPORTUNITIES -->  
+                    <apex:pageBlockSection title="Competitors by Opportunities" collapsible="true" columns="1">
+                        <apex:pageBlockTable value="{!listCompetitorAnaOpp}" var="comp" rendered="{!NOT(ISBLANK(listCompetitorAnaOpp)) || listCompetitorAnaOpp.size > 0}">
+                            <apex:column value="{!comp.Opportunity__c}"/>                                   
+                            <apex:column headerValue="Commodity Class(es)" value="{!comp.Commodity_Class__c}"/>
+                            <apex:column headerValue="Competitor Display(s)" value="{!comp.Competitor_Display__c}"/>                                    
+                            <apex:column value="{!comp.Opportunity__r.Total_Quantity__c}"/>
+                            <apex:column value="{!comp.Opportunity__r.Total_PA_Volume__c}"/>
+                            <apex:column value="{!comp.Opportunity__r.Total_Estimated_PA__c}"/>
+                            <apex:column value="{!comp.Opportunity__r.CloseDate}"/>   
+                        </apex:pageBlockTable>                                                                              
+                            <apex:outputText rendered="{!ISBLANK(listCompetitorAnaOpp) || listCompetitorAnaOpp.size = 0}" value="There are no Competitors records to display." />                          
+                    </apex:pageBlockSection>    
+                    <!-- SECTION: INSIGHTS AND GUIDING QUESTIONS -->
+                    <apex:pageBlockSection title="Insights and Guiding Questions" collapsible="true"  columns="1">   
+                        <apex:pageblockSectionItem >
+                        <apex:outputpanel layout="none">
+                            <table style="width:100%; border:0; cellpadding:0; cellspacing:0;" class="list">
+                                <tr class="dataRow;">
+                                    <td style="width:50%">
+                                        <ul>
+                                            <li><apex:outputText value="{!$Label.RHS_Question_3}" /></li>
+                                            <li><apex:outputText value="{!$Label.RHS_Question_4}" /></li> 
+                                            <li><apex:outputText value="{!$Label.RHS_Question_1}" /></li> 
+                                            <!--li--><!--apex:outputText value="{!$Label.RHS_Question_2}" /--><!--/li--> 
+                                            <!--li--><!--apex:outputText value="{!$Label.RHS_Question_5}" /--><!--/li--> 
+                                        </ul> 
+                                    </td>
+                                    <td style="vertical-align:text-top">
+                                        <strong>Competitors Insights</strong>
+                                        <br />
+                                        <apex:outputField value="{!accountPlan.Competitors_Insights__c}" label="Competitor Insights">  
+                                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                        </apex:outputField>
+                                    </td>
+                                </tr>
+                            </table>
+                            </apex:outputpanel>
+                        </apex:pageblockSectionItem>
+                    </apex:pageBlockSection>     
+                    </apex:pageBlock>
+              </apex:outputPanel>
+            </apex:tab>
+            <!-- TAB: NEED VS CAPABILITY -->
+            <apex:tab label="Need vs. Capability" name="8" id="tabEight" onTabEnter="setCurrentTab('8');" rendered="{!NOT(isResellerAP)}">
+            <apex:outputPanel >              
+                <apex:pageBlock >
+                    <apex:pageBlockButtons location="top">
+                        <apex:commandButton value="Create Opportunity" onclick="window.open('{!URLFOR($Action.Opportunity.New, null, ['accid'=account.Id])}', 'wOpportunity', 'width=screen.width, height=screen.height'); return false;"/>
+                        <apex:commandButton value="Create Initiative" onclick="window.open('{!URLFOR($Action.Key_Initiative__c.New, null, ['CF00N90000003u0SZ'=account.Name,'CF00N90000003u0SZ_lkid'=account.Id])}', 'wInitiative', 'width=screen.width, height=screen.height'); return false;" /> 
+                    </apex:pageBlockButtons>    
+                    <!-- RELATED LIST: CUSTOMER NEEDS -->
+                    <apex:pageBlockSection title="Customer's Needs" columns="1" collapsible="false">                        
+                        <apex:pageBlockTable value="{!listAccountPlan}" var="need" rendered="{!NOT(ISBLANK(listAccountPlan)) || listAccountPlan.size > 0}">                                        
+                            <apex:column width="20%" headerValue="Customer Need 1" >
+                                <apex:outputField value="{!need.Customer_Need_1__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="2" >
+                                <apex:outputField value="{!need.Customer_Need_2__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="3" >
+                                <apex:outputField value="{!need.Customer_Need_3__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="4" >
+                                <apex:outputField value="{!need.Customer_Need_4__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="5"  >
+                                <apex:outputField value="{!need.Customer_Need_5__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>                                                                 
+                        </apex:pageBlockTable>             
+                          <apex:pageBlockTable value="{!accountPlan}" var="cap">
+                            <apex:column width="20%" headerValue="Detailed Needs 1" >
+                                <apex:outputField value="{!cap.Detailed_Needs_1__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="2" >
+                                <apex:outputField value="{!cap.Detailed_Needs_2__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="3" >
+                                <apex:outputField value="{!cap.Detailed_Needs_3__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="4" >
+                                <apex:outputField value="{!cap.Detailed_Needs_4__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="5" >
+                                <apex:outputField value="{!cap.Detailed_Needs_5__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>                                                               
+                        </apex:pageBlockTable>                            
+                    </apex:pageBlockSection>
+                    <!-- SECTION: POTIENTIAL OPPORTUNITY -->
+                    <apex:pageBlockSection title="Potiential Opportunities" columns="1" collapsible="true">
+                         <apex:pageBlockTable value="{!accountPlan}" var="cap">
+                            <apex:column width="20%" headerValue="Potiential Opportunity 1" >
+                                <apex:outputField value="{!cap.Potential_Opportunity_1__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="2" >
+                                <apex:outputField value="{!cap.Potential_Opportunity_2__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="3" >
+                                <apex:outputField value="{!cap.Potential_Opportunity_3__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="4" >
+                                <apex:outputField value="{!cap.Potential_Opportunity_4__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="5" >
+                                <apex:outputField value="{!cap.Potential_Opportunity_5__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>                                                                
+                        </apex:pageBlockTable>
+                    </apex:pageBlockSection> 
+                    <!-- SECTION: FONTERRA'S STRENGTH -->
+                    <apex:pageBlockSection title="Fonterra's Strengths" columns="1" collapsible="true">
+                        <apex:pageBlockTable value="{!accountPlan}" var="cap">
+                            <apex:column width="20%" headerValue="Fonterra's Strengths 1" >
+                                <apex:outputField value="{!cap.Fonterra_s_Strength_1__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="2"  >
+                                <apex:outputField value="{!cap.Fonterra_s_Strength_2__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="3" >
+                                <apex:outputField value="{!cap.Fonterra_s_Strength_3__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="4" >
+                                <apex:outputField value="{!cap.Fonterra_s_Strength_4__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column width="20%" headerValue="5" >
+                                <apex:outputField value="{!cap.Fonterra_s_Strength_5__c}" >
+                                    <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                </apex:outputField>
+                            </apex:column>                                                             
+                        </apex:pageBlockTable>
+                    </apex:pageBlockSection>     
+                </apex:pageBlock>
+            </apex:outputPanel>                  
+            </apex:tab>
+            <!-- TAB: SWOT -->
+            <apex:tab label="SWOT" name="9" id="tabNine" onTabEnter="setCurrentTab('9');">
+            <apex:outputPanel >          
+                <apex:pageBlock >
+                    <apex:pageBlockButtons location="top">
+                        <apex:commandButton value="Create Opportunity" onclick="window.open('{!URLFOR($Action.Opportunity.New, null, ['accid'=account.Id])}', 'wOpportunity', 'width=screen.width, height=screen.height'); return false;"/>
+                        <apex:commandButton value="Create Initiative" onclick="window.open('{!URLFOR($Action.Key_Initiative__c.New, null, ['CF00N90000003u0SZ'=account.Name,'CF00N90000003u0SZ_lkid'=account.Id])}', 'wInitiative', 'width=screen.width, height=screen.height'); return false;" />             
+                    </apex:pageBlockButtons>                 
+                    <!-- SECTION: CUSTOMER -->                             
+                    <apex:pageBlockSection title="Customer" columns="2" collapsible="true">
+                        <apex:outputField value="{!accountPlan.SWOTCustomer_Strengths__c}" >
+                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                        </apex:outputField>
+                        <apex:outputField value="{!accountPlan.SWOT_Customer_Weaknesses__c}" >
+                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                        </apex:outputField>
+                        <apex:outputField value="{!accountPlan.SWOT_Customer_Opportunities__c}" >
+                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                        </apex:outputField>
+                        <apex:outputField value="{!accountPlan.SWOT_Customer_Threats__c}" >
+                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                        </apex:outputField>
+                        <apex:outputField value="{!accountPlan.SWOTCust_Thingsto_develop_capitiliseon__c}" >
+                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                        </apex:outputField>
+                        <apex:outputField value="{!accountPlan.SWOTCust_Things_to_monitor_mitigate__c}" >                              
+                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                        </apex:outputField>
+                    </apex:pageBlockSection>
+                    <!-- SECTION: SWOT OF FONTERRA FROM CUSTOMER POINT OF VIEW -->
+                    <apex:pageBlockSection title="SWOT of Fonterra from Customer Point of View" columns="2" collapsible="true">
+                        <apex:outputField value="{!accountPlan.SWOTFonterra_Strengths__c}" >
+                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                        </apex:outputField>
+                        <apex:outputField value="{!accountPlan.SWOT_Fonterra_Weaknesses__c}" >
+                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                        </apex:outputField>
+                        <apex:outputField value="{!accountPlan.SWOT_Fonterra_Opportunities__c}" >
+                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                        </apex:outputField>
+                        <apex:outputField value="{!accountPlan.SWOT_Fonterra_Threats__c}" >
+                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                        </apex:outputField>
+                        <apex:outputField value="{!accountPlan.SWOTFont_Things_to_develop_capitilise_on__c}" >
+                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                        </apex:outputField>
+                        <apex:outputField value="{!accountPlan.SWOTFont_Things_to_monitor_mitigate__c}" >
+                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                        </apex:outputField>
+                    </apex:pageBlockSection>                                      
+                </apex:pageBlock>
+                </apex:outputPanel>               
+            </apex:tab>           
+            <!-- TAB: 5 YEAR STRATEGY -->
+            <apex:tab label="5yr Strategy" name="10" id="tabTen" onTabEnter="setCurrentTab('10');"> 
+                <apex:outputPanel >              
+                    <apex:pageBlock >
+                        <apex:pageBlockButtons location="top">
+                            <apex:commandButton value="Create Opportunity" onclick="window.open('{!URLFOR($Action.Opportunity.New, null, ['accid'=account.Id])}', 'wOpportunity', 'width=screen.width, height=screen.height'); return false;"/>
+                            <apex:commandButton value="Create Initiative" onclick="window.open('{!URLFOR($Action.Key_Initiative__c.New, null, ['CF00N90000003u0SZ'=account.Name,'CF00N90000003u0SZ_lkid'=account.Id])}', 'wInitiative', 'width=screen.width, height=screen.height'); return false;" />                          
+                            <apex:commandButton value="Preview/Download Slide" id="previewSlide" action="{!save}" status="idStatus" oncomplete="fiveYearConga(); return false;" rendered="{!IF(accountplan.id != null, true, false)}">
+                                <apex:param value="true" name="loadConga" assignTo="{!loadConga}" />
+                            </apex:commandButton>
+                        </apex:pageBlockButtons>                       
+                        <!-- SECTION: CUSTOMER POSITIONING STATEMENT -->                     
+                        <apex:pageBlockSection title="Customer Positioning Statement" collapsible="true">
+                            <apex:outputField value="{!accountPlan.Customer_Postioning_Statement__c}" >
+                                <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                            </apex:outputField>
+                        </apex:pageBlockSection>
+                        <!-- SECTION: HORIZON REVENUE GOAL -->    
+                        <apex:pageBlockSection title="Horizon Revenue Goal" columns="1" collapsible="true">
+                            <apex:pageBlockTable value="{!accountPlan}" var="item" columnsWidth="33%,33%,33%" >
+                                <apex:column headerValue="Total PA Goal 0-1 yr">
+                                    <apex:outputField value="{!item.Total_PA_Goal_0_1_yr__c}" >
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>
+                                </apex:column>
+                                <apex:column headerValue="Total PA Goal 1-2 yrs">
+                                    <apex:outputField value="{!item.Total_PA_Goal_1_2_yrs__c}" >
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>
+                                </apex:column>
+                                <apex:column headerValue="Total PA Goal 3-5 yrs">
+                                    <apex:outputField value="{!item.Total_PA_Goal_3_5_yrs__c}" >
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>
+                                </apex:column>
+                            </apex:pageBlockTable>
+                        </apex:pageBlockSection>   
+                        <!-- SECTION: HORIZON STATEGIC GOAL -->                         
+                        <apex:pageBlockSection title="Horizon Strategic Goal" columns="1" collapsible="true">
+                            <apex:pageBlockTable value="{!accountPlan}" var="item" columnsWidth="33%,33%,33%">
+                                <apex:column headerValue="Strategic Goal 0-1 yr">
+                                    <apex:outputField value="{!item.Strategic_Goal_0_1_yr__c}" >
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>
+                                </apex:column>
+                                <apex:column headerValue="Strategic Goal 1-2 yrs">
+                                    <apex:outputField value="{!item.Strategic_Goal_1_2_yrs__c}" >
+                                            <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>
+                                </apex:column>
+                                <apex:column headerValue="Strategic Goal 3-5 yr">
+                                    <apex:outputField value="{!item.Strategic_Goal_3_5_yrs__c}" >
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>
+                                </apex:column> 
+                            </apex:pageBlockTable>
+                        </apex:pageBlockSection>    
+                        <!-- SECTION: HORIZON THEME -->                         
+                        <apex:pageBlockSection title="Horizon Theme" columns="1" collapsible="true">
+                            <apex:pageBlockTable value="{!accountPlan}" var="item" columnsWidth="33%,33%,33%">
+                                <apex:column headerValue="Theme 0-1 yr">
+                                    <apex:outputField value="{!item.Theme_0_1_yr__c}" >
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                </apex:column>
+                                <apex:column headerValue="Theme 1-2 yrs">
+                                    <apex:outputField value="{!item.Theme_1_2_yrs__c}" >
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField> 
+                                </apex:column>                          
+                                <apex:column headerValue="Theme 3-5 yrs">
+                                    <apex:outputField value="{!item.Theme_3_5_yrs__c}" >
+                                        <apex:inlineEditSupport event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>
+                                </apex:column> 
+                            </apex:pageBlockTable>
+                        </apex:pageBlockSection>                                                                                                 
+                    </apex:pageBlock>
+                </apex:outputPanel>          
+            </apex:tab>
+            <!-- TAB: ASSESSMENT -->                                            
+            <apex:tab label="Assessment" name="11" id="tabTwelve" onTabEnter="setCurrentTab('11');">
+                <apex:pageBlock >
+                    <apex:pageBlockButtons location="top">  
+                     </apex:pageBlockButtons>
+                     <!-- SECTION: ASSESSMENT -->
+                     <apex:pageBlockSection title="Assessment" columns="1" collapsible="true">
+                        <!-- PANEL: NON-RESELLER ASSESSMENT -->
+                        <apex:outputPanel rendered="{!NOT(isResellerAP)}">
+                             <apex:pageBlockTable value="{!assessmentWrapperList}" var="item" >
+                                <apex:column headerValue="Account Elements" width="15%">
+                                    <apex:outputText value="{!item.tempAP.Assessment_Row_Title__c}" />                                                                                                         
+                                </apex:column> 
+                                <apex:column headerValue="Rating Information" width="55%">
+                                    <apex:outputText value="{!item.tempAP.Assessment_Rating_Infomation_Display__c}" escape="false"/>
+                                </apex:column>
+                                <apex:column headerValue="Rating" width="5%">
+                                    <apex:outputField value="{!item.tempAP.Customer_Overview_Rating__c}" rendered="{!IF(item.fieldName='Customer_Overview__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                         
+                                    <apex:outputField value="{!item.tempAP.Financial_Metrics_Rating__c}" rendered="{!IF(item.fieldName='Financial_Metrics__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                         
+                                    <apex:outputField value="{!item.tempAP.Operational_Metrics_Rating__c}" rendered="{!IF(item.fieldName='Operational_Metrics__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                         
+                                    <apex:outputField value="{!item.tempAP.Growth_Metrics_Rating__c}" rendered="{!IF(item.fieldName='Growth_Metrics__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                         
+                                    <apex:outputField value="{!item.tempAP.CVM_Metrics_Rating__c}" rendered="{!IF(item.fieldName='CVM_Metrics__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>    
+                                    <apex:outputField value="{!item.tempAP.Engagement_Plan_Rating__c}" rendered="{!IF(item.fieldName='Engagement_Plan__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>   
+                                    <apex:outputField value="{!item.tempAP.Competitors_Rating__c}" rendered="{!IF(item.fieldName='Competitors__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                                                                                      
+                                    <apex:outputField value="{!item.tempAP.Needs_vs_Capability_Rating__c}" rendered="{!IF(item.fieldName='Needs_vs_Capability__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                                                                                      
+                                    <apex:outputField value="{!item.tempAP.SWOT_Rating__c}" rendered="{!IF(item.fieldName='SWOT__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>   
+                                    <apex:outputField value="{!item.tempAP.X5_yr_Strategy_Rating__c}" rendered="{!IF(item.fieldName='X5yr_Strategy__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>   
+                                    <apex:outputField value="{!item.tempAP.Progress_against_plan_Rating__c}" rendered="{!IF(item.fieldName='Progress_against_plan__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>   
+                                </apex:column>
+                                <apex:column headerValue="Weight" width="5%" >
+                                    <apex:outputField value="{!item.tempAP.Customer_Overview_Weight__c}" rendered="{!IF(item.fieldName='Customer_Overview__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Financial_Metrics_Weight__c}" rendered="{!IF(item.fieldName='Financial_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Operational_Metrics_Weight__c}" rendered="{!IF(item.fieldName='Operational_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Growth_Metrics_Weight__c}" rendered="{!IF(item.fieldName='Growth_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.CVM_Metrics_Weight__c}" rendered="{!IF(item.fieldName='CVM_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Engagement_Plan_Weight__c}" rendered="{!IF(item.fieldName='Engagement_Plan__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Competitors_Weight__c}" rendered="{!IF(item.fieldName='Competitors__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Needs_vs_Capability_Weight__c}" rendered="{!IF(item.fieldName='Needs_vs_Capability__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.SWOT_Weight__c}" rendered="{!IF(item.fieldName='SWOT__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.X5_yr_Strategy_Weight__c}" rendered="{!IF(item.fieldName='X5yr_Strategy__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Progress_against_plan_weight__c}" rendered="{!IF(item.fieldName='Progress_against_plan__c', true, false)}" />                                  
+                                </apex:column>
+                                <apex:column headerValue="Score" width="5%">
+                                    <apex:outputField value="{!item.tempAP.Customer_Overview_Score__c}" rendered="{!IF(item.fieldName='Customer_Overview__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Financial_Metrics_Score__c}" rendered="{!IF(item.fieldName='Financial_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Operational_Metrics_Score__c}" rendered="{!IF(item.fieldName='Operational_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Growth_Metrics_Score__c}" rendered="{!IF(item.fieldName='Growth_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.CVM_Metrics_Score__c}" rendered="{!IF(item.fieldName='CVM_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Engagement_Plan_Score__c}" rendered="{!IF(item.fieldName='Engagement_Plan__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Competitors_Score__c}" rendered="{!IF(item.fieldName='Competitors__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Needs_vs_Capability_Score__c}" rendered="{!IF(item.fieldName='Needs_vs_Capability__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.SWOT_Score__c}" rendered="{!IF(item.fieldName='SWOT__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.X5_yr_Strategy_Score__c}" rendered="{!IF(item.fieldName='X5yr_Strategy__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Progress_against_plan_Score__c}" rendered="{!IF(item.fieldName='Progress_against_plan__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Account_Plan_Score_Display__c}" rendered="{!item.tempAp.Account_Plan_Score_Display__c != 0}" />
+                                </apex:column>                          
+                                <apex:column headerValue="Rationale/Explanation" width="15%" >
+                                    <apex:outputField value="{!item.tempAP.Customer_Overview_Rational_Explanation__c}" rendered="{!IF(item.fieldName='Customer_Overview__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Financial_Metrics_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='Financial_Metrics__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Operation_Metrics_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='Operational_Metrics__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Growth_Metrics_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='Growth_Metrics__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.CVM_Metrics_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='CVM_Metrics__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Engagement_Plan_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='Engagement_Plan__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Competitors_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='Competitors__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Needs_vs_CapabilityRationale_Explanatio__c}" rendered="{!IF(item.fieldName='Needs_vs_Capability__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.SWOT_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='SWOT__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.X5yr_Strategy_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='X5yr_Strategy__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Progress_against_plan_Rationale__c}" rendered="{!IF(item.fieldName='Progress_against_plan__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Account_Plan_Score_Assessment_Display__c}"  rendered="{!IF(item.fieldName='Account_Plan_Score_label__c', true, false)}"  >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                                                                                                                                  
+                                </apex:column>                          
+                            </apex:pageBlockTable>
+                        </apex:outputPanel>
+                        
+                        <!-- PANEL: RESELLER ASSESSMENT -->
+                        <apex:outputPanel rendered="{!isResellerAP}">
+                            <apex:pageBlockTable value="{!assessmentWrapperList}" var="item" >
+                                <apex:column headerValue="Account Elements" width="15%">
+                                    <apex:outputText value="{!item.tempAP.Assessment_Row_Title__c}" />                                                                                                         
+                                </apex:column> 
+                                <apex:column headerValue="Rating Information" width="55%">
+                                    <apex:outputText value="{!item.tempAP.Assessment_Rating_Infomation_Display__c}" escape="false"/>
+                                </apex:column>
+                                <apex:column headerValue="Rating" width="5%">
+                                    <apex:outputField value="{!item.tempAP.Customer_Overview_Rating__c}" rendered="{!IF(item.fieldName='Customer_Overview__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                         
+                                    <apex:outputField value="{!item.tempAP.Financial_Metrics_Rating__c}" rendered="{!IF(item.fieldName='Financial_Metrics__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                         
+                                    <apex:outputField value="{!item.tempAP.Operational_Metrics_Rating__c}" rendered="{!IF(item.fieldName='Operational_Metrics__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                         
+                                    <apex:outputField value="{!item.tempAP.Reseller_Growth_Rating__c}" rendered="{!IF(item.fieldName='Reseller_Growth__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                         
+                                    <apex:outputField value="{!item.tempAP.CVM_Metrics_Rating__c}" rendered="{!IF(item.fieldName='CVM_Metrics__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>
+                                    <apex:outputField value="{!item.tempAP.Associated_Customers_Rating__c}" rendered="{!IF(item.fieldName='Associated_Customers__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>  
+                                    <apex:outputField value="{!item.tempAP.Action_Plan_Rating__c}" rendered="{!IF(item.fieldName='Action_Plan__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>      
+                                    <apex:outputField value="{!item.tempAP.SWOT_Rating__c}" rendered="{!IF(item.fieldName='SWOT__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>   
+                                    <apex:outputField value="{!item.tempAP.X5_yr_Strategy_Rating__c}" rendered="{!IF(item.fieldName='X5yr_Strategy__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>   
+                                    <apex:outputField value="{!item.tempAP.Progress_against_plan_Rating__c}" rendered="{!IF(item.fieldName='Progress_against_plan__c', true, false)}">
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>   
+                                </apex:column>
+                                <apex:column headerValue="Weight" width="5%" >
+                                    <apex:outputField value="{!item.tempAP.Customer_Overview_Weight__c}" rendered="{!IF(item.fieldName='Customer_Overview__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Financial_Metrics_Weight__c}" rendered="{!IF(item.fieldName='Financial_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Operational_Metrics_Weight__c}" rendered="{!IF(item.fieldName='Operational_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Reseller_Growth_Weight__c}" rendered="{!IF(item.fieldName='Reseller_Growth__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.CVM_Metrics_Weight__c}" rendered="{!IF(item.fieldName='CVM_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Associated_Customers_Weight__c}" rendered="{!IF(item.fieldName='Associated_Customers__c', true, false)}" />
+                                    <apex:outputField value="{!item.tempAP.Action_Plan_Weight__c}" rendered="{!IF(item.fieldName='Action_Plan__c', true, false)}" />
+                                    
+                                    <apex:outputField value="{!item.tempAP.SWOT_Weight__c}" rendered="{!IF(item.fieldName='SWOT__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.X5_yr_Strategy_Weight__c}" rendered="{!IF(item.fieldName='X5yr_Strategy__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Progress_against_plan_weight__c}" rendered="{!IF(item.fieldName='Progress_against_plan__c', true, false)}" />                                  
+                                </apex:column>
+                                <apex:column headerValue="Score" width="5%">
+                                    <apex:outputField value="{!item.tempAP.Customer_Overview_Score__c}" rendered="{!IF(item.fieldName='Customer_Overview__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Financial_Metrics_Score__c}" rendered="{!IF(item.fieldName='Financial_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Operational_Metrics_Score__c}" rendered="{!IF(item.fieldName='Operational_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Reseller_Growth_Score__c}" rendered="{!IF(item.fieldName='Reseller_Growth__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.CVM_Metrics_Score__c}" rendered="{!IF(item.fieldName='CVM_Metrics__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Associated_Customers_Score__c}" rendered="{!IF(item.fieldName='Associated_Customers__c', true, false)}" />
+                                    <apex:outputField value="{!item.tempAP.Action_Plan_Score__c}" rendered="{!IF(item.fieldName='Action_Plan__c', true, false)}" />
+                                    
+                                    <apex:outputField value="{!item.tempAP.SWOT_Score__c}" rendered="{!IF(item.fieldName='SWOT__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.X5_yr_Strategy_Score__c}" rendered="{!IF(item.fieldName='X5yr_Strategy__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Progress_against_plan_Score__c}" rendered="{!IF(item.fieldName='Progress_against_plan__c', true, false)}" /> 
+                                    <apex:outputField value="{!item.tempAP.Account_Plan_Score_Display__c}" rendered="{!item.tempAp.Account_Plan_Score_Display__c != 0}" />
+                                </apex:column>                          
+                                <apex:column headerValue="Rationale/Explanation" width="15%" >
+                                    <apex:outputField value="{!item.tempAP.Customer_Overview_Rational_Explanation__c}" rendered="{!IF(item.fieldName='Customer_Overview__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Financial_Metrics_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='Financial_Metrics__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Operation_Metrics_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='Operational_Metrics__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Reseller_Growth_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='Reseller_Growth__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.CVM_Metrics_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='CVM_Metrics__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>     
+                                     <apex:outputField value="{!item.tempAP.Associated_Cust_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='Associated_Customers__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField> 
+                                     <apex:outputField value="{!item.tempAP.Action_Plan_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='Action_Plan__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                      
+                                    
+                                    <apex:outputField value="{!item.tempAP.SWOT_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='SWOT__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.X5yr_Strategy_Rationale_Explanation__c}" rendered="{!IF(item.fieldName='X5yr_Strategy__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Progress_against_plan_Rationale__c}" rendered="{!IF(item.fieldName='Progress_against_plan__c', true, false)}" >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                             
+                                    <apex:outputField value="{!item.tempAP.Account_Plan_Score_Assessment_Display__c}"  rendered="{!IF(item.fieldName='Account_Plan_Score_label__c', true, false)}"  >
+                                        <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick" rendered="{!NOT(bHistoricalAccountPlan)}"/>
+                                    </apex:outputField>                                                                                                                                                  
+                                </apex:column>                          
+                            </apex:pageBlockTable>
+                        </apex:outputPanel>
+                         <apex:outputText rendered="{!accountPlanAssessment.size = 0}" value="There is no account link to this plan." />
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:tab>              
+        </apex:tabPanel> 
+    </apex:form>
+    <apex:outputPanel id="relatedLists">
+        <apex:relatedList subject="{!account}" list="Categories__r" rendered="{!IF((tabInFocus = '1' || tabInFocus = null) && NOT(isResellerAP), true, false)}">
+            <apex:facet name="header">
+                <table border="0" cellpadding="0" cellspacing="0">
+                <tbody>
+                    <tr>
+                        <td class="pbTitle">
+                            <h3>Categories</h3>
+                        </td>
+                        <td class="pbButton">
+                            <input value="New Category" class="btn" name="newCategory" 
+                            onclick="navigateToUrl('/a1d/e?CF00NO0000001980Z={!account.Name}&CF00NO0000001980Z_lkid={!account.Id}&retURL=%2Fapex%2FAccountPlan%3FaccountId={!account.Id}%26{!IF($CurrentPage.parameters.id != null, ('%26id=' + $CurrentPage.parameters.id), '')}%26{!IF($CurrentPage.parameters.retURL!=null, ('%26retURL=' + $CurrentPage.parameters.retURL), '')}&saveURL=%2Fapex%2FAccountPlan%3FaccountId={!account.Id}%26{!IF($CurrentPage.parameters.id != null, ('%26id=' + $CurrentPage.parameters.id), '')}%26{!IF($CurrentPage.parameters.retURL!=null, ('%26retURL=' + $CurrentPage.parameters.retURL), '')}',null,'NewCategory');" title="New Category" type="button" />&nbsp;
+                        </td>
+                        <td class="pbHelp">&nbsp;</td>
+                    </tr>
+                </tbody>
+                </table>
+            </apex:facet> 
+        </apex:relatedList>
+        <apex:relatedList list="CombinedAttachments" rendered="{!IF(tabInFocus = '1' || tabInFocus = null, true, false)}"/>
+        <apex:relatedList list="ProcessSteps" rendered="{!IF(tabInFocus = '1' || tabInFocus = null, true, false)}" />
+    </apex:outputPanel>  
+    <apex:outputpanel id="engagementScript">
+        <script type="text/javascript">
+            var selectTags = document.getElementsByTagName("select");
+            for(var i=0; i<selectTags.length;i++) {
+                if(selectTags[i].id.indexOf("responsiblityField_mlktp") != -1) {
+                    selectTags[i].style.display="none";
+                }
+            }
+        </script>     
+    </apex:outputpanel>          
+</apex:page>

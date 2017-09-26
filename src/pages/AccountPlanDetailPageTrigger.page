@@ -1,0 +1,23 @@
+<apex:page standardController="Account_Plan__c" extensions="AccountPlanDetailPageTriggerCtlr" showheader="false" sidebar="false" standardStylesheets="false">
+<!-- 
+<iframe id="sessionFrame" src="{!sessionFrameSrc}" style="height: 0px; width: 0px;"/>
+
+<script type="text/javascript">
+	document.getElementById("sessionFrame").onload = function() {generateFinancialPerformanceCharts();};
+</script>
+
+<apex:form >
+	<apex:actionFunction action="{!generateFinancialPerformanceCharts}" name="generateFinancialPerformanceCharts"/>
+	<apex:outputPanel id="dummy"/>
+</apex:form>
+ -->
+<script type="text/javascript">
+	if (location.href.indexOf("lkid=") > -1) {
+		accountId = (location.href.split("lkid=")[1]).split("&")[0];
+		AccountPlanDetailPageTriggerCtlr.createAccountPlan(accountId, function(result, event){location.href = result});
+	} else {
+		alert("To create a new Account Plan, please go to an existing Account and use the [New Account Plan] button.");
+		location.href = "/001/o";
+	}
+</script>
+</apex:page>

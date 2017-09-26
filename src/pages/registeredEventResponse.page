@@ -1,0 +1,186 @@
+<apex:page standardcontroller="CampaignMember" extensions="CampaignMemberExt" tabStyle="CampaignMember" action="{!updateMember}" showHeader="false" sidebar="false">
+    <style type="text/css">        /* Color for the title bar */
+	        .bPageBlock .pbTitle
+	        {
+	            background-color:#FFFFFF;!important
+	            width: 50%;
+	        }
+	        .bPageBlock .pbHeader
+	        {
+	            background-color:#FFFFFF;!important
+	        }
+	        .bPageBlock .pbBody
+	        {
+	            background-color:#FFFFFF;!important
+	        }
+	        .bPageBlock .pbButton
+	        {           
+	            background-color:#FFFFFF;!important
+	        }
+	        .bPageBlock .pbSubsection
+	        {           
+	            background-color:#FFFFFF;!important
+	        }
+	        .bPageBlock .pbBottomButtons
+	        {           
+	            background-color:#FFFFFF;!important
+	        } 
+	        .bPageBlock .brandSecondaryBrd .apexDefaultPageBlock .secondaryPalette
+	        {           
+	            background-color:#FFFFFF;!important
+	        }   
+	        .brandSecondaryBrd 
+	        {           
+	            background-color:#FFFFFF;!important
+	        } 
+	        .apexDefaultPageBlock
+	        {           
+	            background-color:#FFFFFF;!important
+	        } 
+	        .body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock 
+	        {	                 
+	            background-color:#FFFFFF;!important
+	            border-top: 4px solid green;!important
+	        } 
+	        .body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock 
+	        {
+	        	border-top-color: #FFFFFF;
+	        	border-bottom-color: #FFFFFF;
+	        	border-left-color: #FFFFFF;
+	        	border-right-color: #FFFFFF;
+	        }
+	        .bPageBlock .detailList .labelCol 
+	        {
+    			width: 50%;
+			}
+			.bPageBlock .pbTitle 
+			{
+				width: 50%;
+			}
+			body .bPageBlock .detailList tr td, body .bPageBlock .detailList tr th, body table.list tr td, body table.list tr th, body .hoverDetail .bPageBlock .detailList tr td, body .hoverDetail .bPageBlock .detailList tr th 
+			{
+				border-color: #FFFFFF;
+			}
+			.bPageBlock .pbHeader table, .bPageBlock .pbBottomButtons table {
+				width: 70%;
+			}
+			.bEditBlock .pbHeader>table, .apexp .bPageBlock.apexDefaultPageBlock .pbHeader>table, #ep.bLayoutBlock .pbHeader>table {
+				border-bottom: 1px solid #FFFFFF;
+			}
+			body .bEditBlock .pbBottomButtons, body .apexp .bPageBlock.apexDefaultPageBlock .pbBottomButtons {
+				border-top: 1px solid #FFFFFF;
+			}
+			element.style {
+				border: 1px solid #FFFFFF;
+			}
+	</style>
+	<head>
+		<title>{!inviteSubject}</title>
+	</head>
+	<center>
+	    <table width="800" height="250" cellspacing="0" cellpadding="0" id="topTable" style="border:1px solid #ECE9D8">
+	        <tbody>
+	        <tr valign="top">
+	                <td style=" vertical-align:top; height:100; text-align:left; background-color:#FFFFFF; bLabel:header; bEditID:r1st1;">	                    
+	                    <img src="servlet/servlet.ImageServer?id=01590000004L5Pr&oid=00D90000000dNE7" height = "200" width = "200" />
+	                    <img src="servlet/servlet.ImageServer?id=01590000004L5Q1&oid=00D90000000dNE7" allign="right" />
+	               <!-- </td>
+	               <td style=" vertical-align:top; height:100; text-align:right; background-color:#FFFFFF; bLabel:header; bEditID:r1st1;">  
+	                    <img src="servlet/servlet.ImageServer?id=015O0000000Lq2e&oid=00DO0000000VdCV" height = "200" width = "200" />
+	                    <img src="servlet/servlet.ImageServer?id=015O0000000Lq25&oid=00DO0000000VdCV" allign="right" />-->
+	                </td>
+	            </tr>
+	            <tr valign="top">
+	                <td align="left" height="200" style=" color:#000000; font-size:12pt; background-color:#FFFFFF; font-family:arial; bLabel:main; bEditID:r3st1;" styleinsert="1">
+	                    <table  width="800" height="200" cellspacing="5" cellpadding="5" border="0">
+	                        <tbody>
+	                            <tr valign="middle" height="200">
+	                                <td align="left" locked="0" aeditid="c1r1" teditid="c1r1" style="text-align:center; color:#000000; font-size:12pt; background-color:#FFFFFF; font-family:arial; bLabel:main; bEditID:r3st1;">
+	                                   <apex:form id="changeStatusForm" title="Registration Page" rendered="{!accepted}">                                   
+									        <apex:outputPanel id="registrationPage" >
+									        <apex:pageBlock rendered="{!NOT(isRegistered)}">
+									        	<apex:pageMessages />
+									        	<p><b>Please fill in the below details to register:  </b></p><br/><br/>
+									        	<apex:pageBlockSection title="" columns="1" collapsible="false" showHeader="false">
+									            	<apex:pageblocksectionitem > 
+									            		<apex:outputlabel value="First Name*"/> 
+									            		<apex:inputText value="{!contactFirstName}" />
+									            	</apex:pageblocksectionitem>
+									            	<apex:pageblocksectionitem >
+									            		<apex:outputlabel value="Last Name*"/>
+									            		<apex:inputText value="{!contactLastName}" />
+									            	</apex:pageblocksectionitem>
+									            	<apex:pageblocksectionitem >
+										            	<apex:outputlabel value="Phone Number*"/>
+										            	<apex:inputText value="{!contactPhoneNumber}" />
+									            	</apex:pageblocksectionitem>
+									            	<apex:pageblocksectionitem >
+										            	<apex:outputlabel value="Email*"/>
+										            	<apex:inputText value="{!contactEmail}" />
+									            	</apex:pageblocksectionitem>
+									            	<apex:pageblocksectionitem >
+									            		<apex:outputlabel value="Emergency Contact Name*"/>
+									            		<apex:inputText value="{!emergencyContactName}" />
+									            	</apex:pageblocksectionitem>
+									            	<apex:pageblocksectionitem >
+									            		<apex:outputlabel value="Emergency Contact Phone Number*"/>
+									            		<apex:inputText value="{!emergencyContactPhoneNumber}" />
+									            	</apex:pageblocksectionitem>
+									            	<apex:pageblocksectionitem >
+									            		<apex:outputlabel value="Dietary Requirements (Please click on ctrl and select multiple items)*"/>
+									            		<apex:selectList id="countries" multiselect="true" value="{!contactDietaryRequirements}">
+															<apex:selectOptions value="{!dietaryRequirements}"/>
+														</apex:selectList>
+													</apex:pageblocksectionitem>
+									            	<apex:pageblocksectionitem >
+									            		<apex:outputlabel value="Other Dietary Requirements"/>
+									            		<apex:inputTextArea value="{!contactDietaryRequirementsAddDetails}"/>
+									            	</apex:pageblocksectionitem>								            	
+	 											</apex:pageBlockSection> 	
+											            <apex:commandButton value="Submit" action="{!save}" reRender="registrationConfirmation,registrationPage"/>
+											       
+									        </apex:pageBlock>
+									        </apex:outputPanel>
+									    </apex:form>
+									    <apex:outputPanel id="registrationConfirmation">
+	                                    <apex:outputText rendered="{!isRegistered}">
+	                                    Thank you for registering for the                                  
+	                                    one Sales Conference.  We are really excited to have the whole world together in one place at one time.
+										Be sure to look out for updates coming your way.
+	                                    </apex:outputText>
+	                                    </apex:outputPanel>
+	                                    <apex:outputText rendered="{!declined}">
+	                                    We are sorry you are unable to attend this event. We hope to see you at our future events.
+	                                    </apex:outputText>
+	                                    <apex:outputText rendered="{!error}">
+	                                    We are sorry, an error has occured.
+	                                    </apex:outputText>
+	                                    <apex:outputText rendered="{!unsubscribe}">
+	                                    Thank you. We have received your request to unsubscribe and will remove this email address from future invites.  
+	                                    </apex:outputText>
+	                                    <apex:outputText rendered="{!unsubscribeAll}">
+	                                    Thank you. We have received your request to unsubscribe and will remove this email address from future promotional activity. This may take up to 1 day to complete so if you receive any emails in the interim, we apologise.  
+	                                    </apex:outputText>
+	                                </td>
+	                            </tr>
+	                        </tbody>
+	                    </table>
+	                </td>
+	            </tr>
+	            <tr valign="top">
+	                <td style=" height:0; background-color:#FFFFFF; bLabel:accent2; bEditID:r4st1;"></td>
+	            </tr>
+	            <tr valign="top">
+	                <td style=" vertical-align:top; height:0; text-align:left; background-color:#FFFFFF; bLabel:footer; bEditID:r5st1;"></td>
+	            </tr>
+	            <tr valign="top">
+	                <td style=" height:0; background-color:#FFFFFF; bLabel:accent3; bEditID:r6st1;"></td>
+	             </tr> <!-- <tr valign="bottom">
+	                <td style=" vertical-align:top; height:100; text-align:right; background-color:#FFFFFF; bLabel:header; bEditID:r1st1;">
+	                    <img border="0" src="servlet/servlet.ImageServer?id=015O0000000Lq25&oid=00DO0000000VdCV" beditid="r1sp1" blabel="headerImage" id="r1sp1"/>
+	                </td>
+	            </tr> -->
+	        </tbody>
+	    </table>
+	</center>
+</apex:page>

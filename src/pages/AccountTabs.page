@@ -1,0 +1,14 @@
+<apex:page standardController="Account_Plan__c">
+<apex:tabPanel switchType="client">
+    <apex:tab label="Opportunities">
+		<apex:relatedList list="Opportunities" title="" subject="{!Account_Plan__c.Account__c}">
+			<apex:facet name="header">&nbsp;</apex:facet>
+		</apex:relatedList>        
+    </apex:tab>
+    <apex:tab label="Strategic Initiatives">
+		<apex:relatedList list="Strategic_Initiatives__r" title="" subject="{!Account_Plan__c.Account__c}">
+			<apex:facet name="header">&nbsp; </apex:facet>
+		</apex:relatedList>
+    </apex:tab>
+</apex:tabPanel>
+</apex:page>

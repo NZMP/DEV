@@ -1,0 +1,68 @@
+<apex:page showHeader="false" sidebar="false">
+    <script type="text/javascript">
+        function redirect(){
+            var url = '/{!$CurrentPage.parameters.reportId}';
+            window.parent.location = url;
+        }   
+    </script>
+    <style>
+        .hideLoading {
+            display: none;
+        }
+        .loadingPanel {
+            background: url('/projRes/analytics-platform/img/spinner_triangle.gif') no-repeat scroll 1px -1px transparent;
+            width: 34px;
+            height: 34px;
+            position: relative;
+            margin-left: auto;
+        }        
+        .loadingMsg {
+            line-height: 1;
+            top: 20%;
+            font-size: 1.5em;
+            position: relative;
+            display: block;
+        }
+        
+    </style>    
+    <apex:outputPanel rendered="{!$CurrentPage.parameters.objType='keyMat'}">
+        <analytics:reportChart reportId="{!$CurrentPage.parameters.reportId}" 
+          filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!$CurrentPage.parameters.accountId}'},
+                 {column:'Key_Metrics__c.FY_Date__c', operator:'lessOrEqual', value:'{!$CurrentPage.parameters.stDate}'},
+                 {column:'Key_Metrics__c.FY_Date__c', operator:'greaterOrEqual', value:'{!($CurrentPage.parameters.endDate)}'}
+          ]" 
+              size="tiny" showRefreshButton="false" cacheResults="false" hideOnError="true"/> 
+     </apex:outputPanel>   
+    <apex:outputPanel rendered="{!$CurrentPage.parameters.objType='keyMatCFY'}">
+        <analytics:reportChart reportId="{!$CurrentPage.parameters.reportId}" 
+          filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!$CurrentPage.parameters.accountId}'},
+                 {column:'Key_Metrics__c.FY_Date__c', operator:'greaterOrEqual', value:'{!$CurrentPage.parameters.stDate}'},
+                 {column:'Key_Metrics__c.FY_Date__c', operator:'lessOrEqual', value:'{!($CurrentPage.parameters.endDate)}'}
+          ]" 
+              size="tiny" showRefreshButton="false" cacheResults="false" hideOnError="true" /> 
+     </apex:outputPanel>   
+     <apex:outputPanel rendered="{!$CurrentPage.parameters.objType='oppty'}">
+        <analytics:reportChart reportId="{!$CurrentPage.parameters.reportId}" 
+          filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!$CurrentPage.parameters.accountId}'},
+                {column:'CLOSE_DATE', operator:'greaterOrEqual', value:'{!$CurrentPage.parameters.stDate}'},
+                {column:'CLOSE_DATE', operator:'lessOrEqual', value:'{!($CurrentPage.parameters.endDate)}'}
+          ]"  
+              size="tiny" showRefreshButton="false" cacheResults="false" hideOnError="true" /> 
+     </apex:outputPanel>   
+     <apex:outputPanel rendered="{!$CurrentPage.parameters.objType='opptyByAccountGroup'}">
+        <analytics:reportChart reportId="{!$CurrentPage.parameters.reportId}" 
+          filter="[{column:'Account.Account_Group__c', operator:'equals', value:'{!$CurrentPage.parameters.accountGroup}'},
+                {column:'CLOSE_DATE', operator:'greaterOrEqual', value:'{!$CurrentPage.parameters.stDate}'},
+                {column:'CLOSE_DATE', operator:'lessOrEqual', value:'{!($CurrentPage.parameters.endDate)}'}
+          ]"  
+              size="tiny" showRefreshButton="false" cacheResults="false" hideOnError="true" /> 
+     </apex:outputPanel>   
+     <apex:outputPanel rendered="{!$CurrentPage.parameters.objType='cvm'}">
+        <analytics:reportChart reportId="{!$CurrentPage.parameters.reportId}" 
+          filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!$CurrentPage.parameters.accountId}'},
+                   {column:'CVM__c.Date__c', operator:'lessOrEqual', value:'{!$CurrentPage.parameters.stDate}'},
+                 {column:'CVM__c.Date__c', operator:'greaterOrEqual', value:'{!($CurrentPage.parameters.endDate)}'}
+          ]" 
+              size="tiny" showRefreshButton="false" cacheResults="false" hideOnError="true" /> 
+     </apex:outputPanel>     
+</apex:page>

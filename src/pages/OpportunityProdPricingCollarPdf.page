@@ -1,0 +1,140 @@
+<apex:page standardController="OpportunityLineItem" title="Opportunity Product Pricing Collar PDF" extensions="OptyProdPricingCollarCalculationCtlr"
+    standardstylesheets="false" sidebar="false" showheader="false" contentType="{!IF($CurrentPage.parameters.renderAs = 'pdf', 'text/css', '')}" 
+    renderAs="{!$CurrentPage.parameters.renderAs}" cache="false">
+
+<apex:stylesheet value="{!URLFOR($Resource.OptyPDFStyleSheet)}"/>
+
+<apex:image value="{! URLFOR($Resource.Fonterra_Logo)}" /><br/>
+<apex:pageBlock title="{! 'Physical Price Collar - ' & OpportunityLineItem.Opportunity.Name}">
+<div class="full">
+<div class="lefthalf">
+</div>
+</div>
+
+<div class="full">
+<div class="lefthalf">
+    <apex:pageBlockSection columns="1" > 
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="Account"/>
+        <apex:outputField value="{!OpportunityLineItem.Opportunity.Account.Name}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="No:"/>
+        <apex:outputField value="{!OpportunityLineItem.Opportunity.Opportunity_No__c}"/>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+</div>
+<div class="righthalf">
+    <apex:pageBlockSection columns="1">
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="Products and Services"/>
+        <apex:outputField value="{!OpportunityLineItem.Pricebookentry.Product2.Name}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="Material Number"/>
+        <apex:outputField value="{!OpportunityLineItem.Material_Number__c}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="Volume"/>
+        <apex:outputPanel layout="block">
+        <apex:outputText value="{0,number, ###,###,##0}"><apex:param value="{!OpportunityLineItem.Quantity}"/></apex:outputText>
+        <apex:outputField value="{!OpportunityLineItem.Quantity_Unit__c}"/>      
+        </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="Volume per month"/>
+        <apex:outputText value="{0,number, ###,###,##0}"><apex:param value="{!OpportunityLineItem.Volume_Month__c}"/></apex:outputText>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+</div>
+</div>
+<br/>
+
+<div class="full">
+<h3>Pricing Collar Details</h3>
+<div class="lefthalf">
+    <apex:pageBlockSection columns="1">
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="First ETD Date"/>
+        <apex:outputText value="{0,date,dd MMM yyyy}"><apex:param value="{!OpportunityLineItem.ServiceDate}"/></apex:outputText>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >    
+        <apex:outputLabel styleclass="strong" value="Last ETD Date"/>
+        <apex:outputText value="{0,date,dd MMM yyyy}"><apex:param value="{!OpportunityLineItem.Collar_Last_Month__c}"/></apex:outputText>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="Pricing Collar Product Class"/>
+        <apex:outputField value="{!OpportunityLineItem.Pricing_Collar_Product_Class__c}"/>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+</div>
+<!--<div class="righthalf">
+    <apex:pageBlockSection columns="1" >
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="Cap Price Chosen"/>
+        <apex:outputText value="{0,number, ###,###,##0}"><apex:param value="{!OpportunityLineItem.Cap_Price_Chosen__c}" /></apex:outputText>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="Floor Price Chosen"/>
+        <apex:outputText value="{0,number, ###,###,##0}"><apex:param value="{!OpportunityLineItem.Floor_Price_Chosen__c}" /></apex:outputText>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="Fee"/>
+        <apex:outputText value="{0,number, ###,###,##0}"><apex:param value="{!OpportunityLineItem.Fee__c}" /></apex:outputText>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+</div>-->
+</div>
+<br/>
+
+<div class="full">
+<h3>Collar Fees</h3>
+<apex:pageBlockTable value="{!priceCollarFees}" var="cpv" rendered="{!NOT(ISNULL(capPrices)) && (capPrices.size > 0)}" border="1">
+        <apex:column width="50px" headerValue="Cap/Floor" value="{!cpv[0].Name_Value__c}" styleClass="header-column"/>
+    <apex:repeat value="{!cpv}" var="cp">
+        <apex:column width="50px" headerValue="Does not display" value="{!cp.Calculation_Value__c}" styleClass="price-column"/>
+    </apex:repeat>
+            <apex:repeat var="header" value="{!floorPriceHeaderDisplayList}">
+    <apex:column headerClass="price-column" styleClass="empty-column-content">
+        <apex:facet name="header"><apex:outputText value="{0,number,#,###,###}"><apex:param value="{!header.Name_Value__c}"/></apex:outputText></apex:facet>
+    </apex:column>
+    </apex:repeat>
+</apex:pageBlockTable>
+</div>
+<br/>
+<div class="full">
+    <apex:pageBlockSection columns="1">
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="Reference Price:"/>
+        <apex:outputField value="{!OpportunityLineItem.Reference_Price__c}"/>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+</div>
+<div class="full">
+    <apex:pageBlockSection columns="1">
+        <apex:pageBlockSectionItem >
+         <apex:outputLabel styleclass="strong" value="Disclaimer:"/>
+        <apex:outputField value="{!OpportunityLineItem.Collars_Standard_Text__c}"/>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+</div>
+<br/>
+
+<div class="full">
+<div class="lefthalf">
+    <apex:pageBlockSection columns="1">
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="Created By"/>
+        <apex:outputText value="{!$User.FirstName} {!$User.LastName}"/>        
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel styleclass="strong" value="Created On"/>
+        <apex:outputPanel ><apex:outputText value="{0,time,dd MMM yyyy h:mm a}"><apex:param value="{!NOW() + (userTimeZoneOffset/24)}"/></apex:outputText> (GMT {!IF(userTimeZoneOffset >= 0, '+', '-') + TEXT(userTimeZoneOffset)})</apex:outputPanel>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+</div>
+</div>
+
+</apex:pageBlock>
+
+</apex:page>

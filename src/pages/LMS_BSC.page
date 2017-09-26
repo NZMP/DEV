@@ -1,0 +1,31 @@
+<apex:page >
+    <apex:stylesheet value="{!$Resource.LearningStyle}"/>
+    <apex:form >       
+        <apex:outputLink value="{! $Page.LMS_Home_Page}">back</apex:outputLink>  
+        <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel styleClass="Title">What is Sales Capability?</apex:outputLabel>   
+                </apex:pageBlockSectionitem> 
+                <apex:pageblockSection columns="3" >    
+                    <apex:image width="280" height="260" url="{!URLFOR($Resource.LearningImages,'Images/BSC.gif')}"/>
+                    <apex:pageblockSection columns="1" >           
+                        <apex:outputLabel styleClass="Header" >What is capability?</apex:outputLabel>
+                        <apex:outputLabel >The ability to do something, the application of skills, knowledge and behaviours</apex:outputLabel>
+                        <apex:outputLabel styleClass="Header" >So what is Competency?</apex:outputLabel>
+                        <apex:outputLabel >A set of defined skills, knowledge and behaviours developed</apex:outputLabel>
+                        <apex:outputLabel styleClass="Header" >What is a Capability Framework?</apex:outputLabel>
+                        <apex:outputLabel >A capability framework is a model that we use to view the set of defined skills, knowledge and behaviours .  It helps us to measure capability, complete capability gaps analysis and deliver leraning tools to help you lift capability.</apex:outputLabel>
+                        <apex:outputLabel styleClass="Header" >What are Functional Competencies?</apex:outputLabel>
+                        <apex:outputLabel >Fonterra has layered it Competency approach into three typical levels</apex:outputLabel>       
+                        <apex:outputLabel >1. <b> Leadership Competencies:</b> Manager and leadership knowledge and skills</apex:outputLabel>
+                        <apex:outputLabel >2. <b> Functional/Technical Competencies:</b> Unique knowledge and skills to a business function:  Marketing, Sales, HR, Manufacturing</apex:outputLabel> 
+                        <apex:outputLabel >3. <b> Business Competencies:</b>General competencies that are applicable across Fonterra business units and functions.  E.g. Business Acumen, Priority Setting</apex:outputLabel>                    
+                        <apex:outputLabel >Sales Capabilities role is to develop and support Functional Sales Competency.</apex:outputLabel>                    
+                    </apex:pageblockSection> 
+                    <apex:image url="{!URLFOR($Resource.LearningImages,'Images/CC.gif')}"/>                  
+                </apex:pageblockSection>
+            </apex:pageblockSection>
+       </apex:pageBlock>
+    </apex:form>
+</apex:page>

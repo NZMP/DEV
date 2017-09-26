@@ -1,0 +1,38 @@
+<apex:page >
+    <apex:stylesheet value="{!$Resource.LearningStyle}"/>
+    <apex:form >       
+        <apex:outputLink value="{! $Page.LMS_CTM}">back</apex:outputLink>  
+        <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">                    
+                    <apex:outputLabel styleClass="Title">Selling and Negotiation</apex:outputLabel>        
+                </apex:pageBlockSectionitem> 
+                <apex:pageblockSection columns="3" >
+                    <apex:pageblockSectionItem dataStyle="width:10%">
+                        <apex:image width="200" height="200" url="{!URLFOR($Resource.LearningImages,'Images/SnN.gif')}"/>
+                    </apex:pageblockSectionItem>                          
+                    <apex:pageblockSection columns="1" >                        
+                        <apex:outputLabel >Illustrates the critical and inter-linked skills of Selling and Negotiating.</apex:outputLabel>
+                        <apex:outputLabel >The ability to achieve a win win outcome and sustain strong business partnerships whilst achieving your desired business outcome. </apex:outputLabel>
+                        <apex:outputLabel >Utilising Negotiation skills, Stakeholder Management, Relationship Management and coaching techniques.</apex:outputLabel>
+                        <apex:outputLabel styleClass="Header" >Examples of competency behaviours</apex:outputLabel>  
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SN%2020/20%22%5D">•20/20 Sales Workshops and Tools </apex:outputLink>                         
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SN%20Communication%20relationship%22%5D">•Adapts sales techniques and communication style according to the individual and relationship </apex:outputLink>  
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SN%20Explicit%20Needs%22%5D">•Uses effective questions that explore issues to uncover Implied needs and highlight Explicit needs (increase the  severity and size of the  Explicit need to the client) </apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SN%20Solutions%22%5D">•Resists the urge to offer solutions prior to understanding the customers issues/needs to ensure any solutions offered are of interest and value</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SN%20Advances%22%5D">•Advances sales by gaining a commitment and action from the customer that moves the process forward</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SN%20Fonterra%20Capability%22%5D">•Builds customers belief in Fonterras capability and value through our potential solution by linking it to an Explicit need, which likely increases acceptance of our solution</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SN%20Objections%22%5D">•Successfully manages customers objections using empathy, understanding the true nature of their concerns</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SN%20Customer%20Criteria%22%5D">•Maximises fit between customers criteria and Fonterras offering to maximise opportunities for price/deal achievement </apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22SN%20Resolve%20risks%22%5D">•Ability to resolve late stage risks perceived by the client prior to making a commitment</apex:outputLink> 
+                   </apex:pageblockSection> 
+                    <apex:pageblockSection columns="1" >
+                        <apex:outputLabel styleClass="Header" >Competency levels</apex:outputLabel>
+                        <apex:image url="{!URLFOR($Resource.LearningImages,'Images/SN_CL.gif')}"/>
+                           
+                       </apex:pageblockSection>                    
+                </apex:pageblockSection>
+            </apex:pageblockSection>
+       </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,45 @@
+<apex:page >
+<style>
+.bPageBlock {background-color: white !important;width:100%;}
+.Title {font-weight:bold; font-size: 30px; color: #3399FF;}
+.Link {font-weight:bold; text-align: center; font-size: 15px; color: #3399FF;  }
+ </style>
+    <apex:form >       
+        <apex:outputLink value="{! $Page.Onboarding_Home_Page}">back</apex:outputLink>  
+        <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel styleClass="Title">The Now</apex:outputLabel>   
+                </apex:pageBlockSectionitem> 
+                <apex:pageblockSection columns="3" >  
+                    <apex:pageblockSection columns="1">
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">                
+                            <apex:outputLink value="/sfc/#search?searchTags=%5B%22Velocity%20Updates%22%5D"><apex:image width="240" height="220" url="{!URLFOR($Resource.OnboardingImages,'Images/Velocity.png')}"/></apex:outputLink>                         
+                         </apex:pageBlockSectionitem>
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;"> 
+                             <apex:outputLabel styleClass="Link">Velocity Updates</apex:outputLabel>
+                         </apex:pageBlockSectionitem>  
+                     </apex:pageblockSection>                                                                            
+                     <apex:pageblockSection columns="1">
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">                
+                            <apex:outputLink value="/sfc/#search?searchTags=%5B%22Coaching%20Principles%22%5D"><apex:image width="240" height="220" url="{!URLFOR($Resource.OnboardingImages,'Images/Coaching.png')}"/></apex:outputLink>                         
+                         </apex:pageBlockSectionitem>
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;"> 
+                             <apex:outputLabel styleClass="Link">Coaching Priciples</apex:outputLabel>
+                         </apex:pageBlockSectionitem>  
+                     </apex:pageblockSection>
+                     <apex:pageblockSection columns="1">
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">                
+                            <apex:outputLink value="/sfc/#search?searchTags=%5B%22Training%20Calendar%22%5D"><apex:image width="240" height="220" url="{!URLFOR($Resource.OnboardingImages,'Images/Calendar.png')}"/></apex:outputLink>                         
+                         </apex:pageBlockSectionitem>
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;"> 
+                             <apex:outputLabel styleClass="Link">Training Calendar</apex:outputLabel>
+                         </apex:pageBlockSectionitem>  
+                     </apex:pageblockSection> 
+                                 
+                </apex:pageblockSection>                                      
+                        
+            </apex:pageblockSection>
+       </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,36 @@
+<apex:page >
+    <apex:stylesheet value="{!$Resource.LearningStyle}"/>
+    <apex:form >       
+        <apex:outputLink value="{! $Page.LMS_CTM}">back</apex:outputLink>  
+        <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel styleClass="Title">Product and Application</apex:outputLabel>   
+                </apex:pageBlockSectionitem> 
+                <apex:pageblockSection columns="3" >  
+                    <apex:pageblockSectionItem dataStyle="width:10%">   
+                        <apex:image width="200" height="200" url="{!URLFOR($Resource.LearningImages,'Images/PaA.gif')}"/>
+                    </apex:pageBlockSectionitem> 
+                    <apex:pageblockSection columns="1" >           
+                        <apex:outputLabel >Describes the various levels of product and application knowledge that are required to succeed in the Dairy industry. </apex:outputLabel>
+                        <apex:outputLabel >Knowledge and understanding of Fonterras ingredients and their various applications as well as ingredients that are offered through our global sourcing community.</apex:outputLabel>
+                        <apex:outputLabel >Can explain Fonterras Manufacturing and Ingredients capability and where to either go for information or where to get information from.</apex:outputLabel>
+                        <apex:outputLabel styleClass="Header" >Examples of competency behaviours</apex:outputLabel>                         
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22PA%20Product%22%5D">•Knowledge of Fonterra products, processes and services with a knowledge of composition, characteristics and application</apex:outputLink>  
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22PA%20Technical%20networks%22%5D">•Maintains strong internal networks in order to close the gap on technical queries and continues to build technical knowledge on the job </apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22PA%20Internal%20networks%22%5D">•Maintains strong internal networks in order to close the gap on technical queries and continues to build sales teams technical knowledge </apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22PA%20Application%20value%22%5D">•Ability to identify and develop opportunities to add Fonterras value to a customers business via technical applications</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22PA%20Product%20categories%22%5D">•Has depth of knowledge in the relevant categories/product groups according to role</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22PA%20Applications%22%5D">•Knows how a number of products can be applied in various applications</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22PA%20Presentations%22%5D">•Can present information about our Products and their applications in a way that is beneficial for our Customers and Fonterra  </apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22PA%20Global%20Sourcing%22%5D">•Knowledge of Global Sourcing community and products that Fonterra purchase and make available to our customers. </apex:outputLink> 
+                   </apex:pageblockSection> 
+                    <apex:pageblockSection columns="1" >
+                        <apex:outputLabel styleClass="Header" >Competency levels</apex:outputLabel>
+                        <apex:image url="{!URLFOR($Resource.LearningImages,'Images/PA_CL.gif')}"/>
+                       </apex:pageblockSection>                    
+                </apex:pageblockSection>
+            </apex:pageblockSection>
+       </apex:pageBlock>
+    </apex:form>
+</apex:page>

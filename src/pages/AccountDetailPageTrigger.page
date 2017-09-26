@@ -1,0 +1,24 @@
+<apex:page standardController="Account" extensions="AccountPlanDetailPageTriggerCtlr" showheader="false" sidebar="false" standardStylesheets="true">
+
+<apex:outputText escape="false" rendered="{!refreshFinancialPerformanceCharts}">
+<iframe id="sessionFrame" src="{!sessionFrameSrc}" style="height: 1px; width: 1px; float: right;"/>
+<div class="loading" style="border: none;"><img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..."/><span id="loadingText" class="loadingText">Account charts refreshing...</span></div>
+<script type="text/javascript">
+	function generateCharts() {	
+        AccountPlanDetailPageTriggerCtlr.generateFinancialPerformanceCharts("{!Account.Id}", function(result, event) {
+	        document.getElementById("loadingText").innerHTML = result;
+            if ((result != null) && (result.match('successful'))) {
+            	top.location = '/{!Account.Id}';
+            }
+        });
+	}
+	setTimeout('generateCharts();', 500);
+</script>
+</apex:outputText>
+ 
+<script type="text/javascript">
+	if (location.href.indexOf("generateTeamShareForRelatedObjects") > -1) {
+		AccountPlanDetailPageTriggerCtlr.generateTeamShareForRelatedObjects("{!Account.Id}", function(result, event){alert(result)});
+	}
+</script>
+</apex:page>

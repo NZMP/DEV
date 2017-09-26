@@ -1,0 +1,16 @@
+<apex:page standardcontroller="Campaign" extensions="CampaignExt" tabStyle="Campaign" showHeader="false" sidebar="false" action="{!showPreview}">
+<head>
+<title>{!inviteSubject}</title>
+</head>
+<!-- retrieving data below - DO NOT REMOVE -->
+	<apex:dataTable value="{!Campaign}" var="camp" rendered="false">
+	    <apex:column value="{!camp.Name}"/>
+	    <apex:column value="{!camp.Mail_Body_Text__c}"/>
+	    <apex:column value="{!camp.Accept_Link_Text__c}"/>
+	    <apex:column value="{!camp.Decline_Link_Text__c}"/>
+	    <apex:column value="{!camp.Invitation_Subject_Text__c}"/>
+	</apex:dataTable>    
+	<apex:pageMessages />
+	<!-- retrieving data above - DO NOT REMOVE --> 
+	<apex:outputText value="{!previewTemplate}" escape="false"/>	
+</apex:page>

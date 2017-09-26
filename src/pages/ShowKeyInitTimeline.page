@@ -1,0 +1,5 @@
+<apex:page standardController="Key_Initiative__c">
+    <apex:outputPanel layout="block" id="detail">
+        <apex:iframe src="/apex/Timeline?recordType=Key_Initiative__c&recordId={!id}" scrolling="false" height="315px" width="100%" />
+    </apex:outputPanel>    
+</apex:page>

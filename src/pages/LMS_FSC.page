@@ -1,0 +1,28 @@
+<apex:page >
+    <apex:stylesheet value="{!$Resource.LearningStyle}"/>
+    <apex:form >       
+        <apex:outputLink value="{! $Page.LMS_Home_Page}">back</apex:outputLink>  
+        <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel styleClass="Title">Functional Sales Competencies</apex:outputLabel>   
+                </apex:pageBlockSectionitem> 
+                <apex:pageblockSection columns="3" >    
+                    <apex:image width="280" height="260" url="{!URLFOR($Resource.LearningImages,'Images/FC.png')}"/>
+                    <apex:pageblockSection columns="1" >           
+                        <apex:outputLabel styleClass="Header" >What is the competency levels for my role</apex:outputLabel>
+                        <apex:outputLabel >The Functional Competencies in Global Sales are the same regardless of your role.  However the competency level required will vary from role to role.Remember additional to your functional roles are Fonterra individual and Leadership Competencies.</apex:outputLabel>
+                        <apex:image width="550" height="350" url="{!URLFOR($Resource.LearningImages,'Images/FC_Roles1.gif')}"/>
+                        <apex:image width="550" height="350" url="{!URLFOR($Resource.LearningImages,'Images/FC_Roles2.gif')}"/>
+                    </apex:pageblockSection> 
+                    <apex:pageblockSection columns="1" >
+                        <apex:image width="550" height="350" url="{!URLFOR($Resource.LearningImages,'Images/FC_Levels.gif')}"/>
+                        <apex:outputLabel styleClass="Header" >How do I assess my Functional Sales Competency?</apex:outputLabel>                         
+                        <apex:outputLink value="/sfc/#workspaceView/05890000000doG6">Functional Sales Competency Assessment template</apex:outputLink>  
+                        <apex:outputLink value="/sfc/#workspaceView/05890000000doG6">Introduction to Functional Sales Competencies</apex:outputLink>  
+                    </apex:pageblockSection>                   
+                </apex:pageblockSection>
+            </apex:pageblockSection>
+       </apex:pageBlock>
+    </apex:form>
+</apex:page>

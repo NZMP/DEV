@@ -1,0 +1,61 @@
+<apex:page >
+<apex:stylesheet value="{!$Resource.LearningStyle}"/>
+    <apex:form >
+    <apex:outputLink value="{! $Page.LMS_Home_Page}">back</apex:outputLink>  
+        <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel styleClass="Title">Competency Training Material</apex:outputLabel>   
+                </apex:pageBlockSectionitem> 
+                <apex:pageblockSection columns="2" > 
+                    <apex:pageblockSection columns="3" > 
+                        <apex:outputLink value="{! $Page.LMS_SN}"><apex:image width="200" height="200" url="{!URLFOR($Resource.LearningImages,'Images/SnN.gif')}"/></apex:outputLink> 
+                        <apex:outputLink value="{! $Page.LMS_SP}"><apex:image width="200" height="200" url="{!URLFOR($Resource.LearningImages,'Images/SP.gif')}"/></apex:outputLink> 
+                        <apex:outputLink value="{! $Page.LMS_PA}"><apex:image width="200" height="200" url="{!URLFOR($Resource.LearningImages,'Images/PaA.gif')}"/></apex:outputLink> 
+                        <apex:outputLabel styleClass="Header">Selling and Negotiation</apex:outputLabel>
+                        <apex:outputLabel styleClass="Header">Customer Planning</apex:outputLabel>
+                        <apex:outputLabel styleClass="Header">Product and Application</apex:outputLabel>
+                        <apex:pageblockSection columns="1" > 
+                            <apex:outputLabel >Illustrates the critical and inter-linked skills of Selling and Negotiating.</apex:outputLabel>
+                            <apex:outputLabel >The ability to achieve a win win outcome and sustain strong business partnerships whilst achieving your desired business outcome</apex:outputLabel>
+                            <apex:outputLabel >Utilising Negotiation skills, Stakeholder Management, Relationship Management and coaching techniques.</apex:outputLabel>
+                        </apex:pageblockSection>   
+                        <apex:pageblockSection columns="1" > 
+                            <apex:outputLabel >Successfully leverages sales systems, processes and information in order to research, plan and achieve profitable results for the business.</apex:outputLabel>
+                            <apex:outputLabel >Effective cross functional planning and management of the Customer to create a valuable long term business partnerships ensuring the customer is at the heart of all business decisions.</apex:outputLabel>
+                            <apex:outputLabel >Formal process of Strategic and functional business planning for future in order to deliver or exceed both ours and our Customers business goals</apex:outputLabel>
+                        </apex:pageblockSection>    
+                        <apex:pageblockSection columns="1" > 
+                            <apex:outputLabel >Describes the various levels of product and application knowledge that are required to succeed in the Dairy industry. </apex:outputLabel>
+                            <apex:outputLabel >Knowledge and understanding of Fonterras ingredients and their various applications as well as ingredients that are offered through our global sourcing community.</apex:outputLabel>
+                            <apex:outputLabel >Can explain Fonterras Manufacturing and Ingredients capability and where to either go for information or where to get information from.</apex:outputLabel>
+                        </apex:pageblockSection>  
+                    </apex:pageblockSection>
+                    <apex:pageblockSection columns="3" > 
+                        <apex:outputLink value="{! $Page.LMS_CA}"><apex:image width="200" height="200" url="{!URLFOR($Resource.LearningImages,'Images/CA.gif')}"/></apex:outputLink> 
+                        <apex:outputLink value="{! $Page.LMS_SVS}"><apex:image width="200" height="200" url="{!URLFOR($Resource.LearningImages,'Images/SVS.gif')}"/></apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22AR%20Resources%22%5D"><apex:image width="200" height="200" url="{!URLFOR($Resource.LearningImages,'Images/AR.gif')}"/></apex:outputLink>                                          
+                        <apex:outputLabel styleClass="Header">Commercial Acumen</apex:outputLabel>
+                        <apex:outputLabel styleClass="Header">Sales Value Stream</apex:outputLabel>
+                        <apex:outputLabel styleClass="Header">Articles and Resources</apex:outputLabel>                      
+                        <apex:pageblockSection columns="1" > 
+                            <apex:outputLabel >The ability to analyse and evaluate financial and market information to create sound business decisions internally and externally.</apex:outputLabel>
+                            <apex:outputLabel >Develops and executes sales and channel strategies externally and within the organisation. </apex:outputLabel>
+                            <apex:outputLabel >Ensures business performance and actively manages risk factors</apex:outputLabel>
+                        </apex:pageblockSection>    
+                        <apex:pageblockSection columns="1" > 
+                            <apex:outputLabel >Has the ability to explain the key value chain activities and systems required to see a sale through to successful execution. </apex:outputLabel>
+                            <apex:outputLabel >Has the understanding and ability to use technology, systems, reporting, tools and insights to support sound business decisions.</apex:outputLabel>
+                        </apex:pageblockSection>    
+                        <apex:pageblockSection columns="1" > 
+                            <apex:outputLabel >Collection of helpful learning resources, including: Videos, Books, Articles,Websites,Reference documents etc</apex:outputLabel>
+                        </apex:pageblockSection>                           
+                    </apex:pageblockSection>
+               </apex:pageblockSection>
+               <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel >If you have any additional training material or resources you feel should be added to the Competency Training Material library or any of the links to the resources are not working please contact Nicole Porter on Nicole.porter@Fonterra.com directly.</apex:outputLabel>   
+                </apex:pageBlockSectionitem> 
+            </apex:pageblockSection>  
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

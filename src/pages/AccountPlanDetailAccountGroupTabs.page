@@ -1,0 +1,51 @@
+<apex:page standardController="Account_Plan__c" extensions="AccountPlanDetailAccountGroupTabsCtlr">
+<apex:form >
+<apex:tabPanel switchType="client">
+    <apex:tab label="Opportunities">
+        <apex:pageBlock id="OpportunityPageBlock">
+            <apex:pageBlockTable value="{!opportunities}" var="o" rendered="{!opportunityRecords.resultSize > 0}">
+                <apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AccountPlanDetailOpportunityTab}" var="f">
+                    <apex:column value="{!o[f]}"/>
+                </apex:repeat>
+            </apex:pageBlockTable>
+            <div style="{!'margin-top: 5px;' & IF(OR(opportunityRecords.hasPrevious, opportunityRecords.hasNext), '', 'display:none')}"><apex:commandLink action="{!opportunityRecords.previous}" reRender="OpportunityPageBlock" style="{!IF(opportunityRecords.hasPrevious, '', 'color:#999')}" >&laquo; Previous</apex:commandlink>&nbsp;|&nbsp;<apex:commandLink action="{!opportunityRecords.next}" reRender="OpportunityPageBlock" style="{!IF(opportunityRecords.hasNext, '', 'color:#ccc')}" >Next &raquo;</apex:commandlink></div>
+            <div style="{!'border: 1px solid #ccc; padding: 5px;' & IF(opportunityRecords.resultSize > 0, 'display:none', '')}">No records to display</div>
+        </apex:pageBlock>
+    </apex:tab>
+    <apex:tab label="Group Opportunities">
+        <apex:pageBlock id="GroupOpportunityPageBlock">
+            <apex:pageBlockTable value="{!groupOpportunities}" var="o" rendered="{!groupOpportunityRecords.resultSize > 0}">
+                <apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AccountPlanDetailOpportunityTab}" var="f">
+                    <apex:column value="{!o[f]}"/>
+                </apex:repeat>
+            </apex:pageBlockTable>
+            <div style="{!'margin-top:5px;' & IF(OR(groupOpportunityRecords.hasPrevious, groupOpportunityRecords.hasNext), '', 'display:none')}"><apex:commandLink action="{!groupOpportunityRecords.previous}" reRender="GroupOpportunityPageBlock" style="{!IF(groupOpportunityRecords.hasPrevious, '', 'color:#999')}" >&laquo; Previous</apex:commandlink>&nbsp;|&nbsp;<apex:commandLink action="{!groupOpportunityRecords.next}" reRender="GroupOpportunityPageBlock" style="{!IF(groupOpportunityRecords.hasNext, '', 'color:#ccc')}" >Next &raquo;</apex:commandlink></div>
+            <div style="{!'border: 1px solid #ccc; padding: 5px;' & IF(groupOpportunityRecords.resultSize > 0, 'display:none', '')}">No records to display</div>
+        </apex:pageBlock>
+    </apex:tab>
+    <apex:tab label="Key Initiatives">
+        <apex:pageBlock id="KeyInitiativePageBlock">
+            <apex:pageBlockTable value="{!keyInitiatives}" var="s" rendered="{!keyInitiativeRecords.resultSize > 0}">
+                <apex:repeat value="{!$ObjectType.Key_Initiative__c.FieldSets.AccountPlanDetailKeyInitiativeTab}" var="f">
+                    <apex:column value="{!s[f]}"/>
+                </apex:repeat>
+            </apex:pageBlockTable>
+            <div style="{!'margin-top:5px;' & IF(OR(keyInitiativeRecords.hasPrevious, keyInitiativeRecords.hasNext), '', 'display:none')}"><apex:commandLink action="{!keyInitiativeRecords.previous}" reRender="KeyInitiativePageBlock" style="{!IF(keyInitiativeRecords.hasPrevious, '', 'color:#999')}" >&laquo; Previous</apex:commandlink>&nbsp;|&nbsp;<apex:commandLink action="{!keyInitiativeRecords.next}" reRender="KeyInitiativePageBlock" style="{!IF(keyInitiativeRecords.hasNext, '', 'color:#ccc')}" >Next &raquo;</apex:commandlink></div>
+            <div style="{!'border: 1px solid #ccc; padding: 5px;' & IF(keyInitiativeRecords.resultSize > 0, 'display:none', '')}">No records to display</div>
+        </apex:pageBlock>
+    </apex:tab>
+    <apex:tab label="Group Key Initiatives">
+        <apex:pageBlock id="GroupKeyInitiativePageBlock">
+            <apex:pageBlockTable value="{!groupKeyInitiatives}" var="s" rendered="{!groupKeyInitiativeRecords.resultSize > 0}">
+                <apex:repeat value="{!$ObjectType.Key_Initiative__c.FieldSets.AccountPlanDetailKeyInitiativeTab}" var="f">
+                    <apex:column value="{!s[f]}"/>
+                </apex:repeat>
+            </apex:pageBlockTable>
+            <div style="{!'margin-top:5px;' & IF(OR(groupKeyInitiativeRecords.hasPrevious, groupKeyInitiativeRecords.hasNext), '', 'display:none')}"><apex:commandLink action="{!groupKeyInitiativeRecords.previous}" reRender="GroupKeyInitiativePageBlock" style="{!IF(groupKeyInitiativeRecords.hasPrevious, '', 'color:#999')}" >&laquo; Previous</apex:commandlink>&nbsp;|&nbsp;<apex:commandLink action="{!groupKeyInitiativeRecords.next}" reRender="GroupKeyInitiativePageBlock" style="{!IF(groupKeyInitiativeRecords.hasNext, '', 'color:#ccc')}" >Next &raquo;</apex:commandlink></div>
+            <div style="{!'border: 1px solid #ccc; padding: 5px;' & IF(groupKeyInitiativeRecords.resultSize > 0, 'display:none', '')}">No records to display</div>
+        </apex:pageBlock>
+    </apex:tab>
+</apex:tabPanel>
+</apex:form>
+<div style="display:none">{!Account_Plan__c.Account__c}{!Account_Plan__c.Account_Group__c}</div>
+</apex:page>

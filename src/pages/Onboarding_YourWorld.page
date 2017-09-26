@@ -1,0 +1,68 @@
+<apex:page >
+<style>
+.bPageBlock {background-color: white !important;width:100%;}
+.Title {font-weight:bold; font-size: 30px; color: #3399FF;}
+.Link {font-weight:bold; text-align: center; font-size: 15px; color: #3399FF;  }
+ </style>
+    <apex:form >       
+        <apex:outputLink value="{! $Page.Onboarding_Home_Page}">back</apex:outputLink>  
+        <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel styleClass="Title">Your World</apex:outputLabel>   
+                </apex:pageBlockSectionitem> 
+                <apex:pageblockSection columns="3" >  
+                    <apex:pageblockSection columns="1">
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">                
+                            <apex:outputLink value="/sfc/#search?searchTags=%5B%22Our%20Organisation%22%5D"><apex:image width="240" height="220" url="{!URLFOR($Resource.OnboardingImages,'Images/Org.png')}"/></apex:outputLink>                         
+                         </apex:pageBlockSectionitem>
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;"> 
+                             <apex:outputLabel styleClass="Link">Our Organisation</apex:outputLabel>
+                         </apex:pageBlockSectionitem>  
+                     </apex:pageblockSection>                                                                            
+                     <apex:pageblockSection columns="1">
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">                
+                            <apex:outputLink value="/sfc/#search?searchTags=%5B%22Our%20Team%22%5D"><apex:image width="240" height="220" url="{!URLFOR($Resource.OnboardingImages,'Images/Team.png')}"/></apex:outputLink>                         
+                         </apex:pageBlockSectionitem>
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;"> 
+                             <apex:outputLabel styleClass="Link">Our Team</apex:outputLabel>
+                         </apex:pageBlockSectionitem>  
+                     </apex:pageblockSection>
+                     <apex:pageblockSection columns="1">
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">                
+                            <apex:outputLink value="/sfc/#search?searchTags=%5B%22Our%20Systems%22%5D"><apex:image width="240" height="220" url="{!URLFOR($Resource.OnboardingImages,'Images/System.png')}"/></apex:outputLink>                         
+                         </apex:pageBlockSectionitem>
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;"> 
+                             <apex:outputLabel styleClass="Link">Our Systems</apex:outputLabel>
+                         </apex:pageBlockSectionitem>  
+                     </apex:pageblockSection> 
+                      <apex:pageblockSection columns="1">
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">                
+                            <apex:outputLink value="/sfc/#search?searchTags=%5B%22Our%20Products%22%5D"><apex:image width="240" height="220" url="{!URLFOR($Resource.OnboardingImages,'Images/Prod.png')}"/></apex:outputLink>                         
+                         </apex:pageBlockSectionitem>
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;"> 
+                             <apex:outputLabel styleClass="Link">Our Products</apex:outputLabel>
+                         </apex:pageBlockSectionitem>  
+                     </apex:pageblockSection>  
+                      <apex:pageblockSection columns="1">
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">                
+                            <apex:outputLink value="/sfc/#search?searchTags=%5B%22Our%20Customers%22%5D"><apex:image width="240" height="220" url="{!URLFOR($Resource.OnboardingImages,'Images/Cust.png')}"/></apex:outputLink>                         
+                         </apex:pageBlockSectionitem>
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;"> 
+                             <apex:outputLabel styleClass="Link">Our Customers</apex:outputLabel>
+                         </apex:pageBlockSectionitem>  
+                     </apex:pageblockSection>  
+                      <apex:pageblockSection columns="1">
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;">                
+                            <apex:outputLink value="/sfc/#search?searchTags=%5B%22Commercial%20Acumen%22%5D"><apex:image width="240" height="220" url="{!URLFOR($Resource.OnboardingImages,'Images/Acumen.png')}"/></apex:outputLink>                         
+                         </apex:pageBlockSectionitem>
+                         <apex:pageBlockSectionitem dataStyle="text-align:center;"> 
+                             <apex:outputLabel styleClass="Link">Your Commercial Acumen</apex:outputLabel>
+                         </apex:pageBlockSectionitem>  
+                     </apex:pageblockSection>                                    
+                </apex:pageblockSection>                                      
+                        
+            </apex:pageblockSection>
+       </apex:pageBlock>
+    </apex:form>
+</apex:page>

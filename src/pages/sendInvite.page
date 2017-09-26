@@ -1,0 +1,52 @@
+<apex:page standardcontroller="Campaign" extensions="CampaignExt" tabStyle="Campaign">
+	<!-- retrieving data below - DO NOT REMOVE -->
+	<apex:dataTable value="{!Campaign}" var="camp" rendered="false">
+	    <apex:column value="{!camp.Name}"/>
+	    <apex:column value="{!camp.Mail_Body_Text__c}"/>
+	    <apex:column value="{!camp.Accept_Link_Text__c}"/>
+	    <apex:column value="{!camp.Decline_Link_Text__c}"/>
+	    <apex:column value="{!camp.Invitation_Subject_Text__c}"/>
+	</apex:dataTable>    
+	<!-- retrieving data above - DO NOT REMOVE --> 
+	<apex:form >
+		<apex:pageBlock title="Send Invites" >
+			<apex:pageMessages escape="false"></apex:pageMessages>
+		    <apex:pageBlockButtons location="both">
+		        <apex:commandButton value="Send Invite" action="{!sendInvite}" rendered="{!NOT(disableSend)}"/>
+		        <apex:commandButton value="Back" action="{!cancelInvite}"/>
+		    </apex:pageBlockButtons>
+			<apex:pageBlockSection title="" columns="1" collapsible="false" showHeader="false">
+				<apex:pageBlockSectionItem >
+			    	<apex:outputPanel >
+			        	<span id="replyToHelp-_help" class="helpButton">
+			            	<apex:outputLabel value="Select Reply-To Address"/>
+			            	<img class="helpOrb" title="" alt="" src="/s.gif" />
+				            <script>
+				                sfdcPage.setHelp('replyToHelp', "If customer 'Replies' to the invite (i.e. they do not click 'accept' or 'decline') their email goes to the Reply-to-Address");
+				            </script>
+			        	</span>
+			    	</apex:outputPanel>
+				    <apex:outputPanel styleClass="requiredInput" layout="block" id="pwPanel" >
+				    	<apex:outputPanel styleClass="requiredBlock" style="left:-2px"/>
+				        <apex:selectList value="{!replyto}" multiselect="false" size="1">
+				            <apex:selectOptions value="{!replyOptions}"/>
+				        </apex:selectList>
+			    	</apex:outputPanel>
+				</apex:pageBlockSectionItem>
+				<apex:pageBlockSectionItem >
+					<apex:outputLabel value="The following customer(s) will be sent e-invites"/>
+					<apex:dataTable value="{!Members}" var="cus" cellPadding="4" border="0" >
+			    		<apex:column >
+			        		<apex:facet name="header">Customer Name</apex:facet>
+			        		<apex:outputField value="{!cus.Contact.Name}"/>
+			    		</apex:column>
+			   			<apex:column >
+			    			<apex:facet name="header">Customer E-Mail Type</apex:facet>
+			    			<apex:outputField value="{!cus.Email_Field_Displayed__c  }"/>
+			   			</apex:column>
+					</apex:dataTable>
+				</apex:pageBlockSectionItem>
+			</apex:pageBlockSection>
+		</apex:pageBlock>   
+	</apex:form>
+</apex:page>

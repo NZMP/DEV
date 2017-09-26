@@ -1,0 +1,22 @@
+<apex:page >
+<apex:stylesheet value="{!$Resource.LearningStyle}"/>
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel styleClass="Title">Develop Sales Capability</apex:outputLabel>   
+                </apex:pageBlockSectionitem> 
+                <apex:pageblockSection columns="4" >                    
+                    <apex:outputLabel styleClass="Header">What is Sales Capability?</apex:outputLabel>
+                    <apex:outputLabel styleClass="Header">Functional Sales Competencies</apex:outputLabel>
+                    <apex:outputLabel styleClass="Header">Sales Position Descriptions</apex:outputLabel>
+                    <apex:outputLabel styleClass="Header">Competency Training Material</apex:outputLabel>
+                    <apex:outputLink value="{! $Page.LMS_BSC}"><apex:image width="280" height="260" url="{!URLFOR($Resource.LearningImages,'Images/BSC.gif')}"/></apex:outputLink> 
+                    <apex:outputLink value="{! $Page.LMS_FSC}"><apex:image width="280" height="260" url="{!URLFOR($Resource.LearningImages,'Images/FC.png')}"/></apex:outputLink> 
+                    <apex:outputLink value="https://workgroup.fonterra.com/sites/SalesOPerationsTeam/SalesOperationsCapability/Position%20Descriptions/Forms/Global%20Sales.aspx" target="_blank"><apex:image width="280" height="260" url="{!URLFOR($Resource.LearningImages,'Images/PD.gif')}"/></apex:outputLink> 
+                    <apex:outputLink value="{! $Page.LMS_CTM}"><apex:image width="280" height="260" url="{!URLFOR($Resource.LearningImages,'Images/CTM.gif')}"/></apex:outputLink>                       
+                </apex:pageblockSection>
+            </apex:pageblockSection>  
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

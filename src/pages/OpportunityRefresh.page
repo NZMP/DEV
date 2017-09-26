@@ -1,0 +1,1247 @@
+<apex:page standardcontroller="Opportunity" action="{!redirect}" extensions="OpportunityRefreshExCon" id="pg" >
+    
+    <chatter:feedWithFollowers entityId="{!opp.id}" />
+    <!-- Define Tab panel .css styles -->
+    <!--     
+        <style>
+        .activeTab {background-color: #236FBD; color:white; background-image:none; border-radius: 10px; width: 160px;height: 25px;font-size:15px}
+        .inactiveTab { background-color: #C5D9FE; color:black; background-image:none ; border-radius: 15px;width: 160px;height: 25px;font-size:15px}
+        .container {width:2500px; border-radius: 10px; border:0}
+        </style>
+        -->  
+    <style type="text/css">
+        .activeTab {background-color: #1797c0; color:white; font-weight: bold; background-image: none;}
+        .inactiveTab { background-image: linear-gradient(rgb(229, 242, 246), rgb(205, 232, 240)); color:#353535; }
+        .inactiveTab1 { background-image: {!IF(opp.Stage_in_Buying_Cycle__c = 'Recognition of Needs','None','linear-gradient(rgb(229, 242, 246), rgb(205, 232, 240))')}; color:#353535; }
+        .rich-tab-header {padding: 6px 10px 6px 10px;}
+        .engagementFieldLine {width:98%; height:17px;}
+        .errorMsg {white-space:initial}
+        .fieldset{color:rgb(213, 101, 178) !important}
+        //.legend{color:rgb(213, 101, 178) !important}
+        .tableStyle {border-collapse: collapse;border-spacing: 1px 1px; }
+        .implColStyle1 { width: 14%;text-align:right;padding-left:2px;padding-right:10px;padding-bottom:5px;padding-top:5px;vertical-align:top;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .implColStyle2 { width: 18%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;vertical-align:top;font-size:11px;color: #000;}
+        .implColStyle3 { width: 16%;text-align:right;padding-left:2px;padding-right:10px;padding-bottom:5px;padding-top:5px;vertical-align:top;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .implColStyle4 { width: 17%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;vertical-align:top;font-size:11px;color: #000;}
+        .implColStyle5 { width: 16%;text-align:right;padding-left:2px;padding-right:10px;padding-bottom:5px;padding-top:5px;vertical-align:top;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .implColStyle6 { width: 18%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;vertical-align:top;font-size:11px;color: #000;}
+        .implColStyle2Edit { width: 18%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;vertical-align:top;font-size:11px;color: #000;}
+        .implColStyle4Edit { width: 17%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;vertical-align:top;font-size:11px;color: #000;}
+        .implColStyle6Edit { width: 18%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;vertical-align:top;font-size:11px;color: #000;}
+        .recogNeedsColStyle1 { width: 20%;text-align:right;padding-left:2px;padding-right:10px;padding-bottom:5px;padding-top:5px;vertical-align:top;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .recogNeedsColStyle2 { width: 22%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;vertical-align:top;font-size:11px;color: #000;}
+        .recogNeedsColStyle3 { width: 4%;text-align:center;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .recogNeedsColStyle4 { width: 4%;text-align:center;font-weight: bold;font-size:91%;color: #4a4a56;}
+        
+        .recogNeedsColStyle1Edit { width: 15%;text-align:right;padding-left:2px;padding-right:3px;vertical-align:top;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .recogNeedsColStyle2Edit { width: 15.5%;text-align:left;padding-left:1.37%;padding-right:1px;vertical-align:top;font-size:11px;color: #000;}
+        
+        @media screen and (-webkit-min-device-pixel-ratio:0) {
+            .recogNeedsColStyle2Edit { width: 15.5%;text-align:left;padding-left:1.60%;padding-right:1px;vertical-align:top;font-size:11px;color: #000;}
+        }
+        
+        .recogColStyle1 { width: 20%;text-align:right;padding-left:2px;padding-right:10px;padding-bottom:5px;padding-top:5px;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .recogColStyle2 { width: 30%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;font-size:11px;color: #000;}
+        .recogColStyle3 { width: 20%;text-align:right;padding-left:2px;padding-right:10px;padding-bottom:5px;padding-top:5px;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .recogColStyle4 { width: 30%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;font-size:11px;color: #000;}
+        .recogColStyle2Edit { width: 30%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:2px;font-size:11px;color: #000;}
+        .recogColStyle4Edit { width: 30%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:2px;font-size:11px;color: #000;}
+        
+        .internalSellingLabelRON { width: 19.6%;text-align:right;padding-left:2px;padding-right:10px;padding-bottom:5px;padding-top:5px;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .internalSellingValueRON { width: 30%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;font-size:11px;color: #000;}
+        .targetedLabelRON { width: 20.7%;text-align:right;padding-left:2px;padding-right:10px;padding-bottom:5px;padding-top:5px;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .targetedValueRON { width: 30%;text-align:left;padding-left:8px;padding-right:2px;padding-bottom:2px;padding-top:5px;font-size:11px;color: #000;}
+        
+        .targetedLabelEditRON { width: 10%;text-align:right;padding-left:2px;padding-right:11px;padding-bottom:5px;padding-top:5px;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .targetedValueEditRON { width: 38%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;font-size:11px;color: #000;}
+        
+        .internalSellingLabelEOP { width: 37.5%;text-align:right;padding-left:2px;padding-right:10px;padding-bottom:5px;padding-top:5px;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .internalSellingValueEOP { width: 30%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;font-size:11px;color: #000;}
+        .targetedLabelEOP { width: 14.2%;text-align:right;padding-left:2px;padding-right:10px;padding-bottom:5px;padding-top:5px;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .targetedValueEOP { width: 30%;text-align:left;padding-left:8px;padding-right:2px;padding-bottom:2px;padding-top:5px;font-size:11px;color: #000;}
+        
+        .targetedLabelEditEOP { width: 7%;text-align:right;padding-left:2px;padding-right:11px;padding-bottom:5px;padding-top:5px;font-weight: bold;font-size:91%;color: #4a4a56;}
+        .targetedValueEditEOP { width: 42%;text-align:left;padding-left:10px;padding-right:2px;padding-bottom:2px;padding-top:5px;font-size:11px;color: #000;}
+        
+        //legend{ font-size:15px;}
+    </style>
+
+    <script type="text/javascript">
+    
+    function invokeApproval(e){
+        e.preventDefault();
+        document.querySelector('input[value="Submit for Approval"]').click();
+        return;
+    }
+    function showRelatedListDiv(divName){
+        document.getElementById(divName+'Div').style.display = 'block';
+    }
+    function hideRelatedListDiv(divName){
+        document.getElementById(divName+'Div').style.display = 'none';
+    }
+    function updateCloseDate(closeDateId){
+        
+        var closeDate = document.getElementById(closeDateId).value;
+        document.getElementById('pg:frm:pgBlockOne:pgBlockSecOne:closeDate1').value = closeDate;
+        document.getElementById('pg:frm:pgBlockTwo:closeDate').value = closeDate;
+        document.getElementById('pg:frm:pgBlockThree:pgBlockSecThree:closeDate').value = closeDate;
+        document.getElementById('pg:frm:pgBlockFour:pgBlockSecFour:closeDate').value = closeDate;
+        document.getElementById('pg:frm:pgBlockFive:pgBlockSecTargetCloseDate:closeDate').value = closeDate;
+        document.getElementById('pg:frm:pgBlockSix:pgBlockSecSix:closeDate').value = closeDate;
+    }
+    
+    function openConga() {
+        window.open('{!URLFOR($Action.Opportunity.Generate_Business_Case,strOppId15)}', '','scrollbars=yes,menubar=no,height=450,width=750,resizable=yes, toolbar=no,location=no,status=yes');  
+    }
+    
+    function showBox() { 
+        var selectedStageElement = document.querySelectorAll("input[id^='pg:frm:pgBlockOne:pgBlockSecThree:customersPhase:']:checked");
+        var selectedStageValue;
+        if ( selectedStageElement.length == 0 ){
+            alert ('Please select "Customers Phase in the Buying Cycle" first');
+            return;
+        }
+        else 
+            selectedStageValue = selectedStageElement[0].value;
+        
+        var box = new parent.SimpleDialog("helder"+Math.random(), true); 
+        parent.box = box; 
+        
+        box.setTitle("Sales Coach - Customer's Phase in Buying Cycle: {!Opportunity.Stage_in_Buying_Cycle__c}"); 
+        
+        box.createDialog(); 
+        box.setWidth(900); 
+        box.setContentInnerHTML("<a href=\"#\" onclick=\"box.hide();\">Close</a><br/><iframe src =\"/apex/SalesCoachV2?id={!Opportunity.Id}&stage="+selectedStageValue+"\" height=\"700\" width=\"950\" frameborder=\"0\" style=\"border:none; width:850px; margin-left:0; margin-right: auto; height:600px;overflow-x:hidden;\"><p>Your browser does not support iframes.</p></iframe>"); 
+        
+        box.setupDefaultButtons(); 
+        
+        box.show(); 
+    } 
+    
+    </script>
+    <apex:form id="frm">
+        <apex:actionFunction name="typeUpdated" status="buttonStatus" rerender="frm"/>
+        <apex:variable var="oppTypeIncreaseVolume" value="Increase Volume"/>
+        <apex:variable var="oppTypeRenovation" value="Renovation"/>
+        <apex:variable var="oppTypeInnovation" value="Innovation"/>
+        <apex:variable var="oppTypeAgreements" value="Agreements"/>
+        <apex:variable var="oppTypeServices" value="Services"/>
+        <apex:variable var="oppSubTypeReseller" value="Reseller"/>
+        <apex:variable var="oppSubTypeLongContract" value="Long Contract"/>
+        <apex:variable var="oppSubTypeBilateral" value="Bilateral"/>
+        <apex:pageBlock mode="mainDetail">
+            <apex:pageBlockButtons location="bottom">
+                <!--<apex:commandButton id="saveButton" value="Save" action="{!save}" rendered="{!AND(bIsEdit,NOT(bEditClicked))}" />-->
+                <apex:commandButton id="saveButtonCust" value="Save" action="{!saveCustom}"/>
+                <apex:commandButton id="salesCoach" value="Sales Coach" onclick="showBox();return false;"/>
+                <apex:commandButton id="cancelButton" action="{!cancel}" value="Cancel" immediate="true"  />
+                <apex:commandButton id="SubmitForApproval" value="Submit For Approval" onclick="invokeApproval(event)" rendered="{!!bIsEdit}" />
+                <!--<apex:commandButton id="submitForApproval" value="Submit for Approval"  action="{!URLFOR($Action.Opportunity.Submit)}"/>-->
+                <!--<apex:commandButton id="Edit" action="{!editPage}" value="Edit" rerender="frm" rendered="{!!bIsEdit}" status="buttonStatus" />-->
+                <apex:actionStatus id="buttonStatus">
+                    <apex:facet name="start">      
+                        <img src="/img/loading32.gif" width="18px" height="18px"/>
+                    </apex:facet>
+                </apex:actionStatus>
+            </apex:pageBlockButtons> 
+        </apex:pageBlock>
+        <apex:pagemessages id="idMessages" escape="false"/>
+        <apex:actionFunction action="{!tabMethod}" name="setCurrentTab" rerender="relatedLists" >
+            <apex:param name="firstParam" assignTo="{!tabInFocus}" value="" />
+        </apex:actionFunction>
+        <apex:tabPanel switchType="client"  id="OppTabPanel" tabClass="activeTab" inactiveTabClass="inactiveTab" value="{!TabInFocus}">
+            <apex:tab label="Opportunity Overview" name="oppOverview" id="tabOne" ontabenter="showRelatedListDiv('opportunityOverview');setCurrentTab('1');" ontableave="hideRelatedListDiv('opportunityOverview')" >
+                <apex:pageBlock id="pgBlockOne">
+                    <apex:pageBlockSection title="Details" id="pgBlockSecOne">
+                        <apex:outputfield value="{!opp.AccountId}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.AccountId}" rendered="{!bIsEdit}"/>
+                        <apex:outputfield value="{!opp.Opportunity_Type_Overview__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit" />
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.Opportunity_Type_Overview__c}" rendered="{!bIsEdit}" onchange="typeUpdated()" required="{!(CONTAINS(conditionalRequiredString,UPPER('Opportunity_Type_Overview__c')))}"/>
+                        <!--<apex:inputfield value="{!opp.Opportunity_Type_Overview__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('Opportunity_Type_Overview__c')))}"/>-->
+                        
+                        <apex:outputfield value="{!opp.name}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.name}" rendered="{!bIsEdit}" />
+                        <!-- immediate="true"  busCaseMarketAccessPanel, busCaseProductSourcePanel, busCaseIntResourcesPanel, busCaseExtReferencesPanel, busCasePricingConditionsPanel, busCaseCCReferencesPanel, busCaseResellerPanel, busCaseAdditionalInfoPanel"-->
+                        <apex:outputfield value="{!opp.Opportunity_Sub_Type__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.Opportunity_Sub_Type__c}" rendered="{!bIsEdit}" onchange="typeUpdated()" required="{!(CONTAINS(conditionalRequiredString,UPPER('Opportunity_Sub_Type__c')))}"/>
+                        <!--<apex:inputfield value="{!opp.Opportunity_Sub_Type__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('Opportunity_Sub_Type__c')))}"/>-->
+                        <apex:outputfield value="{!opp.Opportunity_No__c}" />
+                        <apex:outputfield value="{!opp.Agreement_Details__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.Agreement_Details__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('Agreement_details__c')))}"/>
+                        <apex:outputfield value="{!opp.OwnerId}" rendered="{!!bIsEdit}">
+                        <a href="/{!LEFT(opp.id,15)}/a?retURL=%2F{!LEFT(opp.id,15)}">[Change]</a>
+                    </apex:outputfield>
+                        
+                        <apex:outputfield value="{!opp.Nature_of_Opportunity__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.Nature_of_Opportunity__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('nature_of_opportunity__c')))}"/>
+                        
+<!--                    <apex:outputfield label="Total Volume (MT)" value="{!opp.Total_Quantity__c}" /> -->
+<!--                    <apex:outputfield label="Total Volume (MT)" value="{!opp.Total_Quantity_SP_Rollup__c}" /> -->
+                        <apex:outputfield label="Total Volume (MT)" value="{!opp.Total_Quantity_Final__c}" />
+                        
+                        <apex:outputfield value="{!opp.Nature_of_Value_Benefit__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.Nature_of_Value_Benefit__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('nature_of_value_benefit__c')))}"/>
+                                               
+<!--                    <apex:outputField label="Total Estimated Revenue (MT)" value="{!opp.Amount}" /> -->
+<!--                    <apex:outputField label="Total Estimated Revenue (MT)" value="{!opp.Estimated_Revenue_SP_Rollup__c}" /> -->
+                        <apex:outputField label="Total Estimated Revenue (MT)" value="{!opp.Estimated_Revenue_Final__c}" />
+                        
+                        <!-- Application category mapping added 23/11/2016-->
+                        <apex:outputfield value="{!opp.CBT_Category__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.CBT_Category__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('CBT_Category__c')))}"/>
+                        
+                        <apex:outputfield label="Total Estimated PA (MT)" value="{!opp.Total_Estimated_PA_Final__c}" />
+                        
+                         <apex:outputfield value="{!opp.CBT_Application__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.CBT_Application__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('CBT_Application__c')))}"/>
+                           
+                        <apex:outputField label="Opportunity Record Type" value="{!opp.RecordType.Name}" rendered="{!!bIsEdit}">
+                        <a href="/setup/ui/recordtypeselect.jsp?id={!LEFT(opp.id,15)}&retURL=%2F{!LEFT(opp.id,15)}">[Change]</a>
+                    </apex:outputfield>
+                    
+                        <apex:outputField value="{!opp.Qualification_Status__c}" id="qualificationStatus"/>
+<!--                    <apex:outputfield label="Total Estimated PA (MT)" value="{!opp.Total_Estimated_PA__c}" /> -->
+<!--                    <apex:outputfield label="Total Estimated PA (MT)" value="{!opp.Total_Estimated_PA_SP_Rollup__c}" /> -->
+                        
+                        <apex:pageblocksectionitem />
+                        <apex:inputfield value="{!opp.Business_Case_Approvers__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('Business_Case_Approvers__c')))}"/>
+                        <apex:outputfield value="{!opp.Business_Case_Approvers__c}" rendered="{!!bIsEdit}"/>
+                        
+                        <apex:pageblocksectionitem />
+                        <apex:outputfield label="Targeted Close Sign Date" value="{!opp.CloseDate}" rendered="{!!bIsEdit}" id="closeDate">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit" />
+                        </apex:outputfield>
+                        <apex:inputfield label="Targeted Close Sign Date" value="{!opp.CloseDate}" rendered="{!bIsEdit}" id="closeDate1" onchange="updateCloseDate(this.id)" /> <!--required="{!(CONTAINS(conditionalRequiredString,UPPER('CloseDate')))}"/>-->
+                        
+                        <apex:pageblocksectionitem />
+                        <apex:inputfield value="{!opp.Description}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,'Description'))}"/>
+                        <apex:outputfield value="{!opp.Description}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        
+                    </apex:pageBlockSection>
+                    <br/>
+                    <div style="background-color: white;">
+                        <apex:pageBlockSection id="pgBlockSecTwo">
+                            <apex:outputPanel styleClass="requiredInput"  layout="block">                 
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>  
+                            <apex:selectRadio id="radio" layout="lineDirection" legendText="Internal Selling Stage" style="color:#4a4a56;width:1150px;font-size:96%;font-weight:bold;" value="{!opp.StageName}"  label="">
+                                <apex:selectOption itemLabel="Prospect" itemValue="Prospect" ></apex:selectOption>
+                                <apex:selectOption itemLabel="Qualification" itemValue="Qualification"></apex:selectOption>
+                                <apex:selectOption itemLabel="Business Case Review" itemValue="Business Case Review"></apex:selectOption>
+                                <apex:selectOption itemLabel="Agreement/Solution Development" itemValue="Agreement/Solution Development"></apex:selectOption>
+                                <apex:selectOption itemLabel="Negotiation" itemValue="Negotiation"></apex:selectOption>
+                                <apex:selectOption itemLabel="Closed - Won/Signed" itemValue="Closed - Won/Signed"></apex:selectOption>
+                                <apex:selectOption itemLabel="Closed Lost" itemValue="Closed Lost"></apex:selectOption>
+                                <apex:selectOption itemLabel="Closed - Implemented" itemValue="Closed - Implemented"></apex:selectOption>
+                            </apex:selectRadio>
+                            </apex:outputPanel>
+                        </apex:pageBlockSection>
+                        <apex:pageBlockSection id="pgBlockSecThree" >
+                            <apex:outputPanel styleClass="requiredInput"  layout="block">                 
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                            <apex:selectRadio layout="lineDirection" legendText="Customers Phase in the Buying Cycle" style="color: #4a4a56;width:1000px;font-size:96%;font-weight:bold;" value="{!opp.Stage_in_Buying_Cycle__c}"  label="" id="customersPhase" >
+                                <apex:selectOptions value="{!stages}" />
+                                <!--<apex:selectOption itemLabel="Recognition of Needs" itemValue="Recognition of Needs"></apex:selectOption>
+                                <apex:selectOption itemLabel="Evaluation of Options" itemValue="Evaluation of Options"></apex:selectOption>
+                                <apex:selectOption itemLabel="Resolution of Concerns" itemValue="Resolution of Concerns"></apex:selectOption>
+                                <apex:selectOption itemLabel="Implementation" itemValue="Implementation"></apex:selectOption>
+                                <apex:selectOption itemLabel="Changes Over Time" itemValue="Changes Over Time"></apex:selectOption> -->
+                            </apex:selectRadio>
+                            </apex:outputPanel>
+                        </apex:pageBlockSection>
+                    </div>
+                    <!-- SECTION: Other Details -->
+                    <apex:pageBlockSection title="Other Details">
+                        <apex:outputfield value="{!opp.Lost_Reason__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.Lost_Reason__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('Lost_Reason__c')))}"/>
+                        <apex:outputfield value="{!opp.Lost_Comments__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.Lost_Comments__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('Lost_Comments__c')))}"/>
+                    </apex:pageBlockSection>
+                    <!-- SECTION: CUSTOMER POSITIONING STATEMENT --> 
+                    <!--                     
+                        <apex:pageBlockSection title="Customer Positioning Statement" collapsible="true" rendered="{!Opportunity.Id != null}">
+                        <apex:outputField value="{!accountPlan.Customer_Postioning_Statement__c}" >
+                        </apex:outputField>
+                        </apex:pageBlockSection>   -->
+                    <!-- SECTION: HORIZON REVENUE GOAL -->    
+                    <!-- <apex:pageBlockSection title="Horizon Revenue Goal" columns="1" collapsible="true" rendered="{!Opportunity.Id != null}">
+                        <apex:pageBlockTable value="{!accountPlan}" var="item" columnsWidth="33%,33%,33%" >
+                        <apex:column headerValue="Total PA Goal 0-1 yr">
+                        <apex:outputField value="{!item.Total_PA_Goal_0_1_yr__c}" >
+                        </apex:outputField>
+                        </apex:column>
+                        <apex:column headerValue="Total PA Goal 1-2 yrs">
+                        <apex:outputField value="{!item.Total_PA_Goal_1_2_yrs__c}" >
+                        </apex:outputField>
+                        </apex:column>
+                        <apex:column headerValue="Total PA Goal 3-5 yrs">
+                        <apex:outputField value="{!item.Total_PA_Goal_3_5_yrs__c}" >
+                        </apex:outputField>
+                        </apex:column>
+                        </apex:pageBlockTable>
+                        </apex:pageBlockSection>  -->
+                    <!-- SECTION: HORIZON STATEGIC GOAL -->                         
+                    <apex:pageBlockSection title="Horizon Strategic Goal" columns="1" collapsible="true" >
+                        <apex:pageBlockTable value="{!accountPlan}" var="item" columnsWidth="33%,33%,33%">
+                            <apex:column headerValue="Strategic Goal 0-1 yr">
+                                <apex:outputField value="{!item.Strategic_Goal_0_1_yr__c}" >
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column headerValue="Strategic Goal 1-2 yrs">
+                                <apex:outputField value="{!item.Strategic_Goal_1_2_yrs__c}" >
+                                </apex:outputField>
+                            </apex:column>
+                            <apex:column headerValue="Strategic Goal 3-5 yr">
+                                <apex:outputField value="{!item.Strategic_Goal_3_5_yrs__c}" >
+                                </apex:outputField>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+                    <!-- SECTION: HORIZON THEME -->                         
+                    <!-- <apex:pageBlockSection title="Horizon Theme" columns="1" collapsible="true" rendered="{!Opportunity.Id != null}">
+                        <apex:pageBlockTable value="{!accountPlan}" var="item" columnsWidth="33%,33%,33%">
+                        <apex:column headerValue="Theme 0-1 yr">
+                        <apex:outputField value="{!item.Theme_0_1_yr__c}" >
+                        </apex:outputField>
+                        </apex:column>
+                        <apex:column headerValue="Theme 1-2 yrs">
+                        <apex:outputField value="{!item.Theme_1_2_yrs__c}" >
+                        </apex:outputField>
+                        </apex:column>
+                        <apex:column headerValue="Theme 3-5 yrs">
+                        <apex:outputField value="{!item.Theme_3_5_yrs__c}" >
+                        </apex:outputField>
+                        </apex:column>
+                        </apex:pageBlockTable>
+                        </apex:pageBlockSection>  -->
+                </apex:pageBlock>
+            </apex:tab>
+            <apex:tab label="Changes Over Time" name="2" id="tabSeven" ontabenter="showRelatedListDiv('oppChanges');setCurrentTab('2');" ontableave="hideRelatedListDiv('oppChanges')">
+               
+                <apex:pageBlock >
+                    <apex:pageBlockSection title="Details">
+                        
+                        <apex:outputfield value="{!opp.Referral_Opportunties__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.Referral_Opportunties__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('Referral_Opportunties__c')))}"/>
+                        
+                        <apex:outputfield value="{!opp.Changes_Anticipated__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.Changes_Anticipated__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('Changes_Anticipated__c')))}"/>
+                        
+                        <apex:outputfield value="{!opp.Value_Drivers__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.Value_Drivers__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('Value_Drivers__c')))}"/>
+                        
+                        <apex:outputfield value="{!opp.New_Opportunties__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.New_Opportunties__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('New_Opportunties__c')))}"/>
+                        
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:tab>
+            <apex:tab label="Recognition of Needs" name="3" id="tabTwo" ontabenter="showRelatedListDiv('oppRecognition');setCurrentTab('3');" ontableave="hideRelatedListDiv('oppRecognition')" >
+                
+                <apex:pageBlock id="pgBlockTwo">
+                    FOR – Focus of Receptivity – Person or area that is willing to listen and disclose Information.<br/>
+                    FOD – Focus of Dissatisfaction – Person or area that experiences and or has responsibility for the issues your capability addresses.<br/>
+                    FOP – Focus of Power – Person or area that can make the final decision to purchase.<br/>
+                    <!-- RELATED LIST: CUSTOMER'S NEEDS & RANKINGS -->
+                    <apex:pageBlockSection title="Customer's Needs & Ranking" columns="1" collapsible="true">
+                        
+                            <apex:pageBlockTable value="{!accountPlan}" var="need" rendered="{!accountPlan.Id!=null}">
+                                <apex:column width="20%" headerValue="Customer Need 1" value="{!need.Detailed_Needs_1__c}"/>
+                                <apex:column width="20%" headerValue="2" value="{!need.Detailed_Needs_2__c}"/>
+                                <apex:column width="20%" headerValue="3" value="{!need.Detailed_Needs_3__c}"/>
+                                <apex:column width="20%" headerValue="4" value="{!need.Detailed_Needs_4__c}"/>
+                                <apex:column width="20%" headerValue="5" value="{!need.Detailed_Needs_5__c}"/>
+                            </apex:pageBlockTable>
+                        <apex:outputText value="There are no Customer Needs from the Account to be displayed" rendered="{!accountPlan.Id == null}" />
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection title="Focus of Receptivity" columns="2" collapsible="true">
+                        
+                        <apex:inputfield label="{!$ObjectType.Opportunity.fields['FOR_customer_role__c'].InlineHelpText}" value="{!opp.FOR_customer_role__c}" rendered="{!bIsEdit}" style="color: #000;font-size:11px;" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOR_customer_role__c')))}"/>
+                        <apex:outputfield label="{!$ObjectType.Opportunity.fields['FOR_customer_role__c'].InlineHelpText}" value="{!opp.FOR_customer_role__c}" rendered="{!!bIsEdit}" style="color: #000;font-size:11px;">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        
+                        <apex:inputfield label="{!$ObjectType.Opportunity.fields['Needed_Information__c'].InlineHelpText}"  value="{!opp.Needed_Information__c}" rendered="{!bIsEdit}" style="color: #000;font-size:11px;" required="{!(CONTAINS(conditionalRequiredString,UPPER('Needed_Information__c')))}"/>
+                        <apex:outputfield label="{!$ObjectType.Opportunity.fields['Needed_Information__c'].InlineHelpText}"  value="{!opp.Needed_Information__c}" rendered="{!!bIsEdit}" style="color: #000;font-size:11px;">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        
+                        <apex:inputfield label="{!$ObjectType.Opportunity.fields['Potential_Help__c'].InlineHelpText}"  value="{!opp.Potential_Help__c}" rendered="{!bIsEdit}" style="color: #000;font-size:11px;" required="{!(CONTAINS(conditionalRequiredString,UPPER('Potential_Help__c')))}"/>
+                        <apex:outputfield label="{!$ObjectType.Opportunity.fields['Potential_Help__c'].InlineHelpText}"  value="{!opp.Potential_Help__c}" rendered="{!!bIsEdit}" style="color: #000;font-size:11px;">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection title="Recognition of Needs 1 (This section is Mandatory when progressing on from this Phase)"  columns="1" id="pgBlockSecTwo">
+                        <!--
+                            <apex:outputfield value="{!opp.FOD_Problem_1__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOD_Problem_1__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOP_Problems_1__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOP_Problems_1__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOD_Problem_2__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOD_Problem_2__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOP_Problems_2__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOP_Problems_2__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOD_Problem_3__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOD_Problem_3__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOP_Problems_3__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOP_Problems_3__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOD_Implication_1__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOD_Implication_1__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOP_Implication_1__c}" rendered="{!!bIsEdit}" />
+                            <apex:inputfield value="{!opp.FOP_Implication_1__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOD_Implication_2__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOD_Implication_2__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOP_Implication_2__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOP_Implication_2__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOD_Implication_3__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOD_Implication_3__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOP_Implication_3__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOP_Implication_3__c}" rendered="{!bIsEdit}" />
+                            
+                            <apex:outputfield value="{!opp.FOD_Needs_Implied_or_Explcit_1__c}" rendered="{!!bIsEdit}" />
+                            <apex:inputfield value="{!opp.FOD_Needs_Implied_or_Explcit_1__c}" rendered="{!bIsEdit}" />
+                            
+                            <apex:outputfield value="{!opp.FOP_Needs_Implied_or_Explcit_1__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOP_Needs_Implied_or_Explcit_1__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOD_Needs_Implied_or_Explcit_2__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOD_Needs_Implied_or_Explcit_2__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOP_Needs_Implied_or_Explcit_2__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOP_Needs_Implied_or_Explcit_2__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOD_Needs_Implied_or_Explcit_3__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOD_Needs_Implied_or_Explcit_3__c}" rendered="{!bIsEdit}" />
+                            <apex:outputfield value="{!opp.FOP_Needs_Implied_or_Explcit_3__c}" rendered="{!!bIsEdit}" />
+                            
+                            <apex:inputfield value="{!opp.FOP_Needs_Implied_or_Explcit_3__c}" rendered="{!bIsEdit}" />-->
+                        <!-- Panel for FOD, FOP 1 -->
+                        <apex:panelGrid columns="4" border="0" styleClass="tableStyle" width="100%" columnClasses="recogColStyle1,{!IF(bIsEdit,'recogColStyle2Edit','recogColStyle2')},recogColStyle3,{!IF(bIsEdit,'recogColStyle4Edit','recogColStyle4')}" rowClasses="rowstyle1">
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Problem_1__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!-- <apex:outputLabel value="FOD Problem our capability to solve 1" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:inputfield value="{!opp.FOD_Problem_1__c}" rendered="{!bIsEdit}" style="color: #000;font-size:11px;" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOD_Problem_1__c')))}"/>
+                            <apex:outputfield value="{!opp.FOD_Problem_1__c}" rendered="{!!bIsEdit}" style="color: #000;font-size:11px;">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Problems_1__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!-- <apex:outputLabel value="FOP Problem our capability to solve 1" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:inputfield value="{!opp.FOP_Problems_1__c}" rendered="{!bIsEdit}" style="color: #000;font-size:11px;" 
+                                                    required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Problem_1__c')))}"/>
+                            <apex:outputfield value="{!opp.FOP_Problems_1__c}" rendered="{!!bIsEdit}" style="color: #000;font-size:11px;">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Implication_1__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--   <apex:outputLabel value="FOD Implication of problems 1" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputfield value="{!opp.FOD_Implication_1__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.FOD_Implication_1__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOD_Implication_1__c')))}"/>
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Implication_1__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--    <apex:outputLabel value="FOP Implication of problems 1" style="color: #4a4a56;"></apex:outputLabel>  -->
+                            <apex:outputfield value="{!opp.FOP_Implication_1__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.FOP_Implication_1__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Implication_1__c')))}"/>
+                        </apex:panelGrid>
+                        <!-- Panel Grid for Implied or Explicit 1 Checkbox -->
+                        <apex:panelGrid columns="8" border="0" styleClass="tableStyle" width="100%" columnClasses="{!IF(bIsEdit,'recogNeedsColStyle1Edit','recogNeedsColStyle1')},{!IF(bIsEdit,'recogNeedsColStyle2Edit','recogNeedsColStyle2')},recogNeedsColStyle3,recogNeedsColStyle4,{!IF(bIsEdit,'recogNeedsColStyle1Edit','recogNeedsColStyle1')},{!IF(bIsEdit,'recogNeedsColStyle2Edit','recogNeedsColStyle2')},recogNeedsColStyle3,recogNeedsColStyle4" rowClasses="rowstyle1">
+                            <!--<apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Needs_Implied_or_Explcit_1__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>-->
+                            <apex:outputLabel value="FOD Needs"  style="color: #4a4a56;" />
+                            <apex:outputText value="" />
+                            <apex:outputPanel >
+                                <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Implied1__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                                <!--          <apex:outputLabel value="Implied" style="color: #4a4a56;"></apex:outputLabel> -->
+                                <apex:outputfield value="{!opp.FOD_Implied1__c}" rendered="{!!bIsEdit}" >
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                                </apex:outputfield>
+                                <apex:inputfield value="{!opp.FOD_Implied1__c}" rendered="{!bIsEdit}" />
+                            </apex:outputPanel>
+                            <apex:outputPanel >
+                                <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Explicit1__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                                <!--         <apex:outputLabel value="Explicit" style="color: #4a4a56;"></apex:outputLabel> -->
+                                <apex:outputfield value="{!opp.FOD_Explicit1__c}" rendered="{!!bIsEdit}" >
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                                </apex:outputfield>
+                                <apex:inputfield value="{!opp.FOD_Explicit1__c}" rendered="{!bIsEdit}" />
+                            </apex:outputPanel>
+                            <apex:outputLabel value="FOP Needs"  style="color: #4a4a56;" />
+                            <apex:outputText value="" />
+                            <apex:outputPanel >
+                                <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Implied1__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                                <!--           <apex:outputLabel value="Implied" style="color: #4a4a56;"></apex:outputLabel> -->
+                                <apex:outputfield value="{!opp.FOP_Implied1__c}" rendered="{!!bIsEdit}" >
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                                </apex:outputfield>
+                                <apex:inputfield value="{!opp.FOP_Implied1__c}" rendered="{!bIsEdit}" />
+                            </apex:outputPanel>
+                            <apex:outputPanel >
+                                <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Explicit1__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                                <!--            <apex:outputLabel value="Explicit" style="color: #4a4a56;"></apex:outputLabel> -->
+                                <apex:outputfield value="{!opp.FOP_Explicit1__c}" rendered="{!!bIsEdit}">
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                                </apex:outputfield>
+                                <apex:inputfield value="{!opp.FOP_Explicit1__c}" rendered="{!bIsEdit}" />
+                            </apex:outputPanel>
+                        </apex:panelGrid>
+                    </apex:pageBlockSection>
+                    <apex:pageBlockSection title="Recognition of Needs 2"  columns="1" id="pgBlockSecThree">
+                        <!-- Panel Grid for FOD, FOP 2 -->   
+                        <apex:panelGrid columns="4" border="0" styleClass="tableStyle" width="100%" columnClasses="recogColStyle1,{!IF(bIsEdit,'recogColStyle2Edit','recogColStyle2')},recogColStyle3,{!IF(bIsEdit,'recogColStyle4Edit','recogColStyle4')}" rowClasses="rowstyle1">
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Problem_2__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!-- <apex:outputLabel value="FOD Problem our capability to solve 2" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputfield value="{!opp.FOD_Problem_2__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.FOD_Problem_2__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOD_Problem_2__c')))}"/>
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Problems_2__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!-- <apex:outputLabel value="FOP Problem our capability to solve 3" style="color: #4a4a56;"></apex:outputLabel> -->                           
+                            <apex:outputfield value="{!opp.FOP_Problems_2__c}" rendered="{!!bIsEdit}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.FOP_Problems_2__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Problems_2__c')))}"/>
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Implication_2__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--    <apex:outputLabel value="FOD Implication of problems 2" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputfield value="{!opp.FOD_Implication_2__c}" rendered="{!!bIsEdit}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.FOD_Implication_2__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOD_Implication_2__c')))}"/>
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Implication_2__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--       <apex:outputLabel value="FOP Implication of problems 2" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputfield value="{!opp.FOP_Implication_2__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.FOP_Implication_2__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Implication_2__c')))}"/>
+                        </apex:panelGrid>
+                        <!-- Panel Grid for Implied or Explicit 2 Checkbox -->
+                        <apex:panelGrid columns="8" border="0" styleClass="tableStyle" width="100%" columnClasses="{!IF(bIsEdit,'recogNeedsColStyle1Edit','recogNeedsColStyle1')},{!IF(bIsEdit,'recogNeedsColStyle2Edit','recogNeedsColStyle2')},recogNeedsColStyle3,recogNeedsColStyle4,{!IF(bIsEdit,'recogNeedsColStyle1Edit','recogNeedsColStyle1')},{!IF(bIsEdit,'recogNeedsColStyle2Edit','recogNeedsColStyle2')},recogNeedsColStyle3,recogNeedsColStyle4" rowClasses="rowstyle1">
+                            <apex:outputLabel value="FOD Needs"  style="color: #4a4a56;" />
+                            <apex:outputText value="" />
+                            <apex:outputPanel >
+                                <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Implied2__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                                <!--                   <apex:outputLabel value="Implied" style="color: #4a4a56;"></apex:outputLabel> -->
+                                <apex:outputfield value="{!opp.FOD_Implied2__c}" rendered="{!!bIsEdit}" >
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                                </apex:outputfield>
+                                <apex:inputfield value="{!opp.FOD_Implied2__c}" rendered="{!bIsEdit}" />
+                            </apex:outputPanel>
+                            <apex:outputPanel >
+                                <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Explicit2__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                                <!--                  <apex:outputLabel value="Explicit" style="color: #4a4a56;"></apex:outputLabel>  -->
+                                <apex:outputfield value="{!opp.FOD_Explicit2__c}" rendered="{!!bIsEdit}" >
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                                </apex:outputfield>
+                                <apex:inputfield value="{!opp.FOD_Explicit2__c}" rendered="{!bIsEdit}" />
+                            </apex:outputPanel>
+                            <apex:outputLabel value="FOP Needs"  style="color: #4a4a56;" />
+                            <apex:outputText value="" />
+                            <apex:outputPanel >
+                                <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Implied2__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                                <!--              <apex:outputLabel value="Implied" style="color: #4a4a56;"></apex:outputLabel>  -->
+                                <apex:outputfield value="{!opp.FOP_Implied2__c}" rendered="{!!bIsEdit}" >
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                                </apex:outputfield>
+                                <apex:inputfield value="{!opp.FOP_Implied2__c}" rendered="{!bIsEdit}" />
+                            </apex:outputPanel>
+                            <apex:outputPanel >
+                                <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Explicit2__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                                <!--              <apex:outputLabel value="Explicit" style="color: #4a4a56;"></apex:outputLabel> -->
+                                <apex:outputfield value="{!opp.FOP_Explicit2__c}" rendered="{!!bIsEdit}" >
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                                </apex:outputfield>
+                                <apex:inputfield value="{!opp.FOP_Explicit2__c}" rendered="{!bIsEdit}" />
+                            </apex:outputPanel>
+                        </apex:panelGrid>
+                    </apex:pageBlockSection>
+                    <apex:pageBlockSection title="Recognition of Needs 3"  columns="1" id="pgBlockSecfour">
+                        <!-- Panel Grid for FOD, FOP 3 --> 
+                        <apex:panelGrid columns="4" border="0" styleClass="tableStyle" width="100%" columnClasses="recogColStyle1,{!IF(bIsEdit,'recogColStyle2Edit','recogColStyle2')},recogColStyle3,{!IF(bIsEdit,'recogColStyle4Edit','recogColStyle4')}" rowClasses="rowstyle1">
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Problem_3__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!-- <apex:outputLabel value="FOD Problem our capability to solve 3" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputfield value="{!opp.FOD_Problem_3__c}" rendered="{!!bIsEdit}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.FOD_Problem_3__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOD_Problem_3__c')))}"/>
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Problems_3__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!-- <apex:outputLabel value="FOP Problem our capability to solve 3" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputfield value="{!opp.FOP_Problems_3__c}" rendered="{!!bIsEdit}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.FOP_Problems_3__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Problems_3__c')))}"/>
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Implication_3__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--        <apex:outputLabel value="FOD Implication of problems 3" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputField value="{!opp.FOD_Implication_3__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputField>
+                            <apex:inputField value="{!opp.FOD_Implication_3__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOD_Implication_3__c')))}"/>
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Implication_3__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--          <apex:outputLabel value="FOP Implication of problems 3" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputField value="{!opp.FOP_Implication_3__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputField>
+                            <apex:inputField value="{!opp.FOP_Implication_3__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Implication_3__c')))}"/>
+                        </apex:panelGrid>
+                        <!-- Panel Grid for Implied or Explicit 3 Checkbox -->        
+                        <apex:panelGrid columns="8" border="0" styleClass="tableStyle" width="100%" columnClasses="{!IF(bIsEdit,'recogNeedsColStyle1Edit','recogNeedsColStyle1')},{!IF(bIsEdit,'recogNeedsColStyle2Edit','recogNeedsColStyle2')},recogNeedsColStyle3,recogNeedsColStyle4,{!IF(bIsEdit,'recogNeedsColStyle1Edit','recogNeedsColStyle1')},{!IF(bIsEdit,'recogNeedsColStyle2Edit','recogNeedsColStyle2')},recogNeedsColStyle3,recogNeedsColStyle4" rowClasses="rowstyle1">
+                            <apex:outputLabel value="FOD Needs"  style="color: #4a4a56;" />
+                            <apex:outputText value="" />
+                            <apex:outputPanel >
+                                <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Implied3__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                                <!--                    <apex:outputLabel value="Implied" style="color: #4a4a56;"></apex:outputLabel>  -->
+                                <apex:outputfield value="{!opp.FOD_Implied3__c}" rendered="{!!bIsEdit}" >
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                                </apex:outputfield>
+                                <apex:inputfield value="{!opp.FOD_Implied3__c}" rendered="{!bIsEdit}" />
+                            </apex:outputPanel>
+                            <apex:outputPanel >
+                                <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOD_Explicit3__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                                <!--                   <apex:outputLabel value="Explicit" style="color: #4a4a56;"></apex:outputLabel> -->
+                                <apex:outputfield value="{!opp.FOD_Explicit3__c}" rendered="{!!bIsEdit}" >
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                                </apex:outputfield>
+                                <apex:inputfield value="{!opp.FOD_Explicit3__c}" rendered="{!bIsEdit}" />
+                            </apex:outputPanel>
+                            <apex:outputLabel value="FOP Needs"  style="color: #4a4a56;" />
+                            <apex:outputText value="" />
+                            <apex:outputPanel >
+                                <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Implied3__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                                <!-- <apex:outputLabel value="Implied" style="color: #4a4a56;"></apex:outputLabel> -->
+                                <apex:outputfield value="{!opp.FOP_Implied3__c}" rendered="{!!bIsEdit}">
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                                </apex:outputfield>
+                                <apex:inputfield value="{!opp.FOP_Implied3__c}" rendered="{!bIsEdit}" />
+                            </apex:outputPanel>
+                            <apex:outputPanel >
+                                <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Explicit3__c'].Label}" style="color: #4a4a56;" ></apex:outputLabel>
+                                <!--  <apex:outputLabel value="Explicit" style="color: #4a4a56;"></apex:outputLabel> -->
+                                <apex:outputfield value="{!opp.FOP_Explicit3__c}" rendered="{!!bIsEdit}" >
+                                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                                </apex:outputfield>
+                                <apex:inputfield value="{!opp.FOP_Explicit3__c}" rendered="{!bIsEdit}" />
+                            </apex:outputPanel>
+                        </apex:panelGrid>
+                    </apex:pageBlockSection>
+                    <apex:panelGrid columns="4" border="0" styleClass="tableStyle" width="100%" columnClasses="{!IF(bIsEdit,'targetedLabelEditRON','targetedLabelRON')},{!IF(bIsEdit,'targetedValueEditRON','targetedValueRON')},internalSellingLabelRON,internalSellingValueRON" rowClasses="rowstyle1">
+                        <!--{!IF(bIsEdit,'targetedLabelEdit','internalSellingLabel')}-->
+                        <apex:outputLabel value="Targeted Close Sign Date" style="color: #4a4a56;" ></apex:outputLabel>
+                        <apex:outputfield value="{!opp.closeDate}" rendered="{!!bIsEdit}" style="vertical-align: -13px;"/>
+                        <apex:inputfield label="Targeted Close Sign Date" value="{!opp.CloseDate}" rendered="{!bIsEdit}" id="closeDate" onchange="updateCloseDate(this.id)"/>
+                        
+                        <apex:outputLabel value="Internal Selling Stage" style="color: #4a4a56;" rendered="{!!bIsEdit}"></apex:outputLabel>
+                        <apex:outputfield value="{!opp.StageName}" rendered="{!!bIsEdit}" style="vertical-align: -13px;"/>
+                        
+                    </apex:panelGrid>
+                </apex:pageBlock>
+            </apex:tab>
+            <apex:tab label="Evaluation of Options" name="4" id="tabThree" ontabenter="showRelatedListDiv('oppEvaluation');setCurrentTab('4');" ontableave="hideRelatedListDiv('oppEvaluation')">
+                <apex:pageBlock id="pgBlockThree" >
+                    <apex:pageBlockSection id="pgBlockSecThree" columns="1" title="Details">
+                        <!--  <apex:outputfield value="{!opp.FOP_Decision_Criteria_1__c}" rendered="{!!bIsEdit}"/>
+                            <apex:inputfield value="{!opp.FOP_Decision_Criteria_1__c}" rendered="{!bIsEdit}"/>
+                            
+                            <apex:outputfield value="{!opp.FOP_Competitor_Abiltity_to_Meet_1__c}" rendered="{!!bIsEdit}"/>
+                            <apex:inputfield value="{!opp.FOP_Competitor_Abiltity_to_Meet_1__c}" rendered="{!bIsEdit}"/>
+                            
+                            <apex:outputfield value="{!opp.FOP_Fonterra_Ability_to_Meet_1__c}" rendered="{!!bIsEdit}" />
+                            <apex:inputfield value="{!opp.FOP_Fonterra_Ability_to_Meet_1__c}" rendered="{!bIsEdit}"/>
+                            
+                            <apex:outputfield value="{!opp.FOP_Decision_Criteria_2__c}" rendered="{!!bIsEdit}"/>
+                            <apex:inputfield value="{!opp.FOP_Decision_Criteria_2__c}" rendered="{!bIsEdit}"/>
+                            
+                            <apex:outputfield value="{!opp.FOP_Competitor_Abiltity_to_Meet_2__c}" rendered="{!!bIsEdit}"/>
+                            <apex:inputfield value="{!opp.FOP_Competitor_Abiltity_to_Meet_2__c}" rendered="{!bIsEdit}"/>
+                            
+                            <apex:outputfield value="{!opp.FOP_Fonterra_Ability_to_Meet_2__c}" rendered="{!!bIsEdit}" />
+                            <apex:inputfield value="{!opp.FOP_Fonterra_Ability_to_Meet_2__c}" rendered="{!bIsEdit}"/>
+                            
+                            <apex:outputfield value="{!opp.FOP_Decision_Criteria_3__c}" rendered="{!!bIsEdit}"/>
+                            <apex:inputfield value="{!opp.FOP_Decision_Criteria_3__c}" rendered="{!bIsEdit}"/>
+                            
+                            <apex:outputfield value="{!opp.FOP_Competitor_Abiltity_to_Meet_3__c}" rendered="{!!bIsEdit}"/>
+                            <apex:inputfield value="{!opp.FOP_Competitor_Abiltity_to_Meet_3__c}" rendered="{!bIsEdit}"/>
+                            
+                            <apex:outputfield value="{!opp.FOP_Fonterra_Ability_to_Meet_3__c}" rendered="{!!bIsEdit}" />
+                            <apex:inputfield value="{!opp.FOP_Fonterra_Ability_to_Meet_3__c}" rendered="{!bIsEdit}"/>   -->
+                        <!-- Evaluation Of Options -->
+                        <apex:panelGrid columns="6" border="0" styleClass="tableStyle" width="100%" rowClasses="rowstyle1"
+                                        columnClasses="implColStyle1,{!IF(bIsEdit,'implColStyle2Edit','implColStyle2')},implColStyle3,{!IF(bIsEdit,'implColStyle4Edit','implColStyle4')},implColStyle5,{!IF(bIsEdit,'implColStyle6Edit','implColStyle6')}" >
+                            
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Decision_Criteria_1__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--              <apex:outputLabel value="FOP Decision Criteria 1" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputField value="{!opp.FOP_Decision_Criteria_1__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputField>
+                            
+                            <apex:inputTextArea value="{!opp.FOP_Decision_Criteria_1__c}" rendered="{!bIsEdit}" rows="5" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Decision_Criteria_1__c')))}"/>
+                            
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Fonterra_Ability_to_Meet_1__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--              <apex:outputLabel value="FOP Fonterra Ability to Meet 1" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputfield value="{!opp.FOP_Fonterra_Ability_to_Meet_1__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputTextArea value="{!opp.FOP_Fonterra_Ability_to_Meet_1__c}" rendered="{!bIsEdit}" rows="5" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Fonterra_Ability_to_Meet_1__c')))}"/>
+                            
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Competitor_Abiltity_to_Meet_1__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--               <apex:outputLabel value="FOP Competitor Ability to Meet 1" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputfield value="{!opp.FOP_Competitor_Abiltity_to_Meet_1__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputTextArea value="{!opp.FOP_Competitor_Abiltity_to_Meet_1__c}" rendered="{!bIsEdit}" rows="5" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Competitor_Abiltity_to_Meet_1__c')))}"/>
+                            
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Decision_Criteria_2__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--              <apex:outputLabel value="FOP Decision Criteria 2" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputField value="{!opp.FOP_Decision_Criteria_2__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputField>
+                            <apex:inputTextArea value="{!opp.FOP_Decision_Criteria_2__c}" rendered="{!bIsEdit}" rows="5" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Decision_Criteria_2__c')))}"/>
+                            
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Fonterra_Ability_to_Meet_2__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--              <apex:outputLabel value="FOP Fonterra Ability to Meet 2" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputfield value="{!opp.FOP_Fonterra_Ability_to_Meet_2__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputTextArea value="{!opp.FOP_Fonterra_Ability_to_Meet_2__c}" rendered="{!bIsEdit}" rows="5" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Fonterra_Ability_to_Meet_2__c')))}"/>
+                            
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Competitor_Abiltity_to_Meet_2__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--             <apex:outputLabel value="FOP Competitor Ability to Meet 2" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputfield value="{!opp.FOP_Competitor_Abiltity_to_Meet_2__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputTextArea value="{!opp.FOP_Competitor_Abiltity_to_Meet_2__c}" rendered="{!bIsEdit}" rows="5" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Competitor_Abiltity_to_Meet_2__c')))}"/>
+                            
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Decision_Criteria_3__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--              <apex:outputLabel value="FOP Decision Criteria 3" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputField value="{!opp.FOP_Decision_Criteria_3__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputField>
+                            <apex:inputTextArea value="{!opp.FOP_Decision_Criteria_3__c}" rendered="{!bIsEdit}" rows="5" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Decision_Criteria_3__c')))}"/>
+                            
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Fonterra_Ability_to_Meet_3__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--          <apex:outputLabel value="FOP Fonterra Ability to Meet 3" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputfield value="{!opp.FOP_Fonterra_Ability_to_Meet_3__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputTextArea value="{!opp.FOP_Fonterra_Ability_to_Meet_3__c}" rendered="{!bIsEdit}" rows="5" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Fonterra_Ability_to_Meet_3__c')))}"/>
+                            
+                            <apex:outputLabel value="{!$ObjectType.Opportunity.fields['FOP_Competitor_Abiltity_to_Meet_3__c'].Label}" style="color: #4a4a56;"></apex:outputLabel>
+                            <!--               <apex:outputLabel value="FOP Competitor Ability to Meet 3" style="color: #4a4a56;"></apex:outputLabel> -->
+                            <apex:outputfield value="{!opp.FOP_Competitor_Abiltity_to_Meet_3__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputTextArea value="{!opp.FOP_Competitor_Abiltity_to_Meet_3__c}" rendered="{!bIsEdit}" rows="5" required="{!(CONTAINS(conditionalRequiredString,UPPER('FOP_Competitor_Abiltity_to_Meet_3__c')))}"/>
+                            
+                        </apex:panelGrid>
+                        <!-- For the Targeted End Date -->
+                        <apex:panelGrid columns="4" border="0" styleClass="tableStyle" width="100%" columnClasses="{!IF(bIsEdit,'targetedLabelEditEOP','targetedLabelEOP')},{!IF(bIsEdit,'targetedValueEditEOP','targetedValueEOP')},internalSellingLabelEOP,internalSellingValueEOP">
+                            <apex:outputLabel value="Targeted Close Sign Date" style="color: #4a4a56;" ></apex:outputLabel>
+                            <apex:outputfield value="{!opp.closeDate}" rendered="{!!bIsEdit}" style="vertical-align: -13px;"/>
+                            <apex:inputfield label="Targeted Close Sign Date" value="{!opp.CloseDate}" rendered="{!bIsEdit}" id="closeDate" onchange="updateCloseDate(this.id)"/>
+                            
+                            <apex:outputLabel value="Internal Selling Stage" style="color: #4a4a56;" rendered="{!!bIsEdit}"></apex:outputLabel>
+                            <apex:outputfield value="{!opp.StageName}" rendered="{!!bIsEdit}" style="vertical-align: -13px;"/>
+                        </apex:panelGrid>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:tab>
+            <apex:tab label="Resolution of Concerns" name="5" id="tabFour" ontabenter="showRelatedListDiv('oppResolution');setCurrentTab('5');" ontableave="hideRelatedListDiv('oppResolution')">
+                <apex:pageBlock id="pgBlockFour" >
+                    <apex:pageBlockSection id="pgBlockSecFour"  title="Details">
+                        <apex:outputfield label="Potential Consequences Issues: Personal" value="{!opp.Potential_Consequences_Personal__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield label="Potential Consequences Issues: Personal" value="{!opp.Potential_Consequences_Personal__c}" rendered="{!bIsEdit}" 
+                                         required="{!(CONTAINS(conditionalRequiredString,UPPER('Potential_Consequences_Personal__c')))}"/>
+                        <apex:outputfield label="Potential Consequences Issues: Technical" value="{!opp.Potential_Consequences_Technical__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield label="Potential Consequences Issues: Technical" value="{!opp.Potential_Consequences_Technical__c}" rendered="{!bIsEdit}"
+                                         required="{!(CONTAINS(conditionalRequiredString,UPPER('Potential_Consequences_Technical__c')))}"/>
+                        <apex:outputfield label="Potential Consequences Issues: Organisational" value="{!opp.Potential_Consequences_Organisational__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield label="Potential Consequences Issues: Organisational" value="{!opp.Potential_Consequences_Organisational__c}" rendered="{!bIsEdit}"
+                                         required="{!(CONTAINS(conditionalRequiredString,UPPER('Potential_Consequences_Organisational__c')))}"/>
+                        <apex:outputfield value="{!opp.Resolution_Strategy__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.Resolution_Strategy__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('Resolution_Strategy__c')))}"/>
+                        <apex:outputfield label="Targeted Close Sign Date" value="{!opp.CloseDate}" rendered="{!!bIsEdit}"/>
+                        <apex:inputfield label="Targeted Close Sign Date" value="{!opp.CloseDate}" rendered="{!bIsEdit}" id="closeDate" onchange="updateCloseDate(this.id)"/>
+                        <apex:outputfield value="{!opp.StageName}" rendered="{!!bIsEdit}" label="Internal Selling Stage"/>
+                        
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:tab>
+            <apex:tab label="Business Case" name="6" id="tabFive" ontabenter="showRelatedListDiv('oppBusiness');setCurrentTab('6');" ontableave="hideRelatedListDiv('oppBusiness')">
+                <!--<apex:outputPanel id="businessPanel">-->
+                <apex:pageBlock id="pgBlockFive">
+                        <apex:pageBlockButtons location="top">
+                            <apex:outputpanel id="congaButton" >
+                                <apex:commandButton value="Conga - Generate Business Case" onclick="openConga()" rerender="congaButton">
+                            </apex:commandButton>
+                         </apex:outputpanel>
+                    </apex:pageBlockButtons>
+                    
+                    <apex:outputPanel id="busCaseQualificationPanel" rendered="{!OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume, opp.Opportunity_Type_Overview__c==oppTypeRenovation,opp.Opportunity_Type_Overview__c==oppTypeInnovation, 
+                                                                                opp.Opportunity_Type_Overview__c==oppTypeServices,
+                                                                                opp.Opportunity_Type_Overview__c==oppTypeAgreements)}" >
+                        <apex:pageBlockSection id="pgBlockSecQualification" title="Qualification">
+                            <apex:inputfield value="{!opp.Rank__c}" rendered="{!bIsEdit}"/>
+                            <apex:outputfield value="{!opp.Rank__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Aligned_to_Strategy__c}" rendered="{!bIsEdit}"/>
+                            <apex:outputfield value="{!opp.Aligned_to_Strategy__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Ease_of_Implementation__c}" rendered="{!bIsEdit}"/>
+                            <apex:outputfield value="{!opp.Ease_of_Implementation__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Ease_of_Resourcing__c}" rendered="{!bIsEdit}"/>
+                            <apex:outputfield value="{!opp.Ease_of_Resourcing__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                        </apex:pageBlockSection>
+                    </apex:outputPanel>
+                    
+                    
+                    <!-- MARKET ACCESS -->
+                    <apex:outputPanel id="busCaseMarketAccessPanel" rendered="{!OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume,opp.Opportunity_Type_Overview__c==oppTypeRenovation,opp.Opportunity_Type_Overview__c==oppTypeInnovation, opp.Opportunity_Type_Overview__c==oppTypeAgreements)}" >
+                        <apex:pageBlockSection id="pgBlockSecMarketAccess" title="Market Access" >
+                            <apex:outputfield value="{!opp.Market_Access_Assured__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Market_Access_Assured__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume,opp.Opportunity_Type_Overview__c==oppTypeRenovation,opp.Opportunity_Type_Overview__c==oppTypeInnovation, opp.Opportunity_Type_Overview__c==oppTypeAgreements)}" -->
+                            <apex:outputfield value="{!opp.Market_Access_Requirements__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Market_Access_Requirements__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume,opp.Opportunity_Type_Overview__c==oppTypeRenovation,opp.Opportunity_Type_Overview__c==oppTypeInnovation, opp.Opportunity_Type_Overview__c==oppTypeAgreements)}" -->
+                        </apex:pageBlockSection>
+                    </apex:outputPanel>
+                    <!-- PRODUCT SOURCE -->
+                    <apex:outputPanel id="busCaseProductSourcePanel" rendered="{!OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume,opp.Opportunity_Type_Overview__c==oppTypeRenovation,opp.Opportunity_Type_Overview__c==oppTypeInnovation, opp.Opportunity_Type_Overview__c==oppTypeAgreements)}" >
+                        <apex:pageBlockSection id="pgBlockSecProductSource" title="Product Source" >
+                            <apex:outputfield value="{!opp.Product_Source__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Product_Source__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume, opp.Opportunity_Type_Overview__c==oppTypeRenovation, opp.Opportunity_Type_Overview__c==oppTypeInnovation, opp.Opportunity_Type_Overview__c==oppTypeAgreements)}" -->
+                            <apex:outputText value=""/>
+                            <apex:outputfield value="{!opp.Preferred_Supply_Region__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Preferred_Supply_Region__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume,opp.Opportunity_Type_Overview__c==oppTypeRenovation,opp.Opportunity_Type_Overview__c==oppTypeInnovation, opp.Opportunity_Type_Overview__c==oppTypeAgreements)}" -->
+                            <apex:outputfield value="{!opp.Ship_To_Countries__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Ship_To_Countries__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume,opp.Opportunity_Type_Overview__c==oppTypeRenovation,opp.Opportunity_Type_Overview__c==oppTypeInnovation,opp.Opportunity_Type_Overview__c==oppTypeAgreements)}" -->
+                        </apex:pageBlockSection>
+                    </apex:outputPanel>
+                    <!-- INTERNAL RESOURCES -->
+                    <apex:outputPanel id="busCaseIntResourcesPanel" rendered="{!OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume, opp.Opportunity_Type_Overview__c==oppTypeRenovation, opp.Opportunity_Type_Overview__c==oppTypeInnovation, opp.Opportunity_Type_Overview__c==oppTypeAgreements, opp.Opportunity_Type_Overview__c==oppTypeServices)}">
+                        <apex:pageBlockSection id="pgBlockSecIntResource" title="Internal Resources" >
+                            <apex:outputfield value="{!opp.Technical_Teams_Required_for_Assistances__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Technical_Teams_Required_for_Assistances__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume,opp.Opportunity_Type_Overview__c==oppTypeRenovation, opp.Opportunity_Type_Overview__c==oppTypeInnovation,opp.Opportunity_Type_Overview__c==oppTypeServices)}" -->
+                        </apex:pageBlockSection>
+                    </apex:outputPanel>
+                    <!-- EXTERNAL REFERENCES -->
+                    <apex:outputPanel id="busCaseExtReferencesPanel" rendered="{!AND(OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume, opp.Opportunity_Type_Overview__c==oppTypeRenovation,opp.Opportunity_Type_Overview__c==oppTypeInnovation, opp.Opportunity_Type_Overview__c==oppTypeServices),
+                                                                                opp.Opportunity_Sub_Type__c!='Technical in Market')}" >
+                        <apex:pageBlockSection id="pgBlockSecExtReferences" title="External References" >
+                            <apex:outputfield label="eProject Ref" value="{!opp.eProject__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield label="eProject Ref" value="{!opp.eProject__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!opp.Opportunity_Type_Overview__c==oppTypeServices}" -->
+                            <apex:outputfield value="{!opp.MDM_Reference_Number__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.MDM_Reference_Number__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!opp.Opportunity_Type_Overview__c==oppTypeServices}" -->
+                            <apex:outputfield value="{!opp.Moved_to_APO__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Moved_to_APO__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!opp.Opportunity_Type_Overview__c==oppTypeServices}" -->
+                            
+                            <!-- 18/12/2015 - fields to be added for Opportunity record type Fonterra Ingredients -->
+                            <apex:outputfield value="{!opp.MSR_Status__c}" rendered="{!!bIsEdit}">
+                                 <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.MSR_Status__c}" rendered="{!bIsEdit}"/>
+                            
+                            <apex:outputfield value="{!opp.MSR_ID__c}" rendered="{!!bIsEdit}">
+                                 <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>           
+                            <apex:inputfield value="{!opp.MSR_ID__c}" rendered="{!bIsEdit}"/>                           
+                        </apex:pageBlockSection>
+                    </apex:outputPanel>
+                    <!-- PRICING CONDITIONS -->
+                    <apex:outputPanel id="busCasePricingConditionsPanel" rendered="{!AND(opp.Opportunity_Type_Overview__c==oppTypeAgreements,!(opp.Opportunity_Sub_Type__c == oppSubTypeReseller),!(opp.Opportunity_Sub_Type__c == oppSubTypeLongContract))}" >
+                        <apex:pageBlockSection id="pgBlockSecPricingConditions" title="Pricing Conditions" >
+                            <apex:outputfield value="{!opp.Other_Pricing_Model__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Other_Pricing_Model__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!opp.Opportunity_Type_Overview__c==oppTypeAgreements}" -->
+                            <apex:outputfield value="{!opp.Reference_Price__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Reference_Price__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!opp.Opportunity_Type_Overview__c==oppTypeAgreements}" -->
+                            <apex:outputfield value="{!opp.Terms_and_Conditions_Agreed__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Terms_and_Conditions_Agreed__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!opp.Opportunity_Type_Overview__c==oppTypeAgreements}" -->
+                            <apex:outputfield label="PRM Solution" value="{!opp.Price_Risk_Solutions__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield label="PRM Solution" value="{!opp.Price_Risk_Solutions__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!opp.Opportunity_Type_Overview__c==oppTypeAgreements}" -->
+                            
+                            <!-- 1/12/2016 - PRICING AGREED INDICATOR -->
+                            <apex:outputField value="{!opp.Pricing__c}" rendered="{!!bIsEdit}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputField>
+                            <apex:inputCheckbox value="{!opp.Pricing__c}" rendered="{!bIsEdit}" />
+                        </apex:pageBlockSection>
+                    </apex:outputPanel>
+                    <!-- CC REFERENCES -->
+                    <apex:outputPanel id="busCaseCCReferencesPanel" rendered="{!OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume, opp.Opportunity_Type_Overview__c==oppTypeRenovation, opp.Opportunity_Type_Overview__c==oppTypeInnovation, opp.Opportunity_Type_Overview__c==oppTypeAgreements, opp.Opportunity_Type_Overview__c==oppTypeServices)}" >
+                        <apex:pageBlockSection id="pgBlockSecCCReferences" title="CC References">
+                            <apex:outputfield value="{!opp.Primary_Opportunity_Source__c}" rendered="{!!bIsEdit}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Primary_Opportunity_Source__c}" rendered="{!bIsEdit}"/>
+                            <apex:outputfield value="{!opp.CampaignId}" rendered="{!!bIsEdit}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.CampaignId}" rendered="{!bIsEdit}"/>
+                        </apex:pageBlockSection>
+                    </apex:outputPanel>
+                    <!-- RESELLER -->
+                    <apex:outputPanel id="busCaseResellerPanel" rendered="{!AND(opp.Opportunity_Type_Overview__c==oppTypeAgreements,!(opp.Opportunity_Sub_Type__c == oppSubTypeLongContract),!(opp.Opportunity_Sub_Type__c == oppSubTypeBilateral))}" >
+                        <apex:pageBlockSection id="pgBlockSecReseller" title="Reseller">
+                            <apex:outputfield value="{!opp.Reseller_Type__c}" rendered="{!!bIsEdit}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Reseller_Type__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!opp.Opportunity_Type_Overview__c==oppTypeAgreements}" -->
+                            <apex:outputfield value="{!opp.Reseller_Assessment_and_Action_Plan__c}" rendered="{!!bIsEdit}" >
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Reseller_Assessment_and_Action_Plan__c}" rendered="{!bIsEdit}" />
+                            <!-- required="{!opp.Opportunity_Type_Overview__c==oppTypeAgreements}" -->               
+                        </apex:pageBlockSection>
+                    </apex:outputPanel>
+                    <!-- ADDITIONAL INFORMATION -->
+                    <apex:outputPanel id="busCaseAdditionalInfoPanel" rendered="{!OR(opp.Opportunity_Type_Overview__c==oppTypeIncreaseVolume, opp.Opportunity_Type_Overview__c==oppTypeRenovation,opp.Opportunity_Type_Overview__c==oppTypeInnovation, AND(opp.Opportunity_Type_Overview__c==oppTypeAgreements,!(opp.Opportunity_Sub_Type__c == oppSubTypeReseller)))}" >
+                        <apex:pageBlockSection id="pgBlockSecAdditionalInfo" title="Additional Information">
+                            <apex:outputfield value="{!opp.Customer_Application__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Customer_Application__c}" rendered="{!bIsEdit}"/>
+                            <apex:outputfield value="{!opp.Sub_Application__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Sub_Application__c}" rendered="{!bIsEdit}"/>
+                            <apex:outputfield value="{!opp.Share_of_Business__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Share_of_Business__c}" rendered="{!bIsEdit}"/>
+                            <apex:outputfield value="{!opp.Growth__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Growth__c}" rendered="{!bIsEdit}"/>
+                            <apex:outputfield value="{!opp.Benefi_of_Fonterra_for_Saving__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Benefi_of_Fonterra_for_Saving__c}" rendered="{!bIsEdit}"/>
+                            <apex:outputfield value="{!opp.Fonterra_Solution__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Fonterra_Solution__c}" rendered="{!bIsEdit}"/>
+                            <apex:outputfield value="{!opp.Transition_From_GDT__c}" rendered="{!!bIsEdit}">
+                                <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                            </apex:outputfield>
+                            <apex:inputfield value="{!opp.Transition_From_GDT__c}" rendered="{!bIsEdit}"/>
+                            <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                            <apex:outputfield label="Targeted Close Sign Date" value="{!opp.CloseDate}" rendered="{!!bIsEdit}"/>
+                            <apex:outputfield value="{!opp.StageName}" rendered="{!!bIsEdit}" label="Internal Selling Stage"/>
+                            
+                        </apex:pageBlockSection>
+                    </apex:outputPanel>
+                    <apex:pageBlockSection id="pgBlockSecTargetCloseDate" >
+                        <apex:inputfield label="Targeted Close Sign Date" value="{!opp.CloseDate}" rendered="{!bIsEdit}" id="closeDate" onchange="updateCloseDate(this.id)"/>
+                    </apex:pageBlockSection>                                             
+                    </apex:pageBlock>
+                <!--</apex:outputPanel>-->
+            </apex:tab>
+            <apex:tab label="Implementation" name="7" id="tabSix" ontabenter="showRelatedListDiv('oppImplementation');setCurrentTab('7');" ontableave="hideRelatedListDiv('oppImplementation')">
+                <apex:pageBlock id="pgBlockSix">
+                    <apex:pageBlockSection columns="1"  title="Details">
+                        <apex:outputfield label="Implementation Expectations to communicate" value="{!opp.implementation_Expectations_to_Communic__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield label="Implementation Expectations to communicate" value="{!opp.implementation_Expectations_to_Communic__c}" rendered="{!bIsEdit}"
+                                         required="{!(CONTAINS(conditionalRequiredString,UPPER('implementation_Expectations_to_Communic__c')))}"/>
+                        <apex:outputfield label="Implementation risks, or obstacles to success" value="{!opp.Implementation_Risk_or_Obstacles_to_Suc__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield label="Implementation risks, or obstacles to success" value="{!opp.Implementation_Risk_or_Obstacles_to_Suc__c}" rendered="{!bIsEdit}"
+                                         required="{!(CONTAINS(conditionalRequiredString,UPPER('Implementation_Risk_or_Obstacles_to_Suc__c')))}"/>
+                                         
+                        <apex:outputfield value="{!opp.Good_News_to_Document__c}" rendered="{!!bIsEdit}">
+                            <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                        </apex:outputfield>
+                        <apex:inputfield value="{!opp.Good_News_to_Document__c}" rendered="{!bIsEdit}" required="{!(CONTAINS(conditionalRequiredString,UPPER('Good_News_to_Document__c')))}"/>
+                                         
+                    </apex:pageBlockSection>
+                    <apex:pageBlockSection columns="2" id="pgBlockSecSix">
+                        <apex:outputfield label="Targeted Close Sign Date" value="{!opp.CloseDate}" rendered="{!!bIsEdit}"/>
+                        <apex:inputfield label="Targeted Close Sign Date" value="{!opp.CloseDate}" rendered="{!bIsEdit}" id="closeDate" onchange="updateCloseDate(this.id)"/>
+                        <apex:outputfield value="{!opp.StageName}" rendered="{!!bIsEdit}" label="Internal Selling Stage"/>
+                        
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:tab>
+            
+        </apex:tabPanel>
+        <apex:pageBlock >
+            <apex:pageBlockSection columns="2" id="pBlockSysinfo" title="System Information" rendered="{!!bIsEdit && $Profile.Name='System Administrator'}">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Created By"  /> 
+                    <a href='/{!opp.CreatedById}'> {!opp.CreatedBy.name}</a>, {!createdDate}
+                </apex:pageBlockSectionItem>   
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Last Modified By"  /> 
+                        <a href='/{!opp.LastModifiedById}'> {!opp.LastModifiedBy.name}</a>, {!lastModifiedDate}
+                </apex:pageBlockSectionItem>
+                
+                <apex:outputField value="{!opp.Stuck_Opty_Date__c}" />
+                
+                <apex:outputField value="{!opp.Business_Case_Review_Date_Stamp__c}" />
+                
+                <apex:outputField value="{!opp.Stuck_Counter__c}" />                
+                
+                <apex:outputField value="{!opp.Business_Case_Submit_for_Approval__c}" />
+                
+                <apex:outputField value="{!opp.Next_Stuck_Date__c}" />                
+                
+                <apex:outputField value="{!opp.Business_Case_Status__c}" />                
+                
+                <apex:outputField value="{!opp.Last_Active_Update__c}" />                
+                
+                <apex:outputField value="{!opp.Business_Case_Approval_Date__c}" /> 
+                
+                <apex:outputField value="{!opp.Next_Step_Key_Milestone_Date__c}" />
+                <br/>
+                
+                <apex:outputField value="{!opp.Previous_FY_Stuck_Count__c}" />                
+                                
+                <apex:outputField value="{!opp.Business_Case_Approval_Duration__c}" />                
+                
+                <apex:outputField value="{!opp.Optimisation_BM__c}" />                
+                
+                <apex:outputfield value="{!opp.Category__c}" rendered="{!!bIsEdit}">
+                    <apex:inlineEditSupport event="ondblclick" resetFunction="resetInlineEdit"/>
+                </apex:outputfield>
+                
+                <apex:outputField value="{!opp.Closing_This_Fiscal__c}" />                
+                
+                <apex:outputField value="{!opp.Probability}" />                
+                
+                <apex:outputField value="{!opp.isClosed_Date__c}" />                
+                
+                <apex:outputField value="{!opp.FIA_product__c}" />                
+                
+                <apex:outputField value="{!opp.of_Products__c}" />                
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Opportunity Record Type"/>
+                    <apex:outputText >
+                        <apex:outputField value="{!opp.RecordType.Name}" />
+                        <a href="/setup/ui/recordtypeselect.jsp?id={!LEFT(opp.id,15)}&retURL=%2F{!LEFT(opp.id,15)}">[Change]</a>
+                    </apex:outputText>
+  
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+    <div id="opportunityOverviewDiv" style="display:block;">
+        <apex:relatedList title="Tasks - Milestone, Next Steps" list="OpenActivities"/>
+        <apex:relatedList title="Activity History" list="ActivityHistories"/>
+        <apex:relatedList title="Stakeholders" list="Contact_Roles__r"></apex:relatedList>
+        <apex:relatedList title="Products and Services" list="OpportunityLineItems"></apex:relatedList>
+        <apex:relatedList title="SmartPrice Opportunities" list="SmartPrice__r"></apex:relatedList>
+        <apex:relatedList title="Call Plans" list="Call_Plans__r"></apex:relatedList>
+        <apex:relatedList title="Competitors" list="Competitor_Analysis__r"></apex:relatedList>
+        <apex:relatedList title="Opportunity Team" list="OpportunityTeamMembers"></apex:relatedList>
+        <apex:relatedList title="Agreements" list="Agreements__r" ></apex:relatedList>
+        <apex:relatedList title="Approvals" list="ProcessSteps" ></apex:relatedList>
+        <apex:relatedList title="Notes and Attachments" list="CombinedAttachments"></apex:relatedList>
+        <apex:pageBlock TItle="Opportunity Field History">
+            <apex:pageblocktable value="{!opportunity.Histories}" var="hist" title="opporty">
+                <apex:column value="{!hist.createddate}"/>
+                <apex:column value="{!hist.oldValue}"/>
+                <apex:column value="{!hist.NewValue}"/>
+                <apex:column value="{!hist.Field}"/>
+            </apex:pageblocktable>
+        </apex:pageBlock>
+    </div>
+    <div id="oppRecognitionDiv" style="display:none;">
+        <apex:relatedList title="Tasks - Milestone, Next Steps" list="OpenActivities"/>
+        <apex:relatedList title="Stakeholders" list="Contact_Roles__r"></apex:relatedList>
+        <apex:relatedList title="Products and Services" list="OpportunityLineItems"></apex:relatedList>
+        <apex:relatedList title="Call Plans" list="Call_Plans__r"></apex:relatedList>
+        <apex:relatedList title="Competitors" list="Competitor_Analysis__r"></apex:relatedList>
+        <apex:relatedList title="Opportunity Team" list="OpportunityTeamMembers"></apex:relatedList>
+    </div>
+    <div id="oppEvaluationDiv" style="display:none;">
+        <apex:relatedList title="Tasks - Milestone, Next Steps" list="OpenActivities"/>
+        <apex:relatedList title="Stakeholders" list="Contact_Roles__r"></apex:relatedList>
+        <apex:relatedList title="Products and Services" list="OpportunityLineItems"></apex:relatedList>
+        <apex:relatedList title="Call Plans" list="Call_Plans__r"></apex:relatedList>
+        <apex:relatedList title="Competitors" list="Competitor_Analysis__r"></apex:relatedList>
+        <apex:relatedList title="Opportunity Team" list="OpportunityTeamMembers"></apex:relatedList>
+    </div>
+    <div id="oppResolutionDiv" style="display:none;">
+        <apex:relatedList title="Tasks - Milestone, Next Steps" list="OpenActivities"/>
+        <apex:relatedList title="Stakeholders" list="Contact_Roles__r"></apex:relatedList>
+        <apex:relatedList title="Products and Services" list="OpportunityLineItems"></apex:relatedList>
+        <apex:relatedList title="Call Plans" list="Call_Plans__r"></apex:relatedList>
+        <apex:relatedList title="Competitors" list="Competitor_Analysis__r"></apex:relatedList>
+        <apex:relatedList title="Opportunity Team" list="OpportunityTeamMembers"></apex:relatedList>
+    </div>
+    <div id="oppBusinessDiv" style="display:none;">
+        <apex:relatedList title="Tasks - Milestone, Next Steps" list="OpenActivities"/>
+        <apex:relatedList title="Stakeholders" list="Contact_Roles__r"></apex:relatedList>
+        <apex:relatedList title="Products and Services" list="OpportunityLineItems"></apex:relatedList>
+        <apex:relatedList title="Call Plans" list="Call_Plans__r"></apex:relatedList>
+        <apex:relatedList title="Competitors" list="Competitor_Analysis__r"></apex:relatedList>
+        <apex:relatedList title="Opportunity Team" list="OpportunityTeamMembers"></apex:relatedList>
+    </div>
+    <div id="oppImplementationDiv" style="display:none;">
+        <apex:relatedList title="Tasks - Milestone, Next Steps" list="OpenActivities"/>
+        <apex:relatedList title="Stakeholders" list="Contact_Roles__r"></apex:relatedList>
+        <apex:relatedList title="Products and Services" list="OpportunityLineItems"></apex:relatedList>
+        <apex:relatedList title="Call Plans" list="Call_Plans__r"></apex:relatedList>
+        <apex:relatedList title="Competitors" list="Competitor_Analysis__r"></apex:relatedList>
+        <apex:relatedList title="Opportunity Team" list="OpportunityTeamMembers"></apex:relatedList>
+    </div>
+    <div id="oppChangesDiv" style="display:none;">
+        <apex:relatedList title="Tasks - Milestone, Next Steps" list="OpenActivities"/>
+        <apex:relatedList title="Stakeholders" list="Contact_Roles__r"></apex:relatedList>
+        <apex:relatedList title="Products and Services" list="OpportunityLineItems"></apex:relatedList>
+        <apex:relatedList title="Call Plans" list="Call_Plans__r"></apex:relatedList>
+        <apex:relatedList title="Competitors" list="Competitor_Analysis__r"></apex:relatedList>
+        <apex:relatedList title="Opportunity Team" list="OpportunityTeamMembers"></apex:relatedList>
+    </div>
+    <script>
+        var currentBuyingCycle = '{!opp.Stage_in_Buying_Cycle__c}';
+        if(currentBuyingCycle == 'Recognition of Needs'){
+            document.getElementById("pg:frm:tabTwo_lbl").style.backgroundColor = '#DDB929';
+            document.getElementById("pg:frm:tabTwo_lbl").style.backgroundImage = 'none';
+        }
+        else if(currentBuyingCycle == 'Evaluation of Options'){
+            document.getElementById("pg:frm:tabThree_lbl").style.backgroundColor = '#DDB929';
+            document.getElementById("pg:frm:tabThree_lbl").style.backgroundImage = 'none';
+        }
+        else if(currentBuyingCycle == 'Resolution of Concerns'){
+            document.getElementById("pg:frm:tabFour_lbl").style.backgroundColor = '#DDB929';
+            document.getElementById("pg:frm:tabFour_lbl").style.backgroundImage = 'none';
+        }
+        else if(currentBuyingCycle == 'Implementation'){
+            document.getElementById("pg:frm:tabSix_lbl").style.backgroundColor = '#DDB929';
+            document.getElementById("pg:frm:tabSix_lbl").style.backgroundImage = 'none';
+        }
+        else if(currentBuyingCycle == 'Changes Over Time'){
+            document.getElementById("pg:frm:tabSeven_lbl").style.backgroundColor = '#DDB929';
+            document.getElementById("pg:frm:tabSeven_lbl").style.backgroundImage = 'none';
+        }
+    var dataModified = false;
+    
+    function setupListener( a ){ 
+        a.addEventListener('dblclick', function() { 
+            disableApprovalButtons();
+        });
+    }
+    function setupListenerRadio( a ){ 
+        a.addEventListener('change', function() { 
+            disableApprovalButtons();
+        });
+    }
+    [].slice.call( document.querySelectorAll('span[id$="ilecell"]')).map( setupListener );
+    [].slice.call( document.querySelectorAll('input[type="Radio"]')).map( setupListenerRadio );
+    
+    function disableApprovalButtons (){
+        if ( !dataModified ){
+            dataModified = true;
+            disableApprovalButton ( document.querySelector('input[id$="SubmitForApproval"]') );
+            disableApprovalButton ( document.querySelector('input[value="Submit for Approval"]') );
+        }
+    }
+    function disableApprovalButton ( approvalButton ){
+        approvalButton.disabled = true
+        approvalButton.className = 'btnDisabled';
+        approvalButton.value = 'Please save before submitting for approval';    
+    }
+    </script>
+</apex:page>

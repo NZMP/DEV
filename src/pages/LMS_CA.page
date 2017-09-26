@@ -1,0 +1,34 @@
+<apex:page >
+    <apex:stylesheet value="{!$Resource.LearningStyle}"/>
+    <apex:form >       
+        <apex:outputLink value="{! $Page.LMS_CTM}">back</apex:outputLink>  
+        <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel styleClass="Title">Commercial Accumen</apex:outputLabel>   
+                </apex:pageBlockSectionitem> 
+                <apex:pageblockSection columns="3" >
+                   <apex:pageblockSectionItem dataStyle="width:10%">     
+                        <apex:image width="200" height="200" url="{!URLFOR($Resource.LearningImages,'Images/CA.gif')}"/>
+                   </apex:pageBlockSectionitem> 
+                   <apex:pageblockSection columns="1" >           
+                        <apex:outputLabel >The ability to analyse and evaluate financial and market information to create sound business decisions internally and externally.</apex:outputLabel>
+                        <apex:outputLabel >Develops and executes sales and channel strategies externally and within the organisation. </apex:outputLabel>
+                        <apex:outputLabel >Ensures business performance and actively manages risk factors</apex:outputLabel>
+                        <apex:outputLabel styleClass="Header" >Examples of competency behaviours</apex:outputLabel>                         
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CA%20Dairy%20Commodity's%22%5D">•Knowledge of global dairy commodity dynamics </apex:outputLink>  
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CA%20Fonterra%20market%20strategy%22%5D">•Can explain Fonterras position in the market and accompanying strategy </apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CA%20Customer%20analysis%22%5D">•In depth knowledge of the existing customer base and profitability</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CA%20Global%20Dairy%20markets%22%5D">•Understand the wider Dairy markets and future customers</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CA%20Customer%20Economics%22%5D">•Ability to interpret macro economics and apply to own customer portfolio and region portfolio </apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CA%20Risk%20awareness%20and%20management%22%5D">•Identification and management of potential risk factors. Implementation of appropriate risk solutions to ensure business performance. </apex:outputLink> 
+                    </apex:pageblockSection> 
+                    <apex:pageblockSection columns="1" >
+                        <apex:outputLabel styleClass="Header" >Competency levels</apex:outputLabel>
+                          <apex:image url="{!URLFOR($Resource.LearningImages,'Images/CA_CL.gif')}"/>
+                       </apex:pageblockSection>                    
+                </apex:pageblockSection>
+            </apex:pageblockSection>
+       </apex:pageBlock>
+    </apex:form>
+</apex:page>

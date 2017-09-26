@@ -1,0 +1,36 @@
+<apex:page >
+    <apex:stylesheet value="{!$Resource.LearningStyle}"/>
+    <apex:form >       
+        <apex:outputLink value="{! $Page.LMS_CTM}">back</apex:outputLink>  
+        <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel styleClass="Title">Customer Planning</apex:outputLabel>   
+                </apex:pageBlockSectionitem> 
+                <apex:pageblockSection columns="3" >  
+                    <apex:pageblockSectionItem dataStyle="width:10%">  
+                        <apex:image width="200" height="200" url="{!URLFOR($Resource.LearningImages,'Images/SP.gif')}"/>
+                    </apex:pageBlockSectionitem> 
+                    <apex:pageblockSection columns="1" >           
+                        <apex:outputLabel > Successfully leverages sales systems, processes and information in order to research, plan and achieve profitable results for the business.</apex:outputLabel>
+                        <apex:outputLabel >Effective cross functional planning and management of the Customer to create a valuable long term business partnerships ensuring the customer is at the heart of all business decisions.</apex:outputLabel>
+                        <apex:outputLabel >Formal process of Strategic and functional business planning for future in order to deliver or exceed both ours and our Customers business goals</apex:outputLabel>
+                        <apex:outputLabel styleClass="Header" >Examples of competency behaviours</apex:outputLabel>                         
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CP%20Communication%20Strategies%22%5D">•Demonstrates a variety of communication strategies to establish and maintain effective relationships</apex:outputLink>  
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CP%20Call%20plan%20opportunities%22%5D">•Utilises Customer Central to Plan track/report progress and measure success via planning tools.  Monitor customer contact including call objective, questions to identify issues/needs </apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CP%20influencers%22%5D">•Identifies the influencers and decision making structure within a customers business and teams</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CP%20Customer%20direction%22%5D">•Gathers, captures and communicates information about the customers business direction and needs</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CP%20Customer%20value%20chain%22%5D">•Can explain the customers end to end value chain and uses this as their basis of planning</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CP%20Customer%20Plans%22%5D">•Develops short and long term customer plans /strategies that identify opportunities with contingencies considered to prevent going off-track</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CP%20Customer%20needs%22%5D">•Reviews communication information about the customers business direction and needs</apex:outputLink> 
+                        <apex:outputLink value="/sfc/#search?searchTags=%5B%22CP%20Customer%20interactions%22%5D">•Can directly link all and any customer interactions/visits back to account and opportunity plan</apex:outputLink>
+                   </apex:pageblockSection>
+                   <apex:pageblockSection columns="1" > 
+                           <apex:outputLabel styleClass="Header" >Competency levels</apex:outputLabel>
+                           <apex:image url="{!URLFOR($Resource.LearningImages,'Images/SP_CL.gif')}"/>
+                   </apex:pageblockSection>
+                </apex:pageblockSection>                                                                                   
+            </apex:pageblockSection>
+       </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,36 @@
+<apex:page >
+<apex:stylesheet value="{!$Resource.InsightsStyle}"/>
+    <apex:pageBlock >
+            <apex:pageblockSection columns="1" >
+                <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLabel styleClass="Title">Dairy and Category Insights Hub</apex:outputLabel>   
+                </apex:pageBlockSectionitem>
+                  <apex:pageBlockSectionitem dataStyle="text-align:center;">
+                    <apex:outputLink value="/_ui/core/chatter/groups/GroupProfilePage?g={!$Label.InsightsGroup}">View Chatter Group</apex:outputLink>   
+                </apex:pageBlockSectionitem>      
+             </apex:pageblockSection>
+          <apex:pageblockSection columns="3"> 
+              <apex:outputPanel ></apex:outputPanel>
+              <apex:outputPanel layout="block" style="overflow:auto; height:540px; align:center">
+                 <chatter:feed entityId="{!$Label.InsightsGroup}" /> 
+              </apex:outputPanel>
+              <apex:outputPanel ></apex:outputPanel>
+          </apex:pageblockSection>
+     </apex:pageBlock>
+     <apex:form >
+        <apex:pageBlock >
+                <apex:pageblockSection columns="5" >                    
+                    <apex:outputLabel styleClass="Header">Dairy Industry</apex:outputLabel>
+                    <apex:outputLabel styleClass="Header">Consumer Powders</apex:outputLabel>
+                    <apex:outputLabel styleClass="Header">Paeds and Active Nutrition</apex:outputLabel>
+                    <apex:outputLabel styleClass="Header">Dairy Foods</apex:outputLabel>
+                    <apex:outputLabel styleClass="Header">Dairy Beverages</apex:outputLabel>
+                    <apex:outputLink value="/sfc/#search?searchTags=%5B%22Dairy Industry%22%5D"><apex:image url="{!URLFOR($Resource.InsightsImages,'Images/DairyIndustry.jpg')}"/></apex:outputLink> 
+                    <apex:outputLink value="/sfc/#search?searchTags=%5B%22Consumer Powders%22%5D"><apex:image url="{!URLFOR($Resource.InsightsImages,'Images/ConsumerPowders.jpg')}"/></apex:outputLink> 
+                    <apex:outputLink value="/sfc/#search?searchTags=%5B%22Paeds and Active Nutrition%22%5D"><apex:image url="{!URLFOR($Resource.InsightsImages,'Images/Paeds&ActiveNutrition.jpg')}"/></apex:outputLink> 
+                    <apex:outputLink value="/sfc/#search?searchTags=%5B%22Dairy Foods%22%5D"><apex:image url="{!URLFOR($Resource.InsightsImages,'Images/DairyFoods.jpg')}"/></apex:outputLink>                       
+                    <apex:outputLink value="/sfc/#search?searchTags=%5B%22Dairy Beverages%22%5D"><apex:image url="{!URLFOR($Resource.InsightsImages,'Images/DairyBeverages.jpg')}"/></apex:outputLink>                       
+                </apex:pageblockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

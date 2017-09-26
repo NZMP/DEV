@@ -1,0 +1,51 @@
+<apex:page >
+<style>
+.lightblue {background: #33CCFF; width:20%;}
+.green {background: #92D050; width:20%; }
+.darkblue {background: #0070C0; width:20%;}
+.cell { font-family: sans-serif; font-size: 12px; color: #FFFFFF;text-decoration: none; text-align: center; }
+</style>
+
+<apex:panelGrid columns="3" width="35%" cellspacing="0" cellpadding="10" rules="all" frame="box" border="2" styleClass="cell" columnClasses="lightblue,green,darkblue">
+   
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Chatter%22%5D">Chatter</apex:outputLink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Introduction%22%5D">Introduction</apex:outputLink>    
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Crisis%22%5D">Crisis</apex:outputLink>
+      
+     
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22NZMPHub%22%5D">NZMP Hub</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Account%22%5D">Account</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Global%20Sourcing%22%5D">Global Sourcing</apex:outputlink>
+
+       <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Call%20Plans%22%5D">Call Plans</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Account%20Plan%22%5D">Account Plan</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Reseller%22%5D">Reseller Programme/ Community</apex:outputlink>
+      
+      
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Key%20Initiative%22%5D">Key Initiative</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Opportunities%22%5D">Opportunity</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Campaign%22%5D">Campaign</apex:outputlink>
+      
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Salesforce1%22%5D">Salesforce1</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22SmartPrice%22%5D">SmartPrice</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22CVM%20Action%20Plan%22%5D">CVM Action Plans</apex:outputlink>
+      
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Contacts%22%5D">Contacts</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Outlook%22%5D">Outlook Integration</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Requests%22%2C%22C2S%22%5D">C2S Requests</apex:outputlink>
+      
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Insights%22%5D">Insights</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Reports%22%5D">Dashboards &amp;  Reporting</apex:outputlink> 
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22GDT%22%5D">GDT</apex:outputlink>
+           
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Release%20Notes%22%5D">Release Notes</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Agreements%2FContracts%22%5D">Agreements / Contracts</apex:outputlink>
+      <apex:outputLink styleclass="cell" target="_blank" value="/sfc/#search?searchTags=%5B%22Training%22%2C%22Cases%22%5D">Cases</apex:outputlink>
+
+        
+</apex:panelGrid>
+
+
+
+
+</apex:page>

@@ -1,0 +1,137 @@
+<apex:page standardController="OpportunityLineItem" extensions="OptyProdPricingCollarCalculationCtlr">
+<style type="text/css">
+    .empty-column-content {
+        display: none;
+    }
+    .header-column {
+            color: black;
+            font-size: .9em;
+            font-weight: bold !important;
+    }
+    .price-column {
+            text-align: right;
+    }
+</style>
+
+<script type="text/javascript" src="{!URLFOR($Resource.jqueryui1821custom, 'js/jquery-1.7.2.min.js')}"></script>
+
+<apex:form >
+
+    <apex:pageMessages escape="true"/>
+    
+    <apex:pageBlock id="OpportunityProductPricingCollarFeesTablePageBlock" title="Collar Fees">
+        <apex:pageBlockButtons location="top">
+            <apex:commandButton id="CalculateFeesButton" action="{!calculatePriceCollarFees}" value="Calculate Price Collar Fees" onclick="setCalculateButtonValue('Calculating...')"></apex:commandButton>
+            <apex:commandButton id="GeneratePdfButton" action="{!savePricingCollarFeesAsPdfAttachment}" value="Generate PDF" rerender="" style="display:none;"></apex:commandButton>
+<script type="text/javascript">
+function setCalculateButtonValue(value) {
+    document.getElementById('{!$Component.CalculateFeesButton}').value = value;
+}
+$(document).ready(function() {
+if ('{!attachmentPdfName}'.length > 0) {
+    setCalculateButtonValue('Generating PDF...');
+    setTimeout("document.getElementById('{!$Component.GeneratePdfButton}').click();",500);
+}
+});
+</script>
+        </apex:pageBlockButtons>
+        
+        <apex:outputPanel rendered="{!ISNULL(attachmentPdfName) && NOT(ISNULL(capPrices)) && (capPrices.size > 0)}">
+
+        <apex:outputPanel id="ShowPriceTables" rendered="false">
+        <apex:pageBlockTable value="{!capPrices}" var="cpv" rendered="{!capPrices.size > 0}">
+                <apex:column width="200px" headerValue="Cap Prices" value="{!cpv[0].Name_Value__c}"/>
+            <apex:repeat value="{!cpv}" var="cp">
+                <apex:column headerValue="Does not display" value="{!cp.Calculation_Value__c}" styleClass="price-column"/>
+            </apex:repeat>
+                    <apex:repeat var="header" value="{!etdMonthDisplayList}">
+            <apex:column headerValue="{!header}" headerClass="price-column" styleClass="empty-column-content"/>
+            </apex:repeat>
+        </apex:pageBlockTable>
+<p/>        
+        <apex:pageBlockTable value="{!floorPrices}" var="cpv" rendered="{!capPrices.size > 0}">
+                <apex:column width="200px" headerValue="Floor Prices" value="{!cpv[0].Name_Value__c}"/>
+            <apex:repeat value="{!cpv}" var="cp">
+                <apex:column headerValue="Does not display" value="{!cp.Calculation_Value__c}" styleClass="price-column"/>
+            </apex:repeat>
+                    <apex:repeat var="header" value="{!etdMonthDisplayList}">
+            <apex:column headerValue="{!header}" headerClass="price-column" styleClass="empty-column-content"/>
+            </apex:repeat>
+        </apex:pageBlockTable>
+<p/>
+        </apex:outputPanel>
+
+<!-- 
+        <apex:pageBlockTable value="{!volumeAdjustments}" var="va" rendered="{!volumeAdjustments.size > 0}">
+                <apex:column width="200px" headerValue="{!opportunity.Pricing_Collar_Product__c} Volume Adjustments" value="{!va[0].Name_Value__c}"/>
+            <apex:repeat value="{!va}" var="cp">
+                <apex:column headerValue="Does not display" value="{!cp.Calculation_Value__c}" styleClass="price-column"/>
+            </apex:repeat>
+                    <apex:repeat var="header" value="{!etdMonthDisplayList}">
+            <apex:column headerValue="{!header}" headerClass="price-column" styleClass="empty-column-content"/>
+            </apex:repeat>
+        </apex:pageBlockTable>
+<p/>
+        <apex:pageBlockTable value="{!exerciseDateDummyRow}" var="dr" rendered="{!etdMonthDateListForExerciseDates.size > 0}">
+                <apex:column width="200px" headerValue="ETD Month" value="{!'Exercise Dates'}"/>
+            <apex:repeat value="{!dr}" var="exerciseDate">
+                        <apex:column headerValue="Does not display" styleClass="price-column">
+                 <apex:outputText value="{0,date,dd'/'MM'/'yyyy}"><apex:param value="{!exerciseDate}"/></apex:outputText>
+                        </apex:column> 
+            </apex:repeat>
+                    <apex:repeat var="exerciseDate" value="{!etdMonthDateListForExerciseDates}">
+                        <apex:column headerClass="price-column" styleClass="empty-column-content">
+                            <apex:facet name="header">
+                    <apex:outputText value="{0,date,MMM'-'yy}"><apex:param value="{!exerciseDate}"/></apex:outputText>
+                </apex:facet>
+              </apex:column>
+            </apex:repeat>
+        </apex:pageBlockTable>
+<p/>
+-->
+
+        <apex:pageBlockTable value="{!priceCollarFees}" var="cpv">
+            <apex:column width="60px" headerValue="Fees" value="{!cpv[0].Name_Value__c}" styleClass="header-column"/>
+            <apex:repeat value="{!cpv}" var="cp">
+                <apex:column headerValue="Does not display" value="{!cp.Calculation_Value__c}" styleClass="price-column"/>
+            </apex:repeat>
+            <apex:repeat var="header" value="{!floorPriceHeaderDisplayList}">
+                <apex:column headerClass="price-column" styleClass="empty-column-content">
+                    <apex:facet name="header"><apex:outputText value="{0,number,#,###,###}"><apex:param value="{!header.Name_Value__c}"/></apex:outputText></apex:facet>
+                </apex:column>
+            </apex:repeat>
+        </apex:pageBlockTable>
+        </apex:outputPanel>
+
+    </apex:pageBlock>
+
+</apex:form>
+
+<div style="display:none">
+{!opportunitylineitem.Pricing_Collar_Product_Class__c}
+{!opportunitylineitem.Last_Delivery_Date__c}
+{!opportunitylineitem.ServiceDate}
+{!opportunitylineitem.Quantity}
+{!opportunitylineitem.Collar_First_Month__c}
+{!opportunitylineitem.Collar_Last_Month__c}
+{!opportunitylineitem.OpportunityId}
+{!opportunitylineitem.PricebookEntry.Name}
+{!opportunitylineitem.Opportunity}
+{!opportunitylineitem.Opportunity.Name}
+{!opportunitylineitem.Opportunity.Opportunity_No__c}
+{!OpportunityLineItem.Pricebookentry.Product2.Name}
+{!OpportunityLineItem.Opportunity.Account.Name}
+{!OpportunityLineItem.Material_Number__c}
+{!OpportunityLineItem.Agreement_Term_mths__c}
+{!OpportunityLineItem.Quantity_Unit__c}
+{!OpportunityLineItem.Volume_Change__c}
+{!OpportunityLineItem.Volume_Month__c}
+{!OpportunityLineItem.Description}
+{!OpportunityLineItem.Cap_Price_Chosen__c}
+{!OpportunityLineItem.Floor_Price_Chosen__c}
+{!OpportunityLineItem.Fee__c}
+{!OpportunityLineItem.Collars_Standard_Text__c}
+{!OpportunityLineItem.Reference_Price__c}
+</div>
+
+</apex:page>

@@ -1,0 +1,291 @@
+<apex:page standardController="Account" extensions="ReportChartCon" cache="true" sidebar="false" title="Account Metrics" standardstylesheets="true">
+    <style type="text/css">
+        .apexp .totalRow {
+            font-weight: bold;
+            background-color: #818290;
+        }
+        .ableColumn{
+            text-align:right;
+        }
+        body .bRelatedList .pbTitle h3, body .bPageBlock .pbTitle h2, body .bPageBlock .pbTitle h3, body .bSubBlock h3.lbHeader {
+            color: #000;
+            font-size: 1.3em;
+            width: -moz-max-content;
+        }
+        body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock {
+            background-color: #FFF;
+            border-bottom: 0px solid #FFF;
+            border-left: 0px solid #FFF;
+            border-right: 0px solid #FFF;
+            border-radius: 0px;
+        }
+        .accountTab .secondaryPalette, .individualPalette .accountBlock .secondaryPalette {
+            border-color: #FFF;
+        }
+        .bEditBlock .pbHeader > table, .apexp .bPageBlock.apexDefaultPageBlock .pbHeader > table, #ep.bLayoutBlock .pbHeader > table {
+            border-bottom: 1px solid #DBDBDB;
+            border-top: 3px solid #861614;
+        }
+        .dataRow even  first{
+            background-color: #EEE;
+        }
+    </style>
+    <script>
+        function invoicedVolume() {
+            invoicedVolumeReportspage(); 
+        }
+        function priceAchievement() {
+            priceAchievementReportspage(); 
+        }
+        function invoicedVolume3YrsTrend() {
+            invoicedVolumeReportspage(); 
+        }
+        function priceAchievement3YrsTrend() {
+            invoicedVolumeReportspage(); 
+        }
+    </script>
+    <apex:form >
+        <apex:sectionHeader title="Account Key Metrics" subtitle="{!accountName} - Last update({!keyMetricslastUpdateDate})"/>
+        <!-- <apex:outputText value="Account Key Metrics - {!accountName}" style="font-size:14pt;  font-family:arial; font-weight:bold;"/>  -->
+        <br/><br/>
+        <table title="Account Key Metrics">
+            <tr style="vertical-align: top;">
+                <td style ="text-align:left; width: 20%; padding-right: 10px;">
+                    <apex:outputText value="Volume - Target vs Actual" style="font-size:10pt;  font-family:arial; font-weight:bold;"/>
+                    <analytics:reportChart reportid="00O90000007A6rZ" filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!Account.Id}'}]" 
+                            showRefreshButton="false" cacheResults="false" size="small">            
+                        </analytics:reportChart>
+                    <apex:outputText value="From Price Achievement Report, Contacted Volume, Current FY" style="font-size:10pt; font-style:italic; font-family:Arial,Helvetiserifca,sans-;"/>
+                </td>
+                <td style ="text-align:left; width: 20%; padding-right: 10px;">
+                    <apex:outputText value="PA - Target Vs Actual" style="font-size:10pt; font-weight:bold; font-family:arial;"/>
+                    <analytics:reportChart reportid="00O90000007A6rW" filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!Account.Id}'}]" 
+                        showRefreshButton="false" cacheResults="false" size="small">
+                    </analytics:reportChart>
+                    <apex:outputText value="From Price Achievement Report, Current FY" style="font-size:10pt; font-style:italic; font-family:Arial,Helvetiserifca,sans-;"/>
+                </td>
+                <td style ="text-align:left; width: 20%; padding-right: 10px;">
+                    <apex:outputText value="Volume by Channel (CFY)" style="font-size:10pt; font-weight:bold; font-family:arial;"/>
+                        <analytics:reportChart reportid="00O90000007A6rT" filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!Account.Id}'}]" 
+                            showRefreshButton="false" cacheResults="false" size="small">
+                        </analytics:reportChart>
+                    <apex:outputText value="From Product Profitability Report. Current FY by Channel" style="font-size:10pt; font-style:italic; font-family:Arial,Helvetiserifca,sans-;"/>
+                </td>
+                <!-- Empty Cell -->
+                <td style ="text-align:left; width: 40%; padding-right: 10px;"></td>
+            </tr>
+            <tr style="vertical-align: top">
+                <td style ="text-align:left; width: 20%; padding-right: 10px;">
+                    <apex:outputText value="Volume by Commodity Group (FY)" style="font-size:10pt; font-weight:bold; font-family:arial;"/>
+                        <analytics:reportChart reportid="00O90000007A6rb" filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!Account.Id}'}]" 
+                            showRefreshButton="false" cacheResults="false" size="small">
+                        </analytics:reportChart>
+                    <apex:outputText value="From Product Profitability Report, Current FY" style="font-size:10pt; font-style:italic;font-family:Arial,Helvetiserifca,sans-;"/>
+                </td>
+                <td style ="text-align:left; width: 20%; padding-right: 10px;">
+                    <apex:outputText value="PA by Commodity Group (FY)" style="font-size:10pt; font-weight:bold; font-family:arial;"/>
+                        <analytics:reportChart reportid="00O90000007A6rY" filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!Account.Id}'}]" 
+                            showRefreshButton="false" cacheResults="false" size="small">
+                        </analytics:reportChart>
+                    <apex:outputText value="From Price Achievement Report, Current FY" style="font-size:10pt; font-style:italic; font-family:Arial,Helvetiserifca,sans-;"/>
+                </td>
+                <!-- Empty Cell -->
+                <td style ="text-align:left; width: 60%; padding-right: 10px;"></td>                
+            </tr>
+            <tr>
+                <td style ="text-align:left">
+                    <apex:pageblock onclick="invoicedVolume();">
+                        <apex:actionRegion >
+                            <apex:actionFunction name="invoicedVolume" action="{!invoicedVolumeReportpage}" rerender="">
+                                <apex:param name="volumeTargetVsActual" assignTo="{!volumeTargetVsActual}" value="00O90000007A6rb" />
+                            </apex:actionFunction>
+                        </apex:actionRegion>
+                        <apex:pageBlockTable value="{!stWrapperListForInvoicedVolume}" var="aggInvoice" width="3%">
+                            <apex:column >
+                                <apex:facet name="header">Commodity Group</apex:facet>
+                                {!aggInvoice.commodityGroupSort}
+                                <apex:facet name="footer">
+                                    <div Style="color: #FFF;">Total</div>
+                                </apex:facet>
+                            </apex:column>  
+                            <apex:column style="text-align:right;">
+                                <apex:facet name="header">
+                                    <div style="text-align: right;">Sum of Invoiced Volume</div>
+                                </apex:facet>
+                                {!aggInvoice.sumOfInvoicedVolumeSort}
+                                <apex:facet name="footer">
+                                    <div style="text-align: right;color: #FFF;">{!sumOfInvoicedVolume} </div>
+                                </apex:facet>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageblock>
+                    <apex:outputText value="From Product Profitability Report., Current FY" style="font-size:10pt; font-style:italic; font-family:Arial,Helvetiserifca,sans-;"/>
+                </td>
+                <td style ="text-align:left">
+                    <apex:pageblock onclick="priceAchievement();">
+                        <apex:actionRegion >
+                            <apex:actionFunction name="priceAchievement" action="{!priceAchievementReportpage}" rerender="">
+                                <apex:param name="paTargetVsActual" assignTo="{!paTargetVsActual}" value="00O90000007A6rY" />
+                            </apex:actionFunction>
+                        </apex:actionRegion>
+                         <apex:pageBlockTable value="{!stWrapperListForPriceAchievement}" var="aggPriceAch" width="3%">
+                            <apex:column >
+                                <apex:facet name="header">Commodity Group</apex:facet>
+                                {!aggPriceAch.commodityGroupSort}
+                                <apex:facet name="footer">
+                                    <div Style="color: #FFF;">Total</div>
+                                </apex:facet>
+                            </apex:column>
+                            <apex:column style="text-align:right;">
+                                <apex:facet name="header">
+                                    <div style="text-align: right;">Sum of Price Achievement</div>
+                                </apex:facet>
+                                ${!if(aggPriceAch.sumOfPriceAchievementSort!=null,aggPriceAch.sumOfPriceAchievementSort,0)}
+                                <apex:facet name="footer" >
+                                    <div style="text-align: right;color: #FFF;">${!sumOfPriceAchievement}</div>
+                                </apex:facet>
+                            </apex:column>  
+                        </apex:pageBlockTable>
+                    </apex:pageblock>
+                    <apex:outputText value="From Price Achievement Report, Current FY" style="font-size:10pt; font-style:italic; font-family:Arial,Helvetiserifca,sans-;"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <apex:pageblock title="3 YR TRENDS" onclick="invoicedVolume3YrsTrend();">
+                        <apex:actionRegion >
+                            <apex:actionFunction name="invoicedVolume3YrsTrend" action="{!invoicedVolume3YrsReportpage}" rerender="">
+                                <apex:param name="volumeByFY" assignTo="{!volumeByFY}" value="00O90000007A6rU" />
+                            </apex:actionFunction>
+                        </apex:actionRegion>
+                        <apex:pageBlockTable value="{!sumInvoicedVolumeMap}" var="fieldKey">
+                                <apex:facet name="caption">Volume by FY</apex:facet>
+                                <apex:column >
+                                    <apex:facet name="header">FY</apex:facet>
+                                    <apex:outputText value="{!fieldKey}"/>
+                                    <apex:facet name="footer">
+                                        <div Style="color: #FFF;">Total</div>
+                                    </apex:facet>
+                                </apex:column>
+                                <apex:column style="text-align:right;">
+                                    <apex:facet name="header">
+                                        <div style="text-align: right;">Sum of Invoiced Volume</div>
+                                    </apex:facet>
+                                    <apex:outputText value="{!sumInvoicedVolumeMap[fieldKey]}"/>
+                                    <apex:facet name="footer">
+                                        <div style="text-align: right;color: #FFF;">{!sumOfInvoicedVolumeMapTotalValue}</div>
+                                    </apex:facet>
+                                </apex:column>
+                        </apex:pageBlockTable>
+                        <apex:outputText value="From Product Profitable Report" style="font-size:10pt; font-style:italic; font-family:Arial,Helvetiserifca,sans-;"/>
+                    </apex:pageblock>
+                </td>
+                <td>
+                    <apex:pageblock title="3 YR TRENDS" onclick="priceAchievement3YrsTrend();">
+                        <apex:actionRegion >
+                            <apex:actionFunction name="priceAchievement3YrsTrend" action="{!priceAchievement3YrsReportpage}" rerender="">
+                                <apex:param name="paByFY" assignTo="{!paByFY}" value="00O90000007A6rV" />
+                            </apex:actionFunction>
+                        </apex:actionRegion>
+                        <apex:pageBlockTable value="{!sumPriceAchievementMap}" var="fieldKey">
+                                <apex:facet name="caption">PA by FY</apex:facet>
+                                <apex:column >
+                                    <apex:facet name="header">FY</apex:facet>
+                                    <apex:outputText value="{!fieldKey}"/>
+                                    <apex:facet name="footer">
+                                        <div Style="color: #FFF;">Total</div>
+                                    </apex:facet>
+                                </apex:column>
+                                <apex:column style="text-align:right;">
+                                    <apex:facet name="header">
+                                        <div style="text-align: right;">Sum of Price Achievement</div>
+                                    </apex:facet>
+                                    <apex:outputText value="${!sumPriceAchievementMap[fieldKey]}"/>
+                                    <apex:facet name="footer">
+                                        <div style="text-align: right;color: #FFF;">${!sumOfPriceAchievementMapTotalValue}</div>
+                                    </apex:facet>
+                                </apex:column>
+                        </apex:pageBlockTable>
+                        <apex:outputText value="From Price Achievement Report" style="font-size:10pt; font-style:italic; font-family:Arial,Helvetiserifca,sans-;"/>
+                    </apex:pageblock>
+                </td>
+            </tr>
+            <tr>
+                <td style ="text-align:left">
+                    <apex:outputText value="Volume by FY" style="font-size:10pt; font-weight:bold; font-family:arial;"/>
+                    <analytics:reportChart reportid="00O90000007A6rU" filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!Account.Id}'}]" 
+                        showRefreshButton="false" cacheResults="false" size="small">
+                    </analytics:reportChart>
+                    <apex:outputText value="From Product Profitability Report" style="font-size:10pt; font-style:italic; font-family:Arial,Helvetiserifca,sans-;"/>
+                </td>
+                <td style ="text-align:left">
+                    <apex:outputText value="PA by FY" style="font-size:10pt; font-weight:bold; font-family:arial;"/>
+                    <analytics:reportChart reportid="00O90000007A6rV" filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!Account.Id}'}]" 
+                        showRefreshButton="false" cacheResults="false" size="small">
+                    </analytics:reportChart>
+                    <apex:outputText value="From Price Achievement Report" style="font-size:10pt; font-style:italic; font-family:Arial,Helvetiserifca,sans-;"/>
+                </td>
+            </tr>
+            <tr>
+                <td style ="text-align:left">
+                    <apex:outputText value="Volume by Commodity Group" style="font-size:10pt; font-weight:bold; font-family:arial;"/>
+                    <analytics:reportChart reportid="00O90000007A6ra" filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!Account.Id}'}]" 
+                        showRefreshButton="false" cacheResults="false" size="small">
+                    </analytics:reportChart>
+                    <apex:outputText value="From Product Profitability Report" style="font-size:10pt; font-style:italic; font-family:Arial,Helvetiserifca,sans-;"/>
+                </td>
+                <td style ="text-align:left">
+                    <apex:outputText value="PA by Commodity Group" style="font-size:10pt; font-weight:bold; font-family:arial;"/>
+                    <analytics:reportChart reportid="00O90000007A6rX" filter="[{column:'ACCOUNT_ID', operator:'equals', value:'{!Account.Id}'}]" 
+                        showRefreshButton="false" cacheResults="false" size="small">
+                    </analytics:reportChart>        
+                    <apex:outputText value="From Price Achievement Report" style="font-size:10pt; font-style:italic; font-family:Arial,Helvetiserifca,sans-;"/>                             
+                </td>
+            </tr>
+        </table>
+        <!-- 
+        <apex:repeat value="{!sumInvoicedVolumeMap}" var="fieldKey">
+                <apex:outputText value="{!fieldKey}"/>: 
+                <apex:outputText value="{!sumInvoicedVolumeMap[fieldKey]}"/><br/>
+        </apex:repeat>
+        
+        <apex:pageblock >
+            <apex:actionRegion >
+                <apex:actionFunction name="invoicedVolumeReportspage" action="{!invoicedVolumeReportpage}"/>
+                <apex:actionFunction name="priceAchievementReportspage" action="{!priceAchievementReportpage}"/>
+            </apex:actionRegion>
+             <apex:pageblockSection >
+                 <apex:pageblockSectionItem onDataclick="invoicedVolume();" >
+                    <apex:pageBlockTable value="{!aggregateInvoicedVolumeList}" var="aggInvoice" width="3%">
+                        <apex:column >
+                            <apex:facet name="header">Commodity Group</apex:facet>
+                            {!aggInvoice['commodityGroup']}
+                            <apex:facet name="footer">Total</apex:facet>
+                        </apex:column>  
+                        <apex:column >
+                            <apex:facet name="header">Sum of Invoiced Volume</apex:facet>
+                            {!aggInvoice['sumOfInvoicedVolume']}
+                            <apex:facet name="footer">{!sumOfInvoicedVolume} </apex:facet>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageblockSectionItem>
+                <apex:pageblockSectionItem onDataclick="priceAchievement();">
+                    <apex:pageBlockTable value="{!aggregatePriceAchievementList}" var="aggPriceAch" width="3%">
+                        <apex:column >
+                            <apex:facet name="header">Commodity Group</apex:facet>
+                            {!aggPriceAch['commodityGroup']}
+                            <apex:facet name="footer">Total </apex:facet>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header">Sum of Price Achievement</apex:facet>
+                            {!aggPriceAch['sumOfPriceAchievement']}
+                            <apex:facet name="footer">{!sumOfPriceAchievement} </apex:facet>
+                        </apex:column>  
+                    </apex:pageBlockTable>
+                </apex:pageblockSectionItem>
+            </apex:pageblockSection>
+        </apex:pageblock>
+         -->
+        <!-- </apex:panelGrid> -->
+    </apex:form>
+</apex:page>

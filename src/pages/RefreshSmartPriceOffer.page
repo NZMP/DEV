@@ -1,0 +1,11 @@
+<apex:page standardController="CameleonCPQ__Quote__c" extensions="SmartPriceOfferView" >
+<apex:form id="viewPage"  >
+ <!--apex:commandButton value="Reload" onComplete="window.location.reload();" /-->
+ 
+ <apex:pageMessage summary="Offer details are being refreshed. It will reload in a few seconds" severity="info" strength="3"/>
+  <img src="/img/loading.gif" />  
+ <apex:actionPoller action="{!getRedir}" rerender="viewPage" interval="5" id="poll"/>
+
+            
+ </apex:form>
+</apex:page>
